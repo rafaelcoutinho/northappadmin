@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>WebNLP | Registration in</title>
+<meta
+	content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+	name="viewport">
+<link rel="stylesheet"
+	href="../bower_components/admin-lte/bootstrap/css/bootstrap.min.css">
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+<link rel="stylesheet"
+	href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+<link rel="stylesheet"
+	href="../bower_components/admin-lte/dist/css/AdminLTE.min.css">
+<link rel="stylesheet"
+	href="../bower_components/admin-lte/dist/css/skins/_all-skins.min.css">
+<link rel="stylesheet"
+	href="../bower_components/admin-lte/plugins/iCheck/square/blue.css">
+<link rel="stylesheet"
+	href="../bower_components//angularjs-toaster/toaster.css"
+	media="screen">
+
+<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+<!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+        <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+
+<body class="hold-transition register-page skin-yellow" id="loginApp">
+	<div class="register-box">
+		<div class="register-logo">
+			<a href="../"><img src="img/logo.png" /> <br> <b>Web</b>NLP</a>
+		</div>
+		<div class="register-box-body" ng-controller="BaseFormCtrl">
+
+			<toaster-container
+				toaster-options="{'time-out': 9000, 'close-button':true, 'animation-class': 'toast-top-center'}"></toaster-container>
+
+			<p class="login-box-msg">Register to get full access</p>
+
+			<form name="form" ng-controller="LoginCtrl"
+				class="pure-form login-form" novalidate ng-init="fixCheckBoxes()">
+
+				<div class="form-group has-feedback">
+					<input type="text" class="form-control" placeholder="* Full name"
+						ng-minlength="3" name="name" required="required"
+						ng-model="user.name"> <span
+						class="glyphicon glyphicon-user form-control-feedback"></span>
+					<div ng-messages="form.name.$error" role="alert"
+						ng-show="isMessagesVisible('name')">
+						<div ng-message="required">Your name is mandatory</div>
+						<div ng-message="minlength">must have minimum 3 characters</div>
+					</div>
+				</div>
+				<div class="form-group has-feedback">
+					<input type="email" class="form-control" placeholder="* Email"
+						ng-minlength="4" required="required" name="email"
+						ng-model="user.email"> <span
+						class="glyphicon glyphicon-envelope form-control-feedback"></span>
+					<div class="error-messages" ng-messages="form.email.$error"
+						ng-show="isMessagesVisible('email')" ng-cloak>
+						<div ng-message="required">The email is mandatory</div>
+						<div ng-message="minlength">must have minimum 4 characters</div>
+						<div ng-message="email">Not a valid e-mail. Please enter a
+							valid e-mail.</div>
+						<div ng-message="invalid">Please enter a valid e-mail.</div>
+					</div>
+				</div>
+				<div class="form-group has-feedback">
+					<input type="text" class="form-control" placeholder="* Company"
+						ng-minlength="3" name="company" required="required"
+						ng-model="user.company"> <span
+						class="fa  fa-industry form-control-feedback"></span>
+					<div class="error-messages" ng-messages="form.company.$error"
+						ng-show="isMessagesVisible('company')" ng-cloak>
+						<div ng-message="required">The company name is mandatory</div>
+						<div ng-message="minlength">must have minimum 3 characters</div>
+					</div>
+				</div>
+				<div class="form-group has-feedback">
+					<input type="tel" class="form-control" placeholder="Phone Number"
+						ng-model="user.phone"> <span
+						class="fa   fa-phone form-control-feedback"></span>
+				</div>
+				<div class="form-group has-feedback">
+					<input type="text" class="form-control"
+						placeholder="Job title or role" ng-model="user.positionTitle">
+					<span class="fa   fa-info form-control-feedback"></span>
+				</div>
+				<div class="form-group has-feedback">
+					<input type="text" class="form-control" placeholder="Industry"
+						ng-model="user.industry"> <span
+						class="fa   fa-info form-control-feedback"></span>
+				</div>
+
+
+
+				<div class="form-group has-feedback">
+					<div class="checkbox icheck">
+						<label> <input type="checkbox" checked="checked" icheck  verify-pwd
+							ng-model="defaultPwd"> Generate a password and send to my
+							e-mail
+						</label>
+					</div>
+				</div>
+				<div class="row" ng-hide="defaultPwd">
+					<div class="form-group has-feedback">
+						<input type="password" class="form-control" placeholder="Password"
+							ng-focus="focus('password')" ng-blur="blur('password')"
+							ng-model="user.passwordPlain" name="password" 
+							class="pure-input-1"> <span
+							class="glyphicon glyphicon-lock form-control-feedback"></span>
+						<div class="error-messages"
+							ng-show="isMessagesVisible('password')"
+							ng-messages="form.password.$error" ng-cloak>
+							<div ng-message="verifypwd">The password is mandatory</div>
+							<div ng-message="required">The password is mandatory</div>
+							<div ng-message="minlength">must have minimum 3 characters</div>
+						</div>
+					</div>
+					<div class="form-group has-feedback">
+						<input type="password" class="form-control"
+							ng-focus="focus('confirmPassword')"
+							ng-blur="blur('confirmPassword')" ng-model="vm.confirmPassword" check-passwords-match 
+							name="confirmPassword" class="pure-input-1"
+							placeholder="Retype password"> <span
+							class="glyphicon glyphicon-log-in form-control-feedback"></span>
+						<div class="error-messages"
+							ng-show="isMessagesVisible('confirmPassword')" 
+							ng-messages="form.confirmPassword.$error" ng-cloak>
+							<div ng-message="required">The password confirmation is
+								mandatory</div>
+							<div ng-message="checkPasswordsMatch">Passwords must match</div>
+						</div>
+					</div>
+				</div>
+				<div class="form-group has-feedback">
+
+					<div class="checkbox icheck">
+						<label> <input type="checkbox" checked="checked" icheck
+							name="optIn" ng-model="user.optIn" ng-value="true"> I
+							want to receive information about Sagence's NLP solutions
+						</label>
+					</div>
+
+				</div>
+				<div class="row">
+					<button class="btn btn-primary btn-block btn-flat"
+						ng-click="onRegister()">Register</button>
+				</div>
+			</form>
+
+
+
+			<a href="login.html" class="text-center">I already have an account</a>
+		</div>
+	</div>
+
+
+	<script type="text/javascript" data-main="js/run-loggin-app"
+		src="../bower_components/requirejs/require.js"></script>
+
+
+</body>
+
+</html>

@@ -1,0 +1,64 @@
+<section class="content-header" ng-include="'partials/breadcrumb.html'" ng-init="title = 'Localidades';
+   bcs=[{title:'Home',url:'#/'},{title:'Localidades',url:'#/localidades'},{title:'Localidade',url:'#/localidade/',active:true}]"></section>
+<section class="content">
+
+
+
+
+    <div class="box box-info">
+        <div class="box-header with-border">
+            <h3 class="box-title">Localidade</h3>
+            
+        </div>
+        <!-- /.box-header -->
+        <!-- form start -->
+        <form class="form-horizontal">
+            <div class="box-body">
+                <div class="form-group">
+                    <label for="inputName" class="col-sm-2 control-label">Nome</label>
+
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="inputName" placeholder="Nome" ng-model="location.nome">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="inputAddress" class="col-sm-2 control-label">Endereço</label>
+
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="inputAddress" placeholder="Endereço" ng-model="location.endereco">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="inputCoords" class="col-sm-2 control-label">Coordenadas</label>
+
+                    <div class="col-sm-10">
+                        Indisponível
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="inputPhone" class="col-sm-2 control-label">Telefone</label>
+
+                    <div class="col-sm-10">
+                        
+                        <input type="tel" class="form-control" id="inputPhone" data-inputmask='"mask": "(99) 9999-9999"' data-mask ng-model="location.telefone">    
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="inputWeb" class="col-sm-2 control-label">Website</label>
+
+                    <div class="col-sm-10">
+                        <input type="url" class="form-control" id="inputWeb" placeholder="http://.." ng-model="location.website">
+                    </div>
+                </div>
+            </div>
+            <!-- /.box-body -->
+            <div class="box-footer">
+                <button type="submit" class="btn btn-default" ng-click="cancel()">Voltar</button>
+                <button type="submit" class="btn btn-info pull-right" ng-click="saveData()">Salvar</button>
+            </div>
+            <!-- /.box-footer -->
+        </form>
+    </div>
+
+
+</section>

@@ -1,0 +1,23 @@
+{
+  "name": "northwebadmin",
+  "version": "1.0",
+  "authors": [
+    "rafael.coutinho@gmail.com"
+  ],
+  "description": "NorthBrasil | Web Admin Tool",
+  "dependencies": {
+    "angular": "1.3.8",
+    "angular-messages": "1.3.8",
+    "angular-resource": "1.3.8",
+    "angular-route": "1.3.8",
+    "angularjs-toaster": "~0.4.9",
+    "lodash": "2.4.1",
+    "pure": "0.5.0",
+    "requirejs": "2.1.15",
+    "angular-bootstrap": "0.14.3",
+    "admin-lte": "2.3.1"
+  },
+  "resolutions": {
+    "angular": "1.5.0"
+  }
+}
