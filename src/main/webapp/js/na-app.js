@@ -52,6 +52,12 @@ var angularModule =
         }).when('/destaque/:id', {
             templateUrl: 'partials/destaque.html',
             controller: 'DestaqueDetailsCtrl'
+        }).when('/equipes', {
+            templateUrl: 'partials/equipes.html',
+            controller: 'EquipeListCtrl'
+        }).when('/equipe/:id', {
+            templateUrl: 'partials/equipe.html',
+            controller: 'EquipeDetailsCtrl'
         }).otherwise({
             redirectTo: '/'
         });
@@ -84,6 +90,50 @@ var angularModule =
                     transformResponse: jsonTransformQuery
                 }
             });
+
+        }])  
+        .service('CategoriaService', ['$http', '$q', '$resource', 'appConfigs', function ($http, $q, $resource, appConfigs) {
+            return $resource('http://localhost/northServer/api.php/Categoria/:id', {}, {
+                query: {
+                    isArray: true,
+                    transformResponse: jsonTransformQuery
+                }
+            });
+
+        }])
+        .service('EquipesService', ['$http', '$q', '$resource', 'appConfigs', function ($http, $q, $resource, appConfigs) {
+            return $resource('http://localhost/northServer/api.php/Equipe/:id', {}, {
+                query: {
+                    isArray: true,
+                    transformResponse: jsonTransformQuery
+                }
+            });
+
+        }])
+        .controller('EquipeListCtrl', [
+            '$scope', '$timeout', '$window', '$routeParams', 'EquipesService', '$location', 
+           function ($scope, $timeout, $window, $routeParams, EquipesService, $location) {
+            
+            $scope.equipes = EquipesService.query();
+
+            $scope.novo = function () {
+                $location.path("/equipe/-1");
+            }
+        }])
+        .controller('EquipeDetailsCtrl', ['$scope', '$timeout', '$location', '$routeParams', 'EquipesService','CategoriaService', function ($scope, $timeout, $location, $routeParams, EquipesService,CategoriaService) {
+            if ($routeParams.id == -1) {
+                $scope.destaque = {}
+            } else {
+                $scope.equipe = EquipesService.get({ id: $routeParams.id });
+            }
+            $scope.categorias = CategoriaService.query();
+            $scope.saveData = function () {
+                EquipesService.save({ id: $routeParams.id != -1 ? $routeParams.id : null }, $scope.equipe);
+            }
+
+            $scope.cancel = function () {
+                $location.path("/equipes");
+            }
 
         }])
           .service('DestaquesService', ['$http', '$q', '$resource', 'appConfigs', function ($http, $q, $resource, appConfigs) {

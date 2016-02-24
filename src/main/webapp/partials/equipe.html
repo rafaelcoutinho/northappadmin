@@ -1,0 +1,53 @@
+<section class="content-header" ng-include="'partials/breadcrumb.html'" ng-init="title = 'Equipe';
+   bcs=[{title:'Home',url:'#/'},{title:'Equipes',url:'#/Equipe'},{title:'Equipe',url:'#/Equipe/',active:true}]"></section>
+<section class="content">
+
+
+
+
+    <div class="box box-info">
+        <div class="box-header with-border">
+            <h3 class="box-title">Equipe</h3>
+
+        </div>
+        <!-- /.box-header -->
+        <!-- form start -->
+        <form class="form-horizontal">
+            <div class="box-body">
+                <div class="form-group">
+                    <label for="inputName" class="col-sm-2 control-label">Título</label>
+
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="inputName" placeholder="Nome" ng-model="equipe.nome">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="inputName" class="col-sm-2 control-label">Descrição/Cidade</label>
+
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="inputName" placeholder="cidade" ng-model="equipe.descricao">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="inputDesc" class="col-sm-2 control-label">Categoria atual</label>
+
+                    <div class="col-sm-10">
+                        <select class="form-control" ng-model="equipe.id_Categoria" placeholder="Selecione a categoria">
+                            <option ng-repeat="categoria in categorias" value="{{categoria.id}}">{{categoria.nome}}</option>
+                        </select>
+
+                    </div>
+                </div>
+
+            </div>
+            <!-- /.box-body -->
+            <div class="box-footer">
+                <button type="submit" class="btn btn-default" ng-click="cancel()">Voltar</button>
+                <button type="submit" class="btn btn-info pull-right" ng-click="saveData()">Salvar</button>
+            </div>
+            <!-- /.box-footer -->
+        </form>
+    </div>
+
+
+</section>
