@@ -31,18 +31,76 @@
                     <label for="inputData" class="col-sm-2 control-label">Data</label>
 
                     <div class="col-sm-10">
-                        <input type="text" class="form-control" id="inputData" data-inputmask="'alias': 'dd/mm/yyyy'" data-mask ng-model="etapa.data">
+                        <input type="date" class="form-control" id="inputData" ng-model="formData">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="inputImgSmall" class="col-sm-2 control-label">Imagem Pequena</label>
+
+                    <div class="col-sm-8">
+                        <input type="url" class="form-control" id="inputImgSmall" placeholder="http://" ng-model="etapa.imgSmall">
+                    </div>
+                    <div class="col-sm-2">
+                        <img class="col-sm-2" ng-src="{{etapa.imgSmall}}" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="inputImgBig" class="col-sm-2 control-label">Imagem Grande</label>
+
+                    <div class="col-sm-8">
+                        <input type="url" class="form-control" id="inputImgBig" placeholder="http://" ng-model="etapa.imgBig">
+                    </div>
+                    <div class="col-sm-2">
+                        <img ng-src="{{etapa.imgBig}}" />
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="inputLocal" class="col-sm-2 control-label">Local</label>
 
                     <div class="col-sm-10">
-                        <span ng-show="etapa.id_Local==null" class="text-yellow">A definir</span> 
-                        <span ng-show="etapa.id_Local!=null" class="text-green">{{location.nome}}</span> 
+                        <span ng-show="etapa.id_Local==null" class="text-yellow">A definir</span>
+                        <span ng-show="etapa.id_Local!=null" class="text-green">{{location.nome}}</span>
                         <button type="button" class="btn btn-primary btn-xs " data-toggle="modal" data-target="#pickLocal">
                             Selecionar local
                         </button>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">Inscrição</label>
+                </div>
+                <div class="form-group">
+                    <label for="inputPS" class="col-sm-2 control-label">Prova Social</label>
+
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="inputPS" placeholder="items da prova social" ng-model="etapa.provasocial">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="inputDataI" class="col-sm-2 control-label">Lote I</label>
+                    <div class="col-sm-4">
+                        <input type="text" class="form-control" id="inputDataI" placeholder="Data limite lote I" data-inputmask="'alias': 'dd/mm/yyyy'" data-mask ng-model="etapa.lote1.data">
+                    </div>
+                    <div class="col-sm-4">
+                        <input type="number" class="form-control" id="inputDataI" placeholder="R$" ng-model="etapa.lote1.preco">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="inputDataII" class="col-sm-2 control-label">Lote II</label>
+                    <div class="col-sm-4">
+                        <input type="text" class="form-control" id="inputDataII"  placeholder="Data limite lote II" data-inputmask="'alias': 'dd/mm/yyyy'" data-mask ng-model="etapa.lote1.data">
+                    </div>
+                    <div class="col-sm-4">
+                        <input type="number" class="form-control" id="inputDataII" placeholder="R$" ng-model="etapa.lote1.preco">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="inputDataIII" class="col-sm-2 control-label">Lote III</label>
+                    <div class="col-sm-4">
+                        <input type="text" class="form-control" id="inputDataIII"  placeholder="Data limite lote III" data-inputmask="'alias': 'dd/mm/yyyy'" data-mask ng-model="etapa.lote1.data">
+                    </div>
+                    <div class="col-sm-4">
+                        <input type="number" class="form-control" id="inputDataIII" placeholder="R$" ng-model="etapa.lote1.preco">
                     </div>
                 </div>
 

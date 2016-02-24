@@ -1,0 +1,35 @@
+<section class="content-header" ng-include="'partials/breadcrumb.html'" ng-init="title = 'Destaques';bcs=[{title:'Home',url:'#/'},{title:'Destaques',url:'#/destaques',active:true}]"></section>
+<section class="content">
+
+    <div class="box box-primary">
+        <div class="box-header ">
+
+
+            <h3 class="box-title">Destaques</h3>
+            <div class="pull-right box-tools">
+                <button type="button" class="btn btn-sm  pull-right" data-toggle="tooltip" title="Novo Destaques" ng-click="novo()">
+                    <i class="fa fa-plus"></i></button>
+
+            </div>
+
+        </div>
+        <div class="box-body">
+            <table class="table table-bordered">
+                <tbody>
+                    <tr>
+                        <th style="width: 10px">#</th>
+                        <th>Nome</th>
+
+                    </tr>
+                    <tr ng-repeat="item in destaques">
+                        <td></td>
+                        <td><a href="#/destaque/{{itel.id}}">{{item.titulo}}</a></td>
+                    </tr>
+
+                </tbody>
+            </table>
+        </div>
+        <!-- /.box -->
+    </div>
+
+</section>
