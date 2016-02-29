@@ -1,210 +1,211 @@
--- ---
--- Globals
--- ---
+use northdb;
+-- MySQL dump 10.13  Distrib 5.7.9, for linux-glibc2.5 (x86_64)
+--
+-- Host: localhost    Database: north
+-- ------------------------------------------------------
+-- Server version	5.5.47-0ubuntu0.14.04.1
 
--- SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
--- SET FOREIGN_KEY_CHECKS=0;
-DROP TABLE IF EXISTS `Resultado`;
-DROP TABLE IF EXISTS `Trekker_Equipe`;
-DROP TABLE IF EXISTS `Inscricao`;
-DROP TABLE IF EXISTS `Trekker`;
-DROP TABLE IF EXISTS `Grid`;
-DROP TABLE IF EXISTS `Equipe`;
-DROP TABLE IF EXISTS `Etapa`;
-DROP TABLE IF EXISTS `Local`;
-DROP TABLE IF EXISTS `Categoria`;
--- ---
--- Globals
--- ---
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
--- SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
--- SET FOREIGN_KEY_CHECKS=0;
-
--- ---
--- Table 'Etapa'
--- 
--- ---
-
-DROP TABLE IF EXISTS `Etapa`;
-		
-CREATE TABLE `Etapa` (
-  `id` INTEGER NOT NULL AUTO_INCREMENT DEFAULT NULL,
-  `id_Local` INTEGER NULL DEFAULT NULL,
-  `titulo` VARCHAR(100) NOT NULL DEFAULT 'NULL',
-  `descricao` VARCHAR(256) NULL DEFAULT NULL,
-  `data` DATE NULL DEFAULT NULL,
-  PRIMARY KEY (`id`)
-);
-
--- ---
--- Table 'Local'
--- 
--- ---
-
-DROP TABLE IF EXISTS `Local`;
-		
-CREATE TABLE `Local` (
-  `id` INTEGER NOT NULL AUTO_INCREMENT DEFAULT NULL,
-  `nome` VARCHAR(30) NOT NULL DEFAULT 'NULL',
-  `endereco` VARCHAR(256) NULL DEFAULT NULL,
-  `latitude` INTEGER NULL DEFAULT NULL,
-  `longitude` INTEGER NULL DEFAULT NULL,
-  `telefone` VARCHAR(25) NULL DEFAULT NULL,
-  `website` VARCHAR(256) NULL DEFAULT NULL,
-  PRIMARY KEY (`id`)
-);
-
--- ---
--- Table 'Trekker'
--- 
--- ---
-
-DROP TABLE IF EXISTS `Trekker`;
-		
-CREATE TABLE `Trekker` (
-  `id` INTEGER NOT NULL AUTO_INCREMENT DEFAULT NULL,
-  `imagem` VARCHAR(256) NULL DEFAULT NULL,
-  `nome` VARCHAR(256) NULL DEFAULT NULL,
-  `email` VARCHAR(80) NULL DEFAULT NULL,
-  `telefone` VARCHAR(30) NULL DEFAULT NULL,
-  `fbid` VARCHAR(100) NULL DEFAULT NULL,
-  PRIMARY KEY (`id`)
-);
-
--- ---
--- Table 'Equipe'
--- 
--- ---
-
-DROP TABLE IF EXISTS `Equipe`;
-		
-CREATE TABLE `Equipe` (
-  `id` INTEGER NULL AUTO_INCREMENT DEFAULT NULL,
-  `nome` VARCHAR(100) NOT NULL DEFAULT 'NULL',
-  `cidade` VARCHAR(80) NULL DEFAULT NULL,
-  `id_Categoria` INTEGER NULL DEFAULT NULL,
-  PRIMARY KEY (`id`)
-);
-
--- ---
--- Table 'Inscricao'
--- 
--- ---
-
-DROP TABLE IF EXISTS `Inscricao`;
-		
-CREATE TABLE `Inscricao` (
-  `id_Trekker` INTEGER NULL DEFAULT NULL,
-  `id_Etapa` INTEGER NULL DEFAULT NULL,
-  `paga` BINARY NULL DEFAULT NULL,
-  PRIMARY KEY (`id_Trekker`, `id_Etapa`)
-);
-
--- ---
--- Table 'Trekker_Equipe'
--- 
--- ---
-
-DROP TABLE IF EXISTS `Trekker_Equipe`;
-		
-CREATE TABLE `Trekker_Equipe` (
-  `id_Trekker` INTEGER NULL DEFAULT NULL,
-  `id_Equipe` INTEGER NULL DEFAULT NULL,
-  `start` DATE NULL DEFAULT NULL,
-  `end` DATE NULL DEFAULT NULL,
-  PRIMARY KEY (`id_Trekker`, `id_Equipe`, `start`)
-);
-
--- ---
--- Table 'Resultado'
--- 
--- ---
-
-DROP TABLE IF EXISTS `Resultado`;
-		
-CREATE TABLE `Resultado` (
-  `id_Equipe` INTEGER NULL DEFAULT NULL,
-  `id_Etapa` INTEGER NULL DEFAULT NULL,
-  `pontos` INTEGER NULL DEFAULT NULL,
-  `id_Categoria` INTEGER NULL DEFAULT NULL,
-  PRIMARY KEY (`id_Etapa`, `id_Equipe`)
-);
-
--- ---
--- Table 'Grid'
--- 
--- ---
-
-DROP TABLE IF EXISTS `Grid`;
-		
-CREATE TABLE `Grid` (
-  `id_Equipe` INTEGER NULL DEFAULT NULL,
-  `id_Etapa` INTEGER NULL DEFAULT NULL,
-  `largada` INTEGER NULL DEFAULT NULL,
-  PRIMARY KEY (`id_Equipe`, `id_Etapa`)
-);
-
--- ---
--- Table 'Categoria'
--- 
--- ---
+--
+-- Table structure for table `Categoria`
+--
 
 DROP TABLE IF EXISTS `Categoria`;
-		
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `Categoria` (
-  `id` INTEGER NOT NULL AUTO_INCREMENT DEFAULT NULL,
-  `nome` VARCHAR(40) NULL DEFAULT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `nome` varchar(40) DEFAULT NULL,
   PRIMARY KEY (`id`)
-);
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
--- ---
--- Foreign Keys 
--- ---
+--
+-- Table structure for table `Destaque`
+--
 
-ALTER TABLE `Etapa` ADD FOREIGN KEY (id_Local) REFERENCES `Local` (`id`);
-ALTER TABLE `Equipe` ADD FOREIGN KEY (id_Categoria) REFERENCES `Categoria` (`id`);
-ALTER TABLE `Inscricao` ADD FOREIGN KEY (id_Trekker) REFERENCES `Trekker` (`id`);
-ALTER TABLE `Inscricao` ADD FOREIGN KEY (id_Etapa) REFERENCES `Etapa` (`id`);
-ALTER TABLE `Trekker_Equipe` ADD FOREIGN KEY (id_Trekker) REFERENCES `Trekker` (`id`);
-ALTER TABLE `Trekker_Equipe` ADD FOREIGN KEY (id_Equipe) REFERENCES `Equipe` (`id`);
-ALTER TABLE `Resultado` ADD FOREIGN KEY (id_Equipe) REFERENCES `Equipe` (`id`);
-ALTER TABLE `Resultado` ADD FOREIGN KEY (id_Etapa) REFERENCES `Etapa` (`id`);
-ALTER TABLE `Resultado` ADD FOREIGN KEY (id_Categoria) REFERENCES `Categoria` (`id`);
-ALTER TABLE `Grid` ADD FOREIGN KEY (id_Equipe) REFERENCES `Equipe` (`id`);
-ALTER TABLE `Grid` ADD FOREIGN KEY (id_Etapa) REFERENCES `Etapa` (`id`);
+DROP TABLE IF EXISTS `Destaque`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `Destaque` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `titulo` varchar(45) DEFAULT NULL,
+  `descricao` varchar(255) DEFAULT NULL,
+  `imgUrl` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
--- ---
--- Table Properties
--- ---
+--
+-- Table structure for table `Equipe`
+--
 
--- ALTER TABLE `Etapa` ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
--- ALTER TABLE `Local` ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
--- ALTER TABLE `Trekker` ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
--- ALTER TABLE `Equipe` ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
--- ALTER TABLE `Inscricao` ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
--- ALTER TABLE `Trekker_Equipe` ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
--- ALTER TABLE `Resultado` ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
--- ALTER TABLE `Grid` ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
--- ALTER TABLE `Categoria` ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+DROP TABLE IF EXISTS `Equipe`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `Equipe` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `nome` varchar(100) NOT NULL DEFAULT 'NULL',
+  `descricao` varchar(80) DEFAULT NULL,
+  `id_Categoria` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `id_Categoria` (`id_Categoria`),
+  CONSTRAINT `Equipe_ibfk_1` FOREIGN KEY (`id_Categoria`) REFERENCES `Categoria` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
--- ---
--- Test Data
--- ---
+--
+-- Table structure for table `Etapa`
+--
 
--- INSERT INTO `Etapa` (`id`,`id_Local`,`titulo`,`descricao`,`data`) VALUES
--- ('','','','','');
--- INSERT INTO `Local` (`id`,`nome`,`endereco`,`latitude`,`longitude`,`telefone`,`website`) VALUES
--- ('','','','','','','');
--- INSERT INTO `Trekker` (`id`,`imagem`,`nome`,`email`,`telefone`,`fbid`) VALUES
--- ('','','','','','');
--- INSERT INTO `Equipe` (`id`,`nome`,`cidade`,`id_Categoria`) VALUES
--- ('','','','');
--- INSERT INTO `Inscricao` (`id_Trekker`,`id_Etapa`,`paga`) VALUES
--- ('','','');
--- INSERT INTO `Trekker_Equipe` (`id_Trekker`,`id_Equipe`,`start`,`end`) VALUES
--- ('','','','');
--- INSERT INTO `Resultado` (`id_Equipe`,`id_Etapa`,`pontos`,`id_Categoria`) VALUES
--- ('','','','');
--- INSERT INTO `Grid` (`id_Equipe`,`id_Etapa`,`largada`) VALUES
--- ('','','');
--- INSERT INTO `Categoria` (`id`,`nome`) VALUES ('','');
+DROP TABLE IF EXISTS `Etapa`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `Etapa` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id_Local` int(11) DEFAULT NULL,
+  `titulo` varchar(100) NOT NULL DEFAULT 'NULL',
+  `descricao` varchar(256) DEFAULT NULL,
+  `data` bigint(20) DEFAULT NULL,
+  `imgSmall` varchar(256) DEFAULT NULL,
+  `imgBig` varchar(256) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `id_Local` (`id_Local`),
+  CONSTRAINT `Etapa_ibfk_1` FOREIGN KEY (`id_Local`) REFERENCES `Local` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `Grid`
+--
+
+DROP TABLE IF EXISTS `Grid`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `Grid` (
+  `id_Equipe` int(11) NOT NULL DEFAULT '0',
+  `id_Etapa` int(11) NOT NULL DEFAULT '0',
+  `largada` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id_Equipe`,`id_Etapa`),
+  KEY `id_Etapa` (`id_Etapa`),
+  CONSTRAINT `Grid_ibfk_1` FOREIGN KEY (`id_Equipe`) REFERENCES `Equipe` (`id`),
+  CONSTRAINT `Grid_ibfk_2` FOREIGN KEY (`id_Etapa`) REFERENCES `Etapa` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `Inscricao`
+--
+
+DROP TABLE IF EXISTS `Inscricao`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `Inscricao` (
+  `id_Trekker` int(11) NOT NULL DEFAULT '0',
+  `id_Etapa` int(11) NOT NULL DEFAULT '0',
+  `paga` binary(1) DEFAULT NULL,
+  PRIMARY KEY (`id_Trekker`,`id_Etapa`),
+  KEY `id_Etapa` (`id_Etapa`),
+  CONSTRAINT `Inscricao_ibfk_1` FOREIGN KEY (`id_Trekker`) REFERENCES `Trekker` (`id`),
+  CONSTRAINT `Inscricao_ibfk_2` FOREIGN KEY (`id_Etapa`) REFERENCES `Etapa` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `Local`
+--
+
+DROP TABLE IF EXISTS `Local`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `Local` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `nome` varchar(30) NOT NULL DEFAULT 'NULL',
+  `endereco` varchar(256) DEFAULT NULL,
+  `latitude` int(11) DEFAULT NULL,
+  `longitude` int(11) DEFAULT NULL,
+  `telefone` varchar(25) DEFAULT NULL,
+  `website` varchar(256) DEFAULT NULL,
+  `descricao` varchar(256) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `Resultado`
+--
+
+DROP TABLE IF EXISTS `Resultado`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `Resultado` (
+  `id_Equipe` int(11) NOT NULL DEFAULT '0',
+  `id_Etapa` int(11) NOT NULL DEFAULT '0',
+  `pontos` int(11) DEFAULT NULL,
+  `id_Categoria` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id_Etapa`,`id_Equipe`),
+  KEY `id_Equipe` (`id_Equipe`),
+  KEY `id_Categoria` (`id_Categoria`),
+  CONSTRAINT `Resultado_ibfk_1` FOREIGN KEY (`id_Equipe`) REFERENCES `Equipe` (`id`),
+  CONSTRAINT `Resultado_ibfk_2` FOREIGN KEY (`id_Etapa`) REFERENCES `Etapa` (`id`),
+  CONSTRAINT `Resultado_ibfk_3` FOREIGN KEY (`id_Categoria`) REFERENCES `Categoria` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `Trekker`
+--
+
+DROP TABLE IF EXISTS `Trekker`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `Trekker` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `imagem` varchar(256) DEFAULT NULL,
+  `nome` varchar(256) DEFAULT NULL,
+  `email` varchar(80) DEFAULT NULL,
+  `telefone` varchar(30) DEFAULT NULL,
+  `fbid` varchar(100) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `Trekker_Equipe`
+--
+
+DROP TABLE IF EXISTS `Trekker_Equipe`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `Trekker_Equipe` (
+  `id_Trekker` int(11) NOT NULL DEFAULT '0',
+  `id_Equipe` int(11) NOT NULL DEFAULT '0',
+  `start` date NOT NULL DEFAULT '0000-00-00',
+  `end` date DEFAULT NULL,
+  PRIMARY KEY (`id_Trekker`,`id_Equipe`,`start`),
+  KEY `id_Equipe` (`id_Equipe`),
+  CONSTRAINT `Trekker_Equipe_ibfk_1` FOREIGN KEY (`id_Trekker`) REFERENCES `Trekker` (`id`),
+  CONSTRAINT `Trekker_Equipe_ibfk_2` FOREIGN KEY (`id_Equipe`) REFERENCES `Equipe` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+-- Dump completed on 2016-02-29 11:31:15

@@ -7,7 +7,6 @@ var jsonTransformQuery = function (data, headers) {
             break;
         }
     }
-    console.log("Table ", mainObj)
     var resp = [];
     var cols = mainObj.columns;
     var records = mainObj.records;
@@ -29,7 +28,7 @@ var jsonTransformQuery = function (data, headers) {
 
 var angularModule =
     angular.module('adminApp', [, 'ngRoute', 'ui.bootstrap', 'ngResource']).constant("appConfigs", {
-        "context": "/northServer/api.php"
+        "context": "//cumeqetrekking.appspot.com/rest"
     }).config(['$routeProvider', function ($routeProvider) {
         $routeProvider.when('/', {
             templateUrl: 'partials/main.html'
@@ -76,7 +75,7 @@ var angularModule =
         };
     })
         .service('EtapasService', ['$http', '$q', '$resource', 'appConfigs', function ($http, $q, $resource, appConfigs) {
-            return $resource('http://localhost/northServer/api.php/Etapa/:id', {}, {
+            return $resource(appConfigs.context+'/Etapa/:id', {}, {
                 query: {
                     isArray: true,
                     transformResponse: jsonTransformQuery
@@ -84,7 +83,7 @@ var angularModule =
             })
         }])
         .service('LocationService', ['$http', '$q', '$resource', 'appConfigs', function ($http, $q, $resource, appConfigs) {
-            return $resource('http://localhost/northServer/api.php/Local/:id', {}, {
+            return $resource(appConfigs.context+'/Local/:id', {}, {
                 query: {
                     isArray: true,
                     transformResponse: jsonTransformQuery
@@ -93,7 +92,7 @@ var angularModule =
 
         }])  
         .service('CategoriaService', ['$http', '$q', '$resource', 'appConfigs', function ($http, $q, $resource, appConfigs) {
-            return $resource('http://localhost/northServer/api.php/Categoria/:id', {}, {
+            return $resource(appConfigs.context+'/Categoria/:id', {}, {
                 query: {
                     isArray: true,
                     transformResponse: jsonTransformQuery
@@ -102,7 +101,7 @@ var angularModule =
 
         }])
         .service('EquipesService', ['$http', '$q', '$resource', 'appConfigs', function ($http, $q, $resource, appConfigs) {
-            return $resource('http://localhost/northServer/api.php/Equipe/:id', {}, {
+            return $resource(appConfigs.context+'/Equipe/:id', {}, {
                 query: {
                     isArray: true,
                     transformResponse: jsonTransformQuery
@@ -137,7 +136,7 @@ var angularModule =
 
         }])
           .service('DestaquesService', ['$http', '$q', '$resource', 'appConfigs', function ($http, $q, $resource, appConfigs) {
-            return $resource('http://localhost/northServer/api.php/Destaque/:id', {}, {
+            return $resource(appConfigs.context+'/Destaque/:id', {}, {
                 query: {
                     isArray: true,
                     transformResponse: jsonTransformQuery

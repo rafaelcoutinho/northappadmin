@@ -1,0 +1,23 @@
+runtime: php55
+api_version: 1
+application: cumeqetrekking
+version: 1
+
+
+handlers:
+- url: /api.php
+  script: src/main/php/api.php
+- url: /rest/.*/?.*
+  script: src/main/php/api.php
+- url: /admin/*
+  static_dir: src/main/webapp/
+  login: admin
+- url: /admin/(.*)/(.*)
+  static_dir: src/main/webapp/\1/\2/
+  login: admin
+- url: /admin/(.*)/(.*)/(.*)
+  static_dir: src/main/webapp/\1/\2/\3/
+- url: /admin/(.*)/(.*)/(.*)/(.*)
+  static_dir: src/main/webapp/\1/\2/\3/\4/
+
+
