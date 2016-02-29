@@ -9,6 +9,7 @@ require.config({
         angular: '../bower_components/angular/angular.min',
         angularResources: '../bower_components/angular-resource/angular-resource.min',
         angularRoute: '../bower_components/angular-route/angular-route.min',
+        angularAnimate: '../bower_components/angular-animate/angular-animate.min',
         angularMessages: '../bower_components/angular-messages/angular-messages.min',
         lodash: '../bower_components/lodash/dist/lodash.min',
         jQuery: '../bower_components/admin-lte/plugins/jQuery/jQuery-2.1.4.min',
@@ -17,9 +18,11 @@ require.config({
         inputMaskPhone: '../bower_components/admin-lte/plugins/input-mask/jquery.inputmask.phone.extensions',
         inputMaskExtensions: '../bower_components/admin-lte/plugins/input-mask/jquery.inputmask.extensions',
         boostrap: '../bower_components/admin-lte/bootstrap/js/bootstrap.min',
-        uiboostrap: '../bower_components/angular-bootstrap/ui-bootstrap-tpls.min',
+        uiboostrap: '../bower_components/angular-bootstrap/ui-bootstrap-tpls.min',        
         adminLte: '../bower_components/admin-lte/dist/js/app.min',
         knob: '../bower_components/admin-lte/plugins/knob/jquery.knob',
+        
+        toaster: '../bower_components/angularjs-toaster/toaster.min', 
         'adminApp': "na-app"
 
     },
@@ -42,6 +45,13 @@ require.config({
         boostrap: {
             deps: ['jQuery']
         },
+        angularAnimate:{
+            deps: ['angular']  
+        },
+     
+        toaster: {
+            deps: ['boostrap','angular']
+        },
         adminLte: {
             deps: ['boostrap']
         },
@@ -59,7 +69,7 @@ require.config({
         },
 
         uiboostrap: {
-            deps: ['angular']
+            deps: ['angular','angularAnimate']
         },
 
         angularRoute: {
@@ -69,7 +79,7 @@ require.config({
             deps: ['jQuery']
         },
         adminApp: {
-            deps: ['lodash', 'angular', 'angularMessages', 'angularRoute', 'angularResources', 'uiboostrap', 'adminLte', 'knob', 'inputMaskDate', 'inputMaskPhone']
+            deps: ['lodash', 'angular', 'angularMessages','toaster', 'angularRoute', 'angularResources', 'uiboostrap', 'adminLte', 'knob', 'inputMaskDate', 'inputMaskPhone']
         }
     }
 });

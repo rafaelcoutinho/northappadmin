@@ -8,6 +8,10 @@
     <div class="box box-info">
         <div class="box-header with-border">
             <h3 class="box-title">Etapa</h3>
+            <div class="pull-right box-tools">
+                <button type="button" class="btn btn-sm  pull-right" data-toggle="tooltip" title="Apagar" ng-click="remove()" ng-show="etapa.id!=null && etapa.id!=-1">
+                    <i class="fa  fa-trash-o"></i></button>
+            </div>
         </div>
         <!-- /.box-header -->
         <!-- form start -->
@@ -65,7 +69,7 @@
                         </button>
                     </div>
                 </div>
-                
+
                 <div class="form-group">
                     <label class="col-sm-2 control-label">Inscrição</label>
                 </div>
@@ -79,7 +83,8 @@
                 <div class="form-group">
                     <label for="inputDataI" class="col-sm-2 control-label">Lote I</label>
                     <div class="col-sm-4">
-                        <input type="text" class="form-control" id="inputDataI" placeholder="Data limite lote I" data-inputmask="'alias': 'dd/mm/yyyy'" data-mask ng-model="etapa.lote1.data">
+                        <input type="text" class="form-control" id="inputDataI" placeholder="Data limite lote I" data-inputmask="'alias': 'dd/mm/yyyy'"
+                        data-mask ng-model="etapa.lote1.data">
                     </div>
                     <div class="col-sm-4">
                         <input type="number" class="form-control" id="inputDataI" placeholder="R$" ng-model="etapa.lote1.preco">
@@ -88,7 +93,8 @@
                 <div class="form-group">
                     <label for="inputDataII" class="col-sm-2 control-label">Lote II</label>
                     <div class="col-sm-4">
-                        <input type="text" class="form-control" id="inputDataII"  placeholder="Data limite lote II" data-inputmask="'alias': 'dd/mm/yyyy'" data-mask ng-model="etapa.lote1.data">
+                        <input type="text" class="form-control" id="inputDataII" placeholder="Data limite lote II" data-inputmask="'alias': 'dd/mm/yyyy'"
+                        data-mask ng-model="etapa.lote1.data">
                     </div>
                     <div class="col-sm-4">
                         <input type="number" class="form-control" id="inputDataII" placeholder="R$" ng-model="etapa.lote1.preco">
@@ -97,7 +103,8 @@
                 <div class="form-group">
                     <label for="inputDataIII" class="col-sm-2 control-label">Lote III</label>
                     <div class="col-sm-4">
-                        <input type="text" class="form-control" id="inputDataIII"  placeholder="Data limite lote III" data-inputmask="'alias': 'dd/mm/yyyy'" data-mask ng-model="etapa.lote1.data">
+                        <input type="text" class="form-control" id="inputDataIII" placeholder="Data limite lote III" data-inputmask="'alias': 'dd/mm/yyyy'"
+                        data-mask ng-model="etapa.lote1.data">
                     </div>
                     <div class="col-sm-4">
                         <input type="number" class="form-control" id="inputDataIII" placeholder="R$" ng-model="etapa.lote1.preco">

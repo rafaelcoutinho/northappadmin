@@ -7,12 +7,15 @@
     <title>North Brasil Admin</title>
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
     <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link href="bower_components/angularjs-toaster/toaster.min.css" rel="stylesheet" />
+
     <link rel="stylesheet" href="bower_components/admin-lte/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
     <link rel="stylesheet" href="bower_components/admin-lte/dist/css/AdminLTE.min.css">
     <link rel="stylesheet" href="bower_components/admin-lte/dist/css/skins/_all-skins.min.css">
     <link rel="stylesheet" href="bower_components/angularjs-toaster/toaster.css" media="screen">
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
@@ -68,7 +71,7 @@
                     <li class="header">Administração</li>
 
                     <li><a href="#/"><i class="fa fa-dashboard"></i> <span>Home</span></a></li>
-                    <li><a href="#/destaques"><i class="fa  ion-alert"></i> <span>Destaques</span></a></li>   
+                    <li><a href="#/destaques"><i class="fa  ion-alert"></i> <span>Destaques</span></a></li>
                     <li><a href="#/etapas"><i class="fa  fa-calendar-o"></i> <span>Etapas</span></a></li>
                     <li><a href="#/localidades"><i class="fa fa-map-marker"></i> <span>Localidades</span></a></li>
                     <li><a href="#/equipes"><i class="fa  ion-ios-people"></i> <span>Equipes</span></a></li>
@@ -76,7 +79,12 @@
                 </ul>
             </section>
         </aside>
-        <toaster-container toaster-options="{'time-out': 3000, 'close-button':true, 'animation-class': 'toast-top-center'}"></toaster-container>
+        <script type="text/ng-template" id="alert.html">
+            <div class="alert" style="background-color:#fa39c3;color:white" role="alert">
+                <div ng-transclude></div>
+            </div>
+        </script>
+
         <div class="content-wrapper" ng-view></div>
 
         <footer class="main-footer">
@@ -86,6 +94,6 @@
 	</strong>
         </footer>
     </div>
-
+    <uib-alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)" dismiss-on-timeout="3000" style="position: fixed;top: 15px;  z-index: 11; width: 50%;  left: 25%;">{{alert.msg}}</uib-alert>
     <script type="text/javascript" data-main="js/run-admin" src="bower_components/requirejs/require.js"></script>
 </body>

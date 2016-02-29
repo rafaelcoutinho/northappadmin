@@ -40,7 +40,7 @@ DROP TABLE IF EXISTS `Destaque`;
 CREATE TABLE `Destaque` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `titulo` varchar(45) DEFAULT NULL,
-  `descricao` varchar(255) DEFAULT NULL,
+  `descricao` varchar(800) DEFAULT NULL,
   `imgUrl` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
