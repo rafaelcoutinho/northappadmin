@@ -18,11 +18,11 @@ require.config({
         inputMaskPhone: '../bower_components/admin-lte/plugins/input-mask/jquery.inputmask.phone.extensions',
         inputMaskExtensions: '../bower_components/admin-lte/plugins/input-mask/jquery.inputmask.extensions',
         boostrap: '../bower_components/admin-lte/bootstrap/js/bootstrap.min',
-        uiboostrap: '../bower_components/angular-bootstrap/ui-bootstrap-tpls.min',        
+        uiboostrap: '../bower_components/angular-bootstrap/ui-bootstrap-tpls.min',
         adminLte: '../bower_components/admin-lte/dist/js/app.min',
         knob: '../bower_components/admin-lte/plugins/knob/jquery.knob',
-        
-        
+
+        'adminServices': "na-services",
         'adminApp': "na-app"
 
     },
@@ -45,11 +45,11 @@ require.config({
         boostrap: {
             deps: ['jQuery']
         },
-        angularAnimate:{
-            deps: ['angular']  
+        angularAnimate: {
+            deps: ['angular']
         },
-     
-        
+
+
         adminLte: {
             deps: ['boostrap']
         },
@@ -60,10 +60,10 @@ require.config({
             deps: ['jQuery', 'inputMask']
         },
         inputMaskPhone: {
-            deps: ['jQuery', 'inputMask','inputMaskExtensions']
+            deps: ['jQuery', 'inputMask', 'inputMaskExtensions']
         },
         inputMaskDate: {
-            deps: ['jQuery', 'inputMask','inputMaskExtensions']
+            deps: ['jQuery', 'inputMask', 'inputMaskExtensions']
         },
 
         uiboostrap: {
@@ -76,8 +76,11 @@ require.config({
         knob: {
             deps: ['jQuery']
         },
+        adminServices: {
+            deps: ['angular', 'angularResources']
+        },
         adminApp: {
-            deps: ['lodash', 'angular', 'angularMessages', 'angularRoute', 'angularResources', 'uiboostrap', 'adminLte', 'knob', 'inputMaskDate', 'inputMaskPhone']
+            deps: ['lodash', 'angular', 'angularMessages', 'angularRoute', 'angularResources', 'uiboostrap', 'adminLte', 'knob', 'inputMaskDate', 'inputMaskPhone', 'adminServices']
         }
     }
 });

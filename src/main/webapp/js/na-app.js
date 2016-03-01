@@ -1,33 +1,5 @@
-var jsonTransformQuery = function (data, headers) {
-    data = angular.fromJson(data);
-    var mainObj;
-    for (var key in data) {
-        if (data.hasOwnProperty(key)) {
-            mainObj = data[key];
-            break;
-        }
-    }
-    var resp = [];
-    var cols = mainObj.columns;
-    var records = mainObj.records;
-    for (var i = 0; i < records.length; i++) {
-        var recordsEntry = records[i];
-        var entry = {};
-        for (var j = 0; j < cols.length; j++) {
-            var col = cols[j];
-            var val = recordsEntry[j];
-            entry[col] = val;
-        }
-        resp.push(entry);
-
-    }
-
-
-    return resp;
-}
-
 var angularModule =
-    angular.module('adminApp', [, 'ngRoute', 'ui.bootstrap', 'ngResource']).constant("appConfigs", {
+    angular.module('adminApp', ['north.services', 'ngRoute', 'ui.bootstrap', 'ngResource']).constant("appConfigs", {
         "context": "//cumeqetrekking.appspot.com/rest"
     }).config(['$routeProvider', function ($routeProvider, $rootScope) {
         $routeProvider.when('/', {
@@ -74,62 +46,8 @@ var angularModule =
             };
         };
     })
-        .service('AlertService', ['$rootScope', function ($rootScope) {
-            $rootScope.alerts = [];
-            $rootScope.closeAlert = function (index) {
-                $rootScope.alerts.splice(index, 1);
-            };
-            return {
-                alert: function (text, timeout, type) {
-                    $rootScope.alerts.push({ type: type, msg: text });
-                },
-                showInfo: function (text, timeout) {
-                    this.alert(text, timeout, 'info');
-                },
-                showSuccess: function (text, timeout) {
-                    this.alert(text, timeout, 'success');
-                },
-                showError: function (text, timeout) {
-                    this.alert(text, timeout, 'dange');
-                }
-            }
-        }])
-        .service('EtapasService', ['$http', '$q', '$resource', 'appConfigs', function ($http, $q, $resource, appConfigs) {
 
-            return $resource(appConfigs.context + '/Etapa/:id', {}, {
-                query: {
-                    isArray: true,
-                    transformResponse: jsonTransformQuery
-                }
-            })
-        }])
-        .service('LocationService', ['$http', '$q', '$resource', 'appConfigs', function ($http, $q, $resource, appConfigs) {
-            return $resource(appConfigs.context + '/Local/:id', {}, {
-                query: {
-                    isArray: true,
-                    transformResponse: jsonTransformQuery
-                }
-            });
-
-        }])
-        .service('CategoriaService', ['$http', '$q', '$resource', 'appConfigs', function ($http, $q, $resource, appConfigs) {
-            return $resource(appConfigs.context + '/Categoria/:id', {}, {
-                query: {
-                    isArray: true,
-                    transformResponse: jsonTransformQuery
-                }
-            });
-
-        }])
-        .service('EquipesService', ['$http', '$q', '$resource', 'appConfigs', function ($http, $q, $resource, appConfigs) {
-            return $resource(appConfigs.context + '/Equipe/:id', {}, {
-                query: {
-                    isArray: true,
-                    transformResponse: jsonTransformQuery
-                }
-            });
-
-        }]).controller('ConfirmModalCrtl', function ($scope, $uibModalInstance, title, message) {
+        .controller('ConfirmModalCrtl', function ($scope, $uibModalInstance, title, message) {
 
             $scope.title = title;
             $scope.message = message;
@@ -152,7 +70,7 @@ var angularModule =
                 }
             }])
         .controller('EquipeDetailsCtrl', [
-            '$scope', '$timeout', '$location', '$routeParams', 'EquipesService', 'CategoriaService', '$rootScope', , '$uibModal', 'AlertService',
+            '$scope', '$timeout', '$location', '$routeParams', 'EquipesService', 'CategoriaService', '$rootScope', '$uibModal', 'AlertService',
             function ($scope, $timeout, $location, $routeParams, EquipesService, CategoriaService, $rootScope, $uibModal, AlertService) {
 
                 if ($routeParams.id == -1) {
@@ -162,7 +80,25 @@ var angularModule =
                 }
                 $scope.categorias = CategoriaService.query();
                 $scope.saveData = function () {
-                    EquipesService.save({ id: $routeParams.id != -1 ? $routeParams.id : null }, $scope.equipe);
+                    EquipesService.save({ id: $routeParams.id != -1 ? $routeParams.id : null }, $scope.equipe,
+
+                        function (data) {
+                            console.log("data", data);
+                            if ($routeParams.id == -1) {
+                                $scope.equipe.id = data;
+                                $location.path("/equipe/" + data);
+                            }
+                            AlertService.showSuccess("Salvo com sucesso");
+
+                        }, function (response) {
+                            if (response.data.errorMsg && response.data.errorMsg.indexOf("Duplicate entry") > -1) {
+                                AlertService.showError("Nome da equipe já existe");
+                            } else {
+                                AlertService.showError("Houve um erro ao salvar");
+                            }
+
+
+                        });
                 }
 
                 $scope.cancel = function () {
@@ -199,15 +135,7 @@ var angularModule =
                     });
                 };
             }])
-        .service('DestaquesService', ['$http', '$q', '$resource', 'appConfigs', function ($http, $q, $resource, appConfigs) {
-            return $resource(appConfigs.context + '/Destaque/:id', {}, {
-                query: {
-                    isArray: true,
-                    transformResponse: jsonTransformQuery
-                }
-            });
 
-        }])
         .controller('DestaqueListCtrl', ['$scope', '$timeout', '$window', '$routeParams', 'DestaquesService', '$location', function ($scope, $timeout, $window, $routeParams, DestaquesService, $location) {
 
             $scope.destaques = DestaquesService.query();
@@ -225,7 +153,15 @@ var angularModule =
                     $scope.destaque = DestaquesService.get({ id: $routeParams.id });
                 }
                 $scope.saveData = function () {
-                    DestaquesService.save({ id: $routeParams.id != -1 ? $routeParams.id : null }, $scope.destaque);
+                    DestaquesService.save({ id: $routeParams.id != -1 ? $routeParams.id : null }, $scope.destaque, function (data) {
+                        $scope.destaque.id = data;
+                        $location.path("/destaque/" + data);
+                        AlertService.showSuccess("Salvo com sucesso");
+
+                    }, function (data) {
+                        AlertService.showError("Houve um erro ao salvar");
+
+                    });
                 }
 
                 $scope.cancel = function () {
@@ -304,7 +240,9 @@ var angularModule =
                     
                 // });
                 $scope.saveData = function () {
-                    EtapasService.save({ id: $routeParams.id != -1 ? $routeParams.id : null }, $scope.etapa, function () {
+                    EtapasService.save({ id: $routeParams.id != -1 ? $routeParams.id : null }, $scope.etapa, function (data) {
+                        $scope.etapa.id = data;
+                        $location.path("/etapa/" + data);
                         AlertService.showSuccess("Salvo com sucesso");
                     });
                 }
@@ -389,14 +327,15 @@ var angularModule =
                 $scope.saveData = function () {
                     $scope.location.longitude = $scope.location.longitudeDec * 1000000;
                     $scope.location.latitude = $scope.location.latitudeDec * 1000000;
-                    LocationService.save({ id: $routeParams.id != -1 ? $routeParams.id : null }, $scope.location, function (data) {
-                        $scope.location.id = data;
-                        AlertService.showSuccess("Salvo com sucesso");
+                    LocationService.save({ id: $routeParams.id != -1 ? $routeParams.id : null }, $scope.location,
+                        function (data) {
+                            $scope.location.id = data;
+                            AlertService.showSuccess("Salvo com sucesso");
 
-                    }, function (data) {
-                        AlertService.showError("Houve um erro ao salvar");
+                        }, function (data) {
+                            AlertService.showError("Houve um erro ao salvar");
 
-                    });
+                        });
                 }
 
                 $scope.remove = function () {
