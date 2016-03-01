@@ -27,7 +27,7 @@ var jsonTransformQuery = function (data, headers) {
 }
 
 var angularModule =
-    angular.module('adminApp', [, 'ngRoute', 'ngAnimate', 'ui.bootstrap', 'ngResource']).constant("appConfigs", {
+    angular.module('adminApp', [, 'ngRoute', 'ui.bootstrap', 'ngResource']).constant("appConfigs", {
         "context": "//cumeqetrekking.appspot.com/rest"
     }).config(['$routeProvider', function ($routeProvider, $rootScope) {
         $routeProvider.when('/', {
@@ -152,12 +152,8 @@ var angularModule =
                 }
             }])
         .controller('EquipeDetailsCtrl', [
-            '$scope', '$timeout', '$location', '$routeParams', 'EquipesService', 'CategoriaService', '$rootScope', 'modalService',
-            function ($scope, $timeout, $location, $routeParams, EquipesService, CategoriaService, $rootScope, modalService) {
-
-
-
-
+            '$scope', '$timeout', '$location', '$routeParams', 'EquipesService', 'CategoriaService', '$rootScope', , '$uibModal', 'AlertService',
+            function ($scope, $timeout, $location, $routeParams, EquipesService, CategoriaService, $rootScope, $uibModal, AlertService) {
 
                 if ($routeParams.id == -1) {
                     $scope.destaque = {}
@@ -172,7 +168,36 @@ var angularModule =
                 $scope.cancel = function () {
                     $location.path("/equipes");
                 }
+                $scope.remove = function () {
+                    var modalInstance = $uibModal.open({
+                        animation: $scope.animationsEnabled,
+                        templateUrl: 'partials/modal.html',
+                        controller: 'ConfirmModalCrtl',
+                        size: 'sm',
+                        resolve: {
+                            title: function () {
+                                return "Apagar";
+                            },
+                            message: function () {
+                                return "Você tem certeza que deseja apagar?";
+                            }
+                        }
+                    });
 
+
+
+                    modalInstance.result.then(function () {
+                        EquipesService.remove({ id: $routeParams.id != -1 ? $routeParams.id : null }, $scope.equipe,
+                            function () {
+                                AlertService.showSuccess("Removido com sucesso");
+                                $location.path("/equipes");
+                            }, function (data) {
+                                AlertService.showError("Houve um erro ao remover");
+                            });
+                    }, function () {
+                        // $log.info('Modal dismissed at: ' + new Date());
+                    });
+                };
             }])
         .service('DestaquesService', ['$http', '$q', '$resource', 'appConfigs', function ($http, $q, $resource, appConfigs) {
             return $resource(appConfigs.context + '/Destaque/:id', {}, {
@@ -191,21 +216,54 @@ var angularModule =
                 $location.path("/destaque/-1");
             }
         }])
-        .controller('DestaqueDetailsCtrl', ['$scope', '$timeout', '$location', '$routeParams', 'DestaquesService', function ($scope, $timeout, $location, $routeParams, DestaquesService) {
-            if ($routeParams.id == -1) {
-                $scope.destaque = {}
-            } else {
-                $scope.destaque = DestaquesService.get({ id: $routeParams.id });
-            }
-            $scope.saveData = function () {
-                DestaquesService.save({ id: $routeParams.id != -1 ? $routeParams.id : null }, $scope.destaque);
-            }
+        .controller('DestaqueDetailsCtrl', [
+            '$scope', '$timeout', '$location', '$routeParams', 'DestaquesService', '$uibModal', 'AlertService',
+            function ($scope, $timeout, $location, $routeParams, DestaquesService, $uibModal, AlertService) {
+                if ($routeParams.id == -1) {
+                    $scope.destaque = {}
+                } else {
+                    $scope.destaque = DestaquesService.get({ id: $routeParams.id });
+                }
+                $scope.saveData = function () {
+                    DestaquesService.save({ id: $routeParams.id != -1 ? $routeParams.id : null }, $scope.destaque);
+                }
 
-            $scope.cancel = function () {
-                $location.path("/destaques");
-            }
+                $scope.cancel = function () {
+                    $location.path("/destaques");
+                }
 
-        }])
+                $scope.remove = function () {
+                    var modalInstance = $uibModal.open({
+                        animation: $scope.animationsEnabled,
+                        templateUrl: 'partials/modal.html',
+                        controller: 'ConfirmModalCrtl',
+                        size: 'sm',
+                        resolve: {
+                            title: function () {
+                                return "Apagar";
+                            },
+                            message: function () {
+                                return "Você tem certeza que deseja apagar?";
+                            }
+                        }
+                    });
+
+
+
+                    modalInstance.result.then(function () {
+                        DestaquesService.remove({ id: $routeParams.id != -1 ? $routeParams.id : null }, $scope.destaque,
+                            function () {
+                                AlertService.showSuccess("Removido com sucesso");
+                                $location.path("/destaques");
+                            }, function (data) {
+                                AlertService.showError("Houve um erro ao remover");
+                            });
+                    }, function () {
+                        // $log.info('Modal dismissed at: ' + new Date());
+                    });
+                };
+
+            }])
         .controller('EtapasCtrl', ['$scope', '$timeout', '$window', '$routeParams', 'EtapasService', '$location', function ($scope, $timeout, $window, $routeParams, EtapasService, $location) {
             $('[data-toggle="tooltip"]').tooltip();
             $scope.etapas = EtapasService.query();
@@ -288,12 +346,15 @@ var angularModule =
                         }
                     });
 
+
+
                     modalInstance.result.then(function () {
                         EtapasService.remove({ id: $routeParams.id != -1 ? $routeParams.id : null }, $scope.etapa,
                             function () {
+                                AlertService.showSuccess("Removido com sucesso");
                                 $location.path("/etapas");
                             }, function (data) {
-
+                                AlertService.showError("Houve um erro ao remover");
                             });
                     }, function () {
                         // $log.info('Modal dismissed at: ' + new Date());
@@ -313,49 +374,64 @@ var angularModule =
 
 
         }])
-        .controller('LocationDetailsCtrl', ['$scope', '$timeout', '$location', '$routeParams', 'LocationService', 'toaster', function ($scope, $timeout, $location, $routeParams, LocationService, toaster) {
-            if ($routeParams.id == -1) {
-                $scope.location = {}
-            } else {
-                $scope.location = LocationService.get({ id: $routeParams.id });
-            }
-            $scope.saveData = function () {
-                LocationService.save({ id: $routeParams.id != -1 ? $routeParams.id : null }, $scope.location, function (data) {
-                    $scope.location.id = data;
-                    toaster.pop({
-                        type: 'success',
-                        title: 'Salvo com sucesso',
-                        showCloseButton: false
+        .controller('LocationDetailsCtrl', ['$scope', '$timeout', '$location', '$routeParams', 'LocationService', 'AlertService', '$uibModal',
+            function ($scope, $timeout, $location, $routeParams, LocationService, AlertService, $uibModal) {
+                if ($routeParams.id == -1) {
+                    $scope.location = {}
+                } else {
+                    $scope.location = LocationService.get({ id: $routeParams.id }, function (data) {
+                        data.longitudeDec = data.longitude / 1000000;
+                        data.latitudeDec = data.latitude / 1000000;
                     });
-                }, function (data) {
-                    toaster.pop({
-                        type: 'error',
-                        title: 'Houve um erro ao salvar.',
-                        showCloseButton: false
-                    });
-                });
-            }
-            $scope.remove = function () {
-                LocationService.remove({ id: $routeParams.id != -1 ? $routeParams.id : null }, $scope.location,
-                    function () {
-                        toaster.pop({
-                            type: 'success',
-                            title: 'Apagado com sucesso',
-                            showCloseButton: false
-                        });
-                        $location.path("/localidades");
+                }
+
+
+                $scope.saveData = function () {
+                    $scope.location.longitude = $scope.location.longitudeDec * 1000000;
+                    $scope.location.latitude = $scope.location.latitudeDec * 1000000;
+                    LocationService.save({ id: $routeParams.id != -1 ? $routeParams.id : null }, $scope.location, function (data) {
+                        $scope.location.id = data;
+                        AlertService.showSuccess("Salvo com sucesso");
+
                     }, function (data) {
-                        toaster.pop({
-                            type: 'error',
-                            title: 'Houve um erro ao remover.',
-                            showCloseButton: false
-                        });
+                        AlertService.showError("Houve um erro ao salvar");
+
                     });
-            }
+                }
 
-            $scope.cancel = function () {
-                $location.path("/localidades");
-            }
+                $scope.remove = function () {
+                    var modalInstance = $uibModal.open({
+                        animation: $scope.animationsEnabled,
+                        templateUrl: 'partials/modal.html',
+                        controller: 'ConfirmModalCrtl',
+                        size: 'sm',
+                        resolve: {
+                            title: function () {
+                                return "Apagar";
+                            },
+                            message: function () {
+                                return "Você tem certeza que deseja apagar?";
+                            }
+                        }
+                    });
 
-        }])
+
+
+                    modalInstance.result.then(function () {
+                        LocationService.remove({ id: $routeParams.id != -1 ? $routeParams.id : null }, $scope.location,
+                            function () {
+                                AlertService.showSuccess("Removido com sucesso");
+                                $location.path("/localidades");
+                            }, function (data) {
+                                AlertService.showError("Houve um erro ao remover");
+                            });
+                    }, function () {
+                        // $log.info('Modal dismissed at: ' + new Date());
+                    });
+                };
+                $scope.cancel = function () {
+                    $location.path("/localidades");
+                }
+
+            }])
     ;

@@ -22,7 +22,7 @@ require.config({
         adminLte: '../bower_components/admin-lte/dist/js/app.min',
         knob: '../bower_components/admin-lte/plugins/knob/jquery.knob',
         
-        toaster: '../bower_components/angularjs-toaster/toaster.min', 
+        
         'adminApp': "na-app"
 
     },
@@ -49,9 +49,7 @@ require.config({
             deps: ['angular']  
         },
      
-        toaster: {
-            deps: ['boostrap','angular']
-        },
+        
         adminLte: {
             deps: ['boostrap']
         },
@@ -69,7 +67,7 @@ require.config({
         },
 
         uiboostrap: {
-            deps: ['angular','angularAnimate']
+            deps: ['angular']
         },
 
         angularRoute: {
@@ -79,7 +77,7 @@ require.config({
             deps: ['jQuery']
         },
         adminApp: {
-            deps: ['lodash', 'angular', 'angularMessages','toaster', 'angularRoute', 'angularResources', 'uiboostrap', 'adminLte', 'knob', 'inputMaskDate', 'inputMaskPhone']
+            deps: ['lodash', 'angular', 'angularMessages', 'angularRoute', 'angularResources', 'uiboostrap', 'adminLte', 'knob', 'inputMaskDate', 'inputMaskPhone']
         }
     }
 });

@@ -1,5 +1,5 @@
-<section class="content-header" ng-include="'partials/breadcrumb.html'" ng-init="title = 'Localidades';
-   bcs=[{title:'Home',url:'#/'},{title:'Localidades',url:'#/localidades'},{title:'Localidade',url:'#/localidade/',active:true}]"></section>
+<section class="content-header" ng-include="'partials/breadcrumb.html'" ng-init="title = 'Destaques';
+   bcs=[{title:'Home',url:'#/'},{title:'Destaques',url:'#/destaques'},{title:'Destaque',url:'#/destaque/',active:true}]"></section>
 <section class="content">
 
 
@@ -7,8 +7,11 @@
 
     <div class="box box-info">
         <div class="box-header with-border">
-            <h3 class="box-title">Localidade</h3>
-
+            <h3 class="box-title">Destaque</h3>
+            <div class="pull-right box-tools">
+                <button type="button" class="btn btn-sm  pull-right" data-toggle="tooltip" title="Apagar" ng-click="remove()" ng-show="destaque.id!=null && destaque.id!=-1">
+                    <i class="fa  fa-trash-o"></i></button>
+            </div>
         </div>
         <!-- /.box-header -->
         <!-- form start -->

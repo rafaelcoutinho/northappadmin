@@ -3,12 +3,15 @@
 <section class="content">
 
 
- 
+
 
     <div class="box box-info">
         <div class="box-header with-border">
             <h3 class="box-title">Equipe</h3>
-
+            <div class="pull-right box-tools">
+                <button type="button" class="btn btn-sm  pull-right" data-toggle="tooltip" title="Apagar" ng-click="remove()" ng-show="equipe.id!=null && equipe.id!=-1">
+                    <i class="fa  fa-trash-o"></i></button>
+            </div>
         </div>
         <!-- /.box-header -->
         <!-- form start -->
