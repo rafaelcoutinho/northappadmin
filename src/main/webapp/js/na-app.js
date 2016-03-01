@@ -29,6 +29,12 @@ var angularModule =
         }).when('/equipe/:id', {
             templateUrl: 'partials/equipe.html',
             controller: 'EquipeDetailsCtrl'
+        }).when('/competidores', {
+            templateUrl: 'partials/competidores.html',
+            controller: 'CompetidoresListCtrl'
+        }).when('/competidor/:id', {
+            templateUrl: 'partials/competidor.html',
+            controller: 'CompetidorDetailsCtrl'
         }).otherwise({
             redirectTo: '/'
         });
@@ -59,6 +65,119 @@ var angularModule =
                 $uibModalInstance.dismiss('cancel');
             };
         })
+        .controller('CompetidoresListCtrl', [
+
+            '$scope', '$timeout', '$window', '$routeParams', 'CompetidorService', '$location',
+            function ($scope, $timeout, $window, $routeParams, CompetidorService, $location) {
+
+                $scope.competidores = CompetidorService.query();
+
+                $scope.novo = function () {
+                    $location.path("/competidor/-1");
+                }
+            }])
+        .controller('CompetidorDetailsCtrl', [
+            '$scope', '$timeout', '$location', '$routeParams', 'CompetidorService', 'CategoriaService', '$rootScope', '$uibModal', 'AlertService', 'EquipesService',
+            function ($scope, $timeout, $location, $routeParams, CompetidorService, CategoriaService, $rootScope, $uibModal, AlertService, EquipesService) {
+
+                if ($routeParams.id == -1) {
+                    $scope.entity = {}
+                } else {
+                    $scope.entity = CompetidorService.get({ id: $routeParams.id });
+                }
+                $scope.equipes = EquipesService.query();
+                $scope.saveData = function () {
+                    CompetidorService.save({ id: $routeParams.id != -1 ? $routeParams.id : null }, $scope.entity,
+
+                        function (data) {
+                            if ($routeParams.id == -1) {
+                                $scope.entity.id = data;
+                                $location.path("/competidor/" + data);
+                            }
+                            AlertService.showSuccess("Salvo com sucesso");
+
+                        }, function (response) {
+                            if (response.data.errorMsg && response.data.errorMsg.indexOf("Duplicate entry") > -1) {
+                                AlertService.showError("Nome da competidor já existe");
+                            } else {
+                                AlertService.showError("Houve um erro ao salvar");
+                            }
+                        });
+                }
+                $scope.associate = function (equipe) {
+                    CompetidorService.associateEquipe({ 
+                            id_Trekker: $scope.entity.id, id_Equipe: equipe.id, start: new Date().getTime() 
+                            },
+                        function (data) {
+                            $scope.entity = CompetidorService.get({ id: $routeParams.id });
+                        });
+                    $('#pickEquipe').modal('hide');
+                }
+                $scope.removeAssociation = function () {
+                    var modalInstance = $uibModal.open({
+                        animation: $scope.animationsEnabled,
+                        templateUrl: 'partials/modal.html',
+                        controller: 'ConfirmModalCrtl',
+                        size: 'sm',
+                        resolve: {
+                            title: function () {
+                                return "Apagar";
+                            },
+                            message: function () {
+                                return "Você tem certeza que deseja remover esta associação?";
+                            }
+                        }
+                    });
+                    modalInstance.result.then(function () {
+                        CompetidorService.desassociateEquipe({ id_Trekker: $scope.entity.id, id_Equipe: $scope.entity.id_Equipe, end: new Date().getTime() },
+                            function (data) {
+                                $scope.entity.id_Equipe = null;
+
+                                AlertService.showSuccess("Equipe desassociada");
+
+                            }, function (data) {
+                                AlertService.showError("Houve um erro ao remover");
+                            });
+                    }, function () {
+                        // $log.info('Modal dismissed at: ' + new Date());
+                    });
+
+                }
+                $scope.cancel = function () {
+                    $location.path("/competidores");
+                }
+                $scope.remove = function () {
+                    var modalInstance = $uibModal.open({
+                        animation: $scope.animationsEnabled,
+                        templateUrl: 'partials/modal.html',
+                        controller: 'ConfirmModalCrtl',
+                        size: 'sm',
+                        resolve: {
+                            title: function () {
+                                return "Apagar";
+                            },
+                            message: function () {
+                                return "Você tem certeza que deseja apagar?";
+                            }
+                        }
+                    });
+
+
+
+                    modalInstance.result.then(function () {
+                        CompetidorService.remove({ id: $routeParams.id != -1 ? $routeParams.id : null }, $scope.equipe,
+                            function () {
+                                AlertService.showSuccess("Removido com sucesso");
+                                $location.path("/competidores");
+                            }, function (data) {
+                                AlertService.showError("Houve um erro ao remover");
+                            });
+                    }, function () {
+                        // $log.info('Modal dismissed at: ' + new Date());
+                    });
+                };
+            }])
+
         .controller('EquipeListCtrl', [
             '$scope', '$timeout', '$window', '$routeParams', 'EquipesService', '$location',
             function ($scope, $timeout, $window, $routeParams, EquipesService, $location) {
@@ -74,7 +193,7 @@ var angularModule =
             function ($scope, $timeout, $location, $routeParams, EquipesService, CategoriaService, $rootScope, $uibModal, AlertService) {
 
                 if ($routeParams.id == -1) {
-                    $scope.destaque = {}
+                    $scope.equipe = {}
                 } else {
                     $scope.equipe = EquipesService.get({ id: $routeParams.id });
                 }

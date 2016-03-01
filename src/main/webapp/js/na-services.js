@@ -46,6 +46,29 @@ angular.module('north.services', ['ngResource'])
             }
         }
     }])
+    .service('CompetidorService', ['$http', '$q', '$resource', 'appConfigs', function ($http, $q, $resource, appConfigs) {
+
+        return $resource(appConfigs.context + '/Competidor/:id', {}, {
+            query: {
+                isArray: true,
+                transformResponse: jsonTransformQuery
+            },
+            save:{
+                method: 'POST',
+                url: appConfigs.context + '/Trekker/:id'  
+            },
+            associateEquipe: {
+                method: 'POST',
+                isArray: false,
+                url: appConfigs.context + '/Trekker_Equipe'
+            },
+            desassociateEquipe: {
+                method: 'PUT',
+                isArray: false,
+                url: appConfigs.context + '/Trekker_Equipe'
+            }
+        })
+    }])
     .service('EtapasService', ['$http', '$q', '$resource', 'appConfigs', function ($http, $q, $resource, appConfigs) {
 
         return $resource(appConfigs.context + '/Etapa/:id', {}, {
