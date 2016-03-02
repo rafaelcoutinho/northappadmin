@@ -53,6 +53,10 @@ angular.module('north.services', ['ngResource'])
                 isArray: true,
                 transformResponse: jsonTransformQuery
             },
+            remove:{
+                method: 'DELETE',
+                url: appConfigs.context + '/Trekker/:id'  
+            },
             save:{
                 method: 'POST',
                 url: appConfigs.context + '/Trekker/:id'  

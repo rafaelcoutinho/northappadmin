@@ -1,6 +1,7 @@
 var angularModule =
     angular.module('adminApp', ['north.services', 'ngRoute', 'ui.bootstrap', 'ngResource']).constant("appConfigs", {
         "context": "//cumeqetrekking.appspot.com/rest"
+        // "context": "//localhost/northServer/api.php"
     }).config(['$routeProvider', function ($routeProvider, $rootScope) {
         $routeProvider.when('/', {
             templateUrl: 'partials/main.html'
@@ -90,10 +91,11 @@ var angularModule =
                     CompetidorService.save({ id: $routeParams.id != -1 ? $routeParams.id : null }, $scope.entity,
 
                         function (data) {
-                            if ($routeParams.id == -1) {
-                                $scope.entity.id = data;
-                                $location.path("/competidor/" + data);
+                            if ($scope.entity.id == null || $scope.entity.id == -1) {
+                                $scope.entity = data;
+                                $location.path("/competidor/" + data.id);
                             }
+
                             AlertService.showSuccess("Salvo com sucesso");
 
                         }, function (response) {
@@ -105,9 +107,9 @@ var angularModule =
                         });
                 }
                 $scope.associate = function (equipe) {
-                    CompetidorService.associateEquipe({ 
-                            id_Trekker: $scope.entity.id, id_Equipe: equipe.id, start: new Date().getTime() 
-                            },
+                    CompetidorService.associateEquipe({
+                        id_Trekker: $scope.entity.id, id_Equipe: equipe.id, start: new Date().getTime()
+                    },
                         function (data) {
                             $scope.entity = CompetidorService.get({ id: $routeParams.id });
                         });
@@ -202,10 +204,9 @@ var angularModule =
                     EquipesService.save({ id: $routeParams.id != -1 ? $routeParams.id : null }, $scope.equipe,
 
                         function (data) {
-                            console.log("data", data);
-                            if ($routeParams.id == -1) {
-                                $scope.equipe.id = data;
-                                $location.path("/equipe/" + data);
+                            if ($scope.equipe.id == null || $scope.equipe.id == -1) {
+                                $scope.equipe = data;
+                                $location.path("/equipe/" + data.id);
                             }
                             AlertService.showSuccess("Salvo com sucesso");
 
@@ -273,8 +274,11 @@ var angularModule =
                 }
                 $scope.saveData = function () {
                     DestaquesService.save({ id: $routeParams.id != -1 ? $routeParams.id : null }, $scope.destaque, function (data) {
-                        $scope.destaque.id = data;
-                        $location.path("/destaque/" + data);
+                        if ($scope.destaque.id == null || $scope.destaque.id == -1) {
+                            $scope.destaque = data;
+                            $location.path("/destaque/" + data.id);
+                        }
+
                         AlertService.showSuccess("Salvo com sucesso");
 
                     }, function (data) {
@@ -360,8 +364,10 @@ var angularModule =
                 // });
                 $scope.saveData = function () {
                     EtapasService.save({ id: $routeParams.id != -1 ? $routeParams.id : null }, $scope.etapa, function (data) {
-                        $scope.etapa.id = data;
-                        $location.path("/etapa/" + data);
+                        if ($scope.etapa.id == null || $scope.etapa.id == -1) {
+                            $scope.etapa = data;
+                            $location.path("/etapa/" + data.id);
+                        }
                         AlertService.showSuccess("Salvo com sucesso");
                     });
                 }
@@ -448,7 +454,11 @@ var angularModule =
                     $scope.location.latitude = $scope.location.latitudeDec * 1000000;
                     LocationService.save({ id: $routeParams.id != -1 ? $routeParams.id : null }, $scope.location,
                         function (data) {
-                            $scope.location.id = data;
+                            if ($scope.location.id == null || $scope.location.id == -1) {
+                                $scope.location = data;
+                                $location.path("/localidade/" + data.id);
+                            }
+
                             AlertService.showSuccess("Salvo com sucesso");
 
                         }, function (data) {
