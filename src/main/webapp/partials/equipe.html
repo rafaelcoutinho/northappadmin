@@ -13,8 +13,6 @@
                     <i class="fa  fa-trash-o"></i></button>
             </div>
         </div>
-        <!-- /.box-header -->
-        <!-- form start -->
         <form class="form-horizontal">
             <div class="box-body">
                 <div class="form-group">
@@ -43,13 +41,54 @@
                 </div>
 
             </div>
-            <!-- /.box-body -->
+
             <div class="box-footer">
                 <button type="submit" class="btn btn-default" ng-click="cancel()">Voltar</button>
                 <button type="submit" class="btn btn-info pull-right" ng-click="saveData()">Salvar</button>
             </div>
-            <!-- /.box-footer -->
+
         </form>
+    </div>
+    <div class="box box-info">
+        <div class="box-header with-border">
+            <h3 class="box-title">Integrantes</h3>
+
+            <div class="box-tools pull-right">
+                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                </button>
+
+            </div>
+        </div>
+        <!-- /.box-header -->
+        <div class="box-body" >
+            <div class="table-responsive">
+                <table class="table no-margin">
+                    <thead>
+                        <tr>
+                            <th>Nome</th>
+                            <th>E-mail</th>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="item in competidores">
+
+
+                            <td><a href="#/competidor/{{item.id}}">{{item.nome}}</a></td>
+                            <td><a href="#/competidor/{{item.id}}">{{item.email}}</a></td>
+
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+            <!-- /.table-responsive -->
+        </div>
+        <!-- /.box-body -->
+        <div class="box-footer clearfix">
+
+        </div>
+        <!-- /.box-footer -->
     </div>
 
 

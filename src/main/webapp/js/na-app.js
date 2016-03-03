@@ -191,13 +191,15 @@ var angularModule =
                 }
             }])
         .controller('EquipeDetailsCtrl', [
-            '$scope', '$timeout', '$location', '$routeParams', 'EquipesService', 'CategoriaService', '$rootScope', '$uibModal', 'AlertService',
-            function ($scope, $timeout, $location, $routeParams, EquipesService, CategoriaService, $rootScope, $uibModal, AlertService) {
+            '$scope', '$timeout', '$location', '$routeParams', 'EquipesService', 'CategoriaService', '$rootScope', '$uibModal', 'AlertService','CompetidorService',
+            function ($scope, $timeout, $location, $routeParams, EquipesService, CategoriaService, $rootScope, $uibModal, AlertService,CompetidorService) {
 
                 if ($routeParams.id == -1) {
                     $scope.equipe = {}
                 } else {
-                    $scope.equipe = EquipesService.get({ id: $routeParams.id });
+                    $scope.equipe = EquipesService.get({ id: $routeParams.id },function(equipe){
+                        $scope.competidores = CompetidorService.query({filter:"id_Equipe,eq,"+equipe.id});
+                    });
                 }
                 $scope.categorias = CategoriaService.query();
                 $scope.saveData = function () {
