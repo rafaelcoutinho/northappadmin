@@ -19,5 +19,6 @@ handlers:
   static_dir: src/main/webapp/\1/\2/\3/
 - url: /admin/(.*)/(.*)/(.*)/(.*)
   static_dir: src/main/webapp/\1/\2/\3/\4/
-
-
+- url: /endpoints/Login
+  script: src/main/php/login.php
+  secure: always
