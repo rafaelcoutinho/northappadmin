@@ -81,7 +81,7 @@ angular.module('north.services', ['ngResource'])
         return $resource(appConfigs.context + '/InscricaoFull/', {}, {
             get: {
                 isArray: false,
-                url: appConfigs.context + '/InscricaoFull?filter=id_Trekker,eq,:idTrekker&filter=id_Etapa,eq,:idEtapa',
+                url: appConfigs.context + '/InscricaoFull?filter0=id_Trekker,eq,:idTrekker&filter1=id_Etapa,eq,:idEtapa',
                 transformResponse: jsonTransformQueryGetSingle
             },
             query: {

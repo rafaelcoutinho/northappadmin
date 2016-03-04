@@ -145,7 +145,7 @@ var angularModule =
             '$scope', '$timeout', '$location', '$routeParams', 'CompetidorService', 'CategoriaService', '$rootScope', '$uibModal', 'AlertService', 'EquipesService',
             function ($scope, $timeout, $location, $routeParams, CompetidorService, CategoriaService, $rootScope, $uibModal, AlertService, EquipesService) {
 
-                    if ($routeParams.id == -1) {
+                if ($routeParams.id == -1) {
                     $scope.entity = {}
                 } else {
                     $scope.entity = CompetidorService.get({ id: $routeParams.id });

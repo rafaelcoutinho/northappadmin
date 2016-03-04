@@ -9,16 +9,43 @@ handlers:
   script: src/main/php/api.php
 - url: /rest/.*/?.*
   script: src/main/php/api.php
+
+
 - url: /admin/*
-  static_dir: src/main/webapp/
+  static_dir: src/main/webapp/admin/
   login: admin
 - url: /admin/(.*)/(.*)
-  static_dir: src/main/webapp/\1/\2/
+  static_dir: src/main/webapp/admin/\1/\2/
   login: admin
 - url: /admin/(.*)/(.*)/(.*)
-  static_dir: src/main/webapp/\1/\2/\3/
+  static_dir: src/main/webapp/admin/\1/\2/\3/
 - url: /admin/(.*)/(.*)/(.*)/(.*)
-  static_dir: src/main/webapp/\1/\2/\3/\4/
+  static_dir: src/main/webapp/admin/\1/\2/\3/\4/
+
+- url: /open/*
+  static_dir: src/main/webapp/open/
+- url: /open/(.*)/(.*)
+  static_dir: src/main/webapp/open/\1/\2/
+- url: /open/(.*)/(.*)/(.*)
+  static_dir: src/main/webapp/open/\1/\2/\3/
+- url: /open/(.*)/(.*)/(.*)/(.*)
+  static_dir: src/main/webapp/open/\1/\2/\3/\4/
+
+- url: /common/*
+  static_dir: src/main/webapp/common/
+
+- url: /bower_components/*
+  static_dir: src/main/webapp/bower_components/
+- url: /bower_components/(.*)/(.*)
+  static_dir: src/main/webapp/bower_components/\1/\2/
+- url: /bower_components/(.*)/(.*)/(.*)
+  static_dir: src/main/webapp/bower_components/\1/\2/\3/
+- url: /bower_components/(.*)/(.*)/(.*)/(.*)
+  static_dir: src/main/webapp/bower_components/\1/\2/\3/\4/
+- url: /bower_components/(.*)/(.*)/(.*)/(.*)/(.*)
+  static_dir: src/main/webapp/bower_components/\1/\2/\3/\4/\5
+
+
 - url: /endpoints/Login
   script: src/main/php/login.php
   secure: always
