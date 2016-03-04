@@ -25,6 +25,9 @@ var jsonTransformQuery = function (data, headers) {
 
     return resp;
 }
+var jsonTransformQueryGetSingle = function (data, headers) {
+    return jsonTransformQuery(data, headers)[0];
+}
 angular.module('north.services', ['ngResource'])
     .service('AlertService', ['$rootScope', function ($rootScope) {
         $rootScope.alerts = [];
@@ -53,13 +56,13 @@ angular.module('north.services', ['ngResource'])
                 isArray: true,
                 transformResponse: jsonTransformQuery
             },
-            remove:{
+            remove: {
                 method: 'DELETE',
-                url: appConfigs.context + '/Trekker/:id'  
+                url: appConfigs.context + '/Trekker/:id'
             },
-            save:{
+            save: {
                 method: 'POST',
-                url: appConfigs.context + '/Trekker/:id'  
+                url: appConfigs.context + '/Trekker/:id'
             },
             associateEquipe: {
                 method: 'POST',
@@ -70,6 +73,30 @@ angular.module('north.services', ['ngResource'])
                 method: 'PUT',
                 isArray: false,
                 url: appConfigs.context + '/Trekker_Equipe'
+            }
+        })
+    }])
+    .service('InscricaoService', ['$http', '$q', '$resource', 'appConfigs', function ($http, $q, $resource, appConfigs) {
+
+        return $resource(appConfigs.context + '/InscricaoFull/', {}, {
+            get: {
+                isArray: false,
+                url: appConfigs.context + '/InscricaoFull?filter=id_Trekker,eq,:idTrekker&filter=id_Etapa,eq,:idEtapa',
+                transformResponse: jsonTransformQueryGetSingle
+            },
+            query: {
+                isArray: true,
+                transformResponse: jsonTransformQuery
+            },
+            save: {
+                method: 'POST',
+                isArray: false,
+                url: appConfigs.context + '/Inscricao'
+            },
+            marcarPagto: {
+                method: 'PUT',
+                isArray: false,
+                url: appConfigs.context + '/Inscricao'
             }
         })
     }])

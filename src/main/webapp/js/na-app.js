@@ -36,6 +36,12 @@ var angularModule =
         }).when('/competidor/:id', {
             templateUrl: 'partials/competidor.html',
             controller: 'CompetidorDetailsCtrl'
+        }).when('/etapa/:idEtapa/inscricoes', {
+            templateUrl: 'partials/inscricoes.html',
+            controller: 'InscricoesListCtrl'
+        }).when('/etapa/:idEtapa/inscricoes/:idTrekker', {
+            templateUrl: 'partials/inscricao.html',
+            controller: 'InscricaoDetailsCtrl'
         }).otherwise({
             redirectTo: '/'
         });
@@ -66,6 +72,63 @@ var angularModule =
                 $uibModalInstance.dismiss('cancel');
             };
         })
+        .controller('InscricoesListCtrl', [
+
+            '$scope', '$timeout', '$window', '$routeParams', 'InscricaoService', '$location',
+            function ($scope, $timeout, $window, $routeParams, InscricaoService, $location) {
+                $scope.inscOrder = "data";
+                $scope.items = InscricaoService.query({ filter: "id_Etapa,eq," + $routeParams.idEtapa });
+                $scope.sortBy = function (col) {
+                    $scope.inscOrder = col;
+                }
+                $scope.marcarPago = function (item, state) {
+                    var p = item.pago;
+                    item.pagoTemp = true;
+                    InscricaoService.marcarPagto({ id_Trekker: $routeParams.idTrekker, id_Etapa: $routeParams.idEtapa, pago: state }, function (successo) {
+                        item.pago = state;
+                        item.pagoTemp = false;
+                    }, function (error) {
+                        item.pagoTemp = false;
+                    })
+
+                }
+
+                $scope.nova = function () {
+                    $location.path("/etapa/" + $routeParams.idEtapa + "/inscricoes/-1");
+                }
+            }])
+        .controller('InscricaoDetailsCtrl', [
+            '$scope', '$timeout', '$location', '$routeParams', 'CompetidorService', 'CategoriaService', '$rootScope', '$uibModal', 'AlertService', 'EquipesService', 'InscricaoService',
+            function ($scope, $timeout, $location, $routeParams, CompetidorService, CategoriaService, $rootScope, $uibModal, AlertService, EquipesService, InscricaoService) {
+
+                if ($routeParams.idTrekker == -1) {
+                    $scope.inscricao = {}
+                } else {
+                    $scope.inscricao = InscricaoService.get({ idTrekker: $routeParams.idTrekker, idEtapa: $routeParams.idEtapa }, function (data) {
+                        $scope.inscricao.trekker = {
+                            nome: data.nome,
+                            id: data.id_Trekker,
+                            email: data.email
+                        }
+                    });
+                }
+                $scope.competidores = CompetidorService.query();
+                $scope.saveData = function () {
+                    $scope.inscricao.id_Trekker = $scope.inscricao.trekker.id;
+                    $scope.inscricao.id_Etapa = $routeParams.idEtapa;
+                    $scope.inscricao.data = new Date().getTime();
+                    InscricaoService.save({}, $scope.inscricao,
+                        function (data) {
+
+                            AlertService.showSuccess("Salvo com sucesso");
+
+                        }, function (response) {
+
+                            AlertService.showError("Houve um erro ao salvar");
+
+                        });
+                }
+            }])
         .controller('CompetidoresListCtrl', [
 
             '$scope', '$timeout', '$window', '$routeParams', 'CompetidorService', '$location',
@@ -191,14 +254,14 @@ var angularModule =
                 }
             }])
         .controller('EquipeDetailsCtrl', [
-            '$scope', '$timeout', '$location', '$routeParams', 'EquipesService', 'CategoriaService', '$rootScope', '$uibModal', 'AlertService','CompetidorService',
-            function ($scope, $timeout, $location, $routeParams, EquipesService, CategoriaService, $rootScope, $uibModal, AlertService,CompetidorService) {
+            '$scope', '$timeout', '$location', '$routeParams', 'EquipesService', 'CategoriaService', '$rootScope', '$uibModal', 'AlertService', 'CompetidorService',
+            function ($scope, $timeout, $location, $routeParams, EquipesService, CategoriaService, $rootScope, $uibModal, AlertService, CompetidorService) {
 
                 if ($routeParams.id == -1) {
                     $scope.equipe = {}
                 } else {
-                    $scope.equipe = EquipesService.get({ id: $routeParams.id },function(equipe){
-                        $scope.competidores = CompetidorService.query({filter:"id_Equipe,eq,"+equipe.id});
+                    $scope.equipe = EquipesService.get({ id: $routeParams.id }, function (equipe) {
+                        $scope.competidores = CompetidorService.query({ filter: "id_Equipe,eq," + equipe.id });
                     });
                 }
                 $scope.categorias = CategoriaService.query();
