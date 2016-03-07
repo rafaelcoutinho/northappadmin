@@ -1,8 +1,8 @@
 var angularModule =
     angular.module('adminApp', ['north.services', 'ngRoute', 'ui.bootstrap', 'ngResource'])
         .constant("appConfigs", {
-            "context": "//cumeqetrekking.appspot.com/rest"
-            // "context": "//localhost/northServer/api.php"
+            //"context": "//cumeqetrekking.appspot.com/rest"
+             "context": "//localhost/northServer/api.php"
         }).config(['$routeProvider', function ($routeProvider, $rootScope) {
             $routeProvider.when('/', {
                 templateUrl: 'partials/main.html'
@@ -83,10 +83,10 @@ var angularModule =
                     $scope.inscOrder = col;
                 }
                 $scope.marcarPago = function (item, state) {
-                    var p = item.pago;
+                    var p = item.paga;
                     item.pagoTemp = true;
-                    InscricaoService.marcarPagto({ id_Trekker: $routeParams.idTrekker, id_Etapa: $routeParams.idEtapa, pago: state }, function (successo) {
-                        item.pago = state;
+                    InscricaoService.marcarPagto({ id_Trekker: item.id_Trekker, id_Etapa: $routeParams.idEtapa, paga: state }, function (successo) {
+                        item.paga = state;
                         item.pagoTemp = false;
                     }, function (error) {
                         item.pagoTemp = false;

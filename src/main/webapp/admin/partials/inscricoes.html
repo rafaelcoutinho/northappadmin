@@ -44,14 +44,14 @@
                                 <td>{{item.categoria}}</td>
                                 <td>
                                     <div class="input-group-btn" style="width:100%">
-                                        <button type="button" class="btn dropdown-toggle" ng-class="{'btn-warning':item.pago!=true,'btn-success':item.pago==true}"
-                                        data-toggle="dropdown" aria-expanded="false"><i class="fa fa-spin fa-refresh" ng-show="item.pagoTemp"></i> <span ng-show="item.pago==true">Pago</span>
+                                        <button type="button" class="btn dropdown-toggle" ng-class="{'btn-warning':item.paga!=true,'btn-success':item.paga==true}"
+                                        data-toggle="dropdown" aria-expanded="false"><i class="fa fa-spin fa-refresh" ng-show="item.pagoTemp"></i> <span ng-show="item.paga==true">Pago</span>
                                             <span
-                                            ng-hide="item.pago==true">Pendente</span>
+                                            ng-hide="item.paga==true">Pendente</span>
                                                 <span class="fa fa-caret-down"></span></button>
                                         <ul class="dropdown-menu">
-                                            <li><a href="" ng-click="marcarPago(item,true)" ng-hide="item.pago==true">Pagamento Confirmado</a></li>
-                                            <li><a href="" ng-click="marcarPago(item,false)" ng-show="item.pago==true">Pagamento Pendente</a></li>
+                                            <li><a href="" ng-click="marcarPago(item,true)" ng-hide="item.paga==true">Pagamento Confirmado</a></li>
+                                            <li><a href="" ng-click="marcarPago(item,false)" ng-show="item.paga==true">Pagamento Pendente</a></li>
 
 
                                         </ul>

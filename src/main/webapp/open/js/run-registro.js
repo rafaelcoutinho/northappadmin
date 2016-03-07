@@ -11,6 +11,8 @@ require.config({
         angularRoute: '../../bower_components/angular-route/angular-route.min',
         angularAnimate: '../../bower_components/angular-animate/angular-animate.min',
         angularMessages: '../../bower_components/angular-messages/angular-messages.min',
+        angularSanitize: '../../bower_components/angular-sanitize/angular-sanitize.min',
+
         lodash: '../../bower_components/lodash/dist/lodash.min',
         jQuery: '../../bower_components/admin-lte/plugins/jQuery/jQuery-2.1.4.min',
         inputMask: '../../bower_components/admin-lte/plugins/input-mask/jquery.inputmask',
@@ -20,7 +22,7 @@ require.config({
         boostrap: '../../bower_components/admin-lte/bootstrap/js/bootstrap.min',
         uiboostrap: '../../bower_components/angular-bootstrap/ui-bootstrap-tpls.min',
         adminLte: '../../bower_components/admin-lte/dist/js/app.min',
-        northServices:"../../common/na-services",
+        northServices: "../../common/na-services",
 
         'facebook': 'http://connect.facebook.net/pt_BR/sdk',
         'registroApp': "registro-app"
@@ -73,6 +75,9 @@ require.config({
             deps: ['angular']
         },
 
+ angularSanitize: {
+            deps: ['angular']
+        },
         angularRoute: {
             deps: ['angular']
         },
@@ -81,7 +86,7 @@ require.config({
         },
 
         registroApp: {
-            deps: ['lodash', 'facebook', 'northServices', 'angular', 'adminLte', 'angularMessages', 'angularRoute', 'angularResources', 'uiboostrap']
+            deps: ['lodash', 'facebook', 'northServices', 'angular', 'adminLte', 'angularMessages', 'angularRoute', 'angularResources', 'uiboostrap','angularSanitize']
         }
     }
 });

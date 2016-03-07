@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="../bower_components/admin-lte/dist/css/AdminLTE.min.css">
     <link rel="stylesheet" href="../bower_components/admin-lte/dist/css/skins/_all-skins.min.css">
 
+
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
@@ -30,9 +31,9 @@
 
     <div class="wrapper">
         <div ng-include="'partials/header.html'" />
-        
+
     </div>
-<div class="content-wrapper" ng-view></div>
+    <div class="content-wrapper" ng-view></div>
     <div id="fb-root"></div>
     <footer class="main-footer no-print">
         <div class="container ">
@@ -46,6 +47,12 @@
 
     <script type="text/javascript" data-main="js/run-registro" src="../bower_components/requirejs/require.js"></script>
     <uib-alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)" dismiss-on-timeout="3000" style="position: fixed;top: 10%;  z-index: 1110; width: 50%;  left: 25%;">{{alert.msg}}</uib-alert>
+
+    <script type="text/ng-template " id="loading.html ">
+        <div class="modal-header ">
+            <h3 class="modal-title "><i class="fa fa-spin fa-refresh" ></i></h3>
+        </div>
+    </script>
 </body>
 
 </html>

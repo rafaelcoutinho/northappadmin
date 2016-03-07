@@ -93,6 +93,12 @@ angular.module('north.services', ['ngResource'])
                 isArray: false,
                 url: appConfigs.context + '/Inscricao'
             },
+
+            inscrever: {
+                method: 'POST',
+                isArray: false,
+                url: "http://localhost/northServer/inscrever.php"//appConfigs.context + '/Inscrever'
+            },
             marcarPagto: {
                 method: 'PUT',
                 isArray: false,
