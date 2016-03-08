@@ -1,8 +1,9 @@
 var angularModule =
     angular.module('adminApp', ['north.services', 'ngRoute', 'ui.bootstrap', 'ngResource'])
         .constant("appConfigs", {
-            //"context": "//cumeqetrekking.appspot.com/rest"
-             "context": "//localhost/northServer/api.php"
+            "context": "//cumeqetrekking.appspot.com/rest",
+             "contextRoot": "//cumeqetrekking.appspot.com/"
+            //"context": "//localhost/northServer/api.php"
         }).config(['$routeProvider', function ($routeProvider, $rootScope) {
             $routeProvider.when('/', {
                 templateUrl: 'partials/main.html'
@@ -37,6 +38,15 @@ var angularModule =
             }).when('/competidor/:id', {
                 templateUrl: 'partials/competidor.html',
                 controller: 'CompetidorDetailsCtrl'
+            }).when('/etapa/:idEtapa/grid', {
+                templateUrl: 'partials/grid.html',
+                controller: 'GridListCtrl'
+            }).when('/gridconfs', {
+                templateUrl: 'partials/gridConfigs.html',
+                controller: 'GridConfListCtrl'
+            }).when('/gridconf/:id', {
+                templateUrl: 'partials/gridConf.html',
+                controller: 'GridConfDetailsCtrl'
             }).when('/etapa/:idEtapa/inscricoes', {
                 templateUrl: 'partials/inscricoes.html',
                 controller: 'InscricoesListCtrl'
@@ -73,11 +83,88 @@ var angularModule =
                 $uibModalInstance.dismiss('cancel');
             };
         })
-        .controller('InscricoesListCtrl', [
+
+        .controller('GridListCtrl', [
+
+            '$scope', '$timeout', '$window', '$routeParams', 'GridService', '$location', 'CategoriaService',
+            function ($scope, $timeout, $window, $routeParams, GridService, $location, CategoriaService) {
+                $scope.inscOrder = "data";
+                $scope.gridConfig = 1;
+                $scope.categoriaGrid = 1;
+                $scope.categorias = CategoriaService.query({}, function (data) {
+                    $scope.items = GridService.query({ idEtapa: $routeParams.idEtapa, idConfig: $scope.gridConfig });
+                });
+
+                $scope.updateGrid = function () {
+                    //hardcoded
+                    if ($scope.categoriaGrid == 2 || $scope.categoriaGrid == 1) {//TREKKERs
+                        $scope.gridConfig = 1;
+
+                    } else {
+                        $scope.gridConfig = $scope.categoriaGrid;
+                    }
+                    $scope.items = GridService.query({ idEtapa: $routeParams.idEtapa, idConfig: $scope.gridConfig });
+                }
+                $scope.getLabelCategoria = function (id) {
+                    for (var index = 0; index < $scope.categorias.length; index++) {
+                        var element = $scope.categorias[index];
+                        if (element.id == id) {
+                            return element.nome;
+                        }
+                    }
+                }
+                $scope.inscOrder = "largada";
+                $scope.sortBy = function (col) {
+                    $scope.inscOrder = col;
+                }
+
+            }])
+        .controller('GridConfListCtrl', [
+
+            '$scope', '$timeout', '$window', '$routeParams', 'GridConfService', '$location',
+            function ($scope, $timeout, $window, $routeParams, GridConfService, $location) {
+                
+                $scope.items = GridConfService.query();
+                $scope.sortBy = function (col) {
+                    $scope.inscOrder = col;
+                }
+                
+                $scope.novo = function () {
+                    $location.path("/etapa/" + $routeParams.idEtapa + "/gridconfs/-1");
+                }
+            }])
+        .controller('GridConfDetailsCtrl', [
+            '$scope', '$timeout', '$location', '$routeParams', 'GridConfService', 'CategoriaService', '$rootScope', '$uibModal', 'AlertService', 'EquipesService', 'InscricaoService',
+            function ($scope, $timeout, $location, $routeParams, GridConfService, CategoriaService, $rootScope, $uibModal, AlertService, EquipesService, InscricaoService) {
+
+                if ($routeParams.idTrekker == -1) {
+                    $scope.item = {}
+                } else {
+                    $scope.item = GridConfService.get({ id: $routeParams.id }, function (data) {
+                        
+                    });
+                }
+              
+                $scope.saveData = function () {
+            
+                    GridConfService.save({id:$scope.item.id}, $scope.item,
+                        function (data) {
+
+                            AlertService.showSuccess("Salvo com sucesso");
+
+                        }, function (response) {
+
+                            AlertService.showError("Houve um erro ao salvar");
+
+                        });
+                }
+            }])
+             .controller('InscricoesListCtrl', [
 
             '$scope', '$timeout', '$window', '$routeParams', 'InscricaoService', '$location',
             function ($scope, $timeout, $window, $routeParams, InscricaoService, $location) {
                 $scope.inscOrder = "data";
+                $scope.idEtapa = $routeParams.idEtapa;
                 $scope.items = InscricaoService.query({ filter0: "id_Etapa,eq," + $routeParams.idEtapa });
                 $scope.sortBy = function (col) {
                     $scope.inscOrder = col;

@@ -76,6 +76,26 @@ angular.module('north.services', ['ngResource'])
             }
         })
     }])
+     .service('GridService', ['$http', '$q', '$resource', 'appConfigs', function ($http, $q, $resource, appConfigs) {
+
+        return $resource(appConfigs.context + '/GridFull?filter0=id_Etapa,eq,:idEtapa&filter1=id_Config,eq,:idConfig', {}, {
+            get: {
+                isArray: false,
+                url: appConfigs.context + '/GridFull?filter0=id_Etapa,eq,:idEtapa&filter1=id_Equipe,eq,:idEquipe',
+                transformResponse: jsonTransformQueryGetSingle
+            },
+            query: {
+                isArray: true,
+                url: appConfigs.context + '/GridFull?filter0=id_Etapa,eq,:idEtapa&filter1=id_Config,eq,:idConfig',
+                transformResponse: jsonTransformQuery
+            },
+            save: {
+                method: 'POST',
+                isArray: false,
+                url: appConfigs.context + '/Grid'
+            }
+        })
+    }])
     .service('InscricaoService', ['$http', '$q', '$resource', 'appConfigs', function ($http, $q, $resource, appConfigs) {
 
         return $resource(appConfigs.context + '/InscricaoFull/', {}, {
@@ -97,12 +117,21 @@ angular.module('north.services', ['ngResource'])
             inscrever: {
                 method: 'POST',
                 isArray: false,
-                url: "http://localhost/northServer/inscrever.php"//appConfigs.context + '/Inscrever'
+                url: appConfigs.contextRoot + '/Inscrever.do'
             },
             marcarPagto: {
                 method: 'PUT',
                 isArray: false,
-                url: appConfigs.context + '/Inscricao'
+                url: appConfigs.contextRoot + '/SetPago.do'//"http://localhost/northServer/marcarPaga.php"
+            }
+        })
+    }])
+    .service('GridConfService', ['$http', '$q', '$resource', 'appConfigs', function ($http, $q, $resource, appConfigs) {
+
+        return $resource(appConfigs.context + '/GridConfig/:id', {}, {
+            query: {
+                isArray: true,
+                transformResponse: jsonTransformQuery
             }
         })
     }])

@@ -1,5 +1,5 @@
-<section class="content-header" ng-include="'partials/breadcrumb.html'"  ng-init="title = 'Etapa';
-   bcs=[{title:'Home',url:'#/'},{title:'Etapas',url:'#/etapas'},{title:'Etapa',url:'#/etapa/{{etapa.id}}'},{title:'Inscrições',url:'#/etapa//inscricoes'}]"></section>
+<section class="content-header" ng-include="'partials/breadcrumb.html'"  ng-init="title = 'Inscrições';
+   bcs=[{title:'Home',url:'#/'},{title:'Etapas',url:'#/etapas'},{title:'Etapa',url:'#/etapa/{{etapa.id}}'},{title:'Inscrições',url:'#/etapa//inscricoes',active:true}]"></section>
 <section class="content">
 
     <div class="row">
@@ -10,6 +10,7 @@
 
                     <h3 class="box-title">Inscrições </h3>
                     <div class="pull-right box-tools">
+                        <a href="#/etapa/{{idEtapa}}/grid" class="label label-danger" >Grid</a>
                         <div class="input-group input-group-sm" style="width: 150px;">
                             <input type="text" name="table_search" class="form-control pull-right" placeholder="Search" ng-model="searchText">
 

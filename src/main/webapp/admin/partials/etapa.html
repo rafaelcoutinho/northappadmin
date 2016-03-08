@@ -9,7 +9,9 @@
         <div class="box-header with-border">
             <h3 class="box-title">Etapa</h3>
             <div class="pull-right box-tools">
+                <a href="#/etapa/{{etapa.id}}/grid" class="label label-danger" >Grid</a>
                 <a href="#/etapa/{{etapa.id}}/inscricoes" class="label label-danger" >Inscrições</a>
+                
                 
                 <button type="button" class="btn btn-sm  pull-right" data-toggle="tooltip" title="Apagar" ng-click="remove()" ng-show="etapa.id!=null && etapa.id!=-1">
                     <i class="fa  fa-trash-o"></i></button>

@@ -1,7 +1,8 @@
 var angularModule =
     angular.module('registroApp', ['ngRoute', 'north.services', 'ui.bootstrap', 'ngResource','ngSanitize']).constant("appConfigs", {
-        //"context": "//cumeqetrekking.appspot.com/rest"
-        "context": "//localhost/northServer/api.php"
+        "context": "//cumeqetrekking.appspot.com/rest",
+        "contextRoot": "//cumeqetrekking.appspot.com/"
+        // "context": "//localhost/northServer/api.php"
     }).config(['$routeProvider', function ($routeProvider) {
         $routeProvider.when('/:id', {
             controller: 'RegistroCtrl',
@@ -478,7 +479,13 @@ var angularModule =
                         console.log("inscrevendo", $scope.inscricao)
                         InscricaoService.inscrever({}, $scope.inscricao,
                             function (data) {
-                                console.log(data)
+                                console.log(data);
+                                $scope.inscricao.equipe.id=data.equipe.id;
+                                $scope.inscricao.lider.id=data.lider.id;
+                                for (var index = 0; index < $scope.inscricao.integrantes.length; index++) {
+                                    $scope.inscricao.integrantes[index].id=data.integrantes[index].id;//TODO talvez saida da ordem
+                                    
+                                }
                                 $rootScope.$broadcast('dialogs.wait.complete');
                             }, function (response) {
                                  $rootScope.$broadcast('dialogs.wait.complete');

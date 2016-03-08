@@ -10,6 +10,12 @@ handlers:
 - url: /rest/.*/?.*
   script: src/main/php/api.php
 
+- url: /SetPago.do
+  script:  src/main/php/marcarPaga.php
+  login: admin
+
+- url: /Inscrever.do
+  script:  src/main/php/inscrever.php
 
 - url: /admin/*
   static_dir: src/main/webapp/admin/
