@@ -11,7 +11,9 @@ require.config({
         angularRoute: '../../bower_components/angular-route/angular-route.min',
         angularAnimate: '../../bower_components/angular-animate/angular-animate.min',
         angularMessages: '../../bower_components/angular-messages/angular-messages.min',
+
         angularSanitize: '../../bower_components/angular-sanitize/angular-sanitize.min',
+        angularDialogs: '../../bower_components/angular-dialog-service/dist/dialogs.min',
 
         lodash: '../../bower_components/lodash/dist/lodash.min',
         jQuery: '../../bower_components/admin-lte/plugins/jQuery/jQuery-2.1.4.min',
@@ -74,8 +76,10 @@ require.config({
         uiboostrap: {
             deps: ['angular']
         },
-
- angularSanitize: {
+        angularDialogs: {
+            deps: ['angular']
+        },
+        angularSanitize: {
             deps: ['angular']
         },
         angularRoute: {
@@ -86,7 +90,7 @@ require.config({
         },
 
         registroApp: {
-            deps: ['lodash', 'facebook', 'northServices', 'angular', 'adminLte', 'angularMessages', 'angularRoute', 'angularResources', 'uiboostrap','angularSanitize']
+            deps: ['lodash', 'facebook', 'angularDialogs', 'angularAnimate', 'northServices', 'angular', 'adminLte', 'angularMessages', 'angularRoute', 'angularResources', 'uiboostrap', 'angularSanitize']
         }
     }
 });

@@ -2,8 +2,9 @@ var angularModule =
     angular.module('adminApp', ['north.services', 'ngRoute', 'ui.bootstrap', 'ngResource'])
         .constant("appConfigs", {
             "context": "//cumeqetrekking.appspot.com/rest",
-             "contextRoot": "//cumeqetrekking.appspot.com/"
-            //"context": "//localhost/northServer/api.php"
+            // "context": "//localhost/northServer/api.php",
+            "contextRoot": "//cumeqetrekking.appspot.com/"
+
         }).config(['$routeProvider', function ($routeProvider, $rootScope) {
             $routeProvider.when('/', {
                 templateUrl: 'partials/main.html'
@@ -123,12 +124,12 @@ var angularModule =
 
             '$scope', '$timeout', '$window', '$routeParams', 'GridConfService', '$location',
             function ($scope, $timeout, $window, $routeParams, GridConfService, $location) {
-                
+
                 $scope.items = GridConfService.query();
                 $scope.sortBy = function (col) {
                     $scope.inscOrder = col;
                 }
-                
+
                 $scope.novo = function () {
                     $location.path("/etapa/" + $routeParams.idEtapa + "/gridconfs/-1");
                 }
@@ -141,13 +142,13 @@ var angularModule =
                     $scope.item = {}
                 } else {
                     $scope.item = GridConfService.get({ id: $routeParams.id }, function (data) {
-                        
+
                     });
                 }
-              
+
                 $scope.saveData = function () {
-            
-                    GridConfService.save({id:$scope.item.id}, $scope.item,
+
+                    GridConfService.save({ id: $scope.item.id }, $scope.item,
                         function (data) {
 
                             AlertService.showSuccess("Salvo com sucesso");
@@ -159,7 +160,7 @@ var angularModule =
                         });
                 }
             }])
-             .controller('InscricoesListCtrl', [
+        .controller('InscricoesListCtrl', [
 
             '$scope', '$timeout', '$window', '$routeParams', 'InscricaoService', '$location',
             function ($scope, $timeout, $window, $routeParams, InscricaoService, $location) {
@@ -221,9 +222,19 @@ var angularModule =
 
             '$scope', '$timeout', '$window', '$routeParams', 'CompetidorService', '$location',
             function ($scope, $timeout, $window, $routeParams, CompetidorService, $location) {
-
+                $scope.go = function (n) {
+                    $scope.currentPage += n;
+                }
+                $scope.sortItem = {
+                    field:"nome",
+                    reverse:false   
+                }
+                $scope.currentPage = 0;
+                $scope.pageSize = 10;
                 $scope.competidores = CompetidorService.query();
-
+                $scope.numberOfPages = function () {
+                    return Math.ceil($scope.competidores.length / $scope.pageSize);
+                }
                 $scope.novo = function () {
                     $location.path("/competidor/-1");
                 }
@@ -655,4 +666,44 @@ var angularModule =
                 }
 
             }])
+        .directive('colSorter', function () {
+            function link(scope, element, attrs) {
+                
+                scope.reverse = true;
+                element.on('click', function (event) {
+                    if(scope.sortVar.field != scope.sortField){    
+                        scope.sortVar.field = scope.sortField;
+                    }
+                    
+                     scope.reverse = ! scope.reverse;
+                     scope.sortVar.reverse=scope.reverse;
+                    
+                    scope.$apply();
+                });
+                 
+                  scope.$watch('sortVar', function (value) {
+                      
+                      if(value!=scope.sortField){                          
+                          scope.reverse = null;
+                      }
+                 })
+               
+
+                element.on('$destroy', function () {
+
+                });
+            }
+
+            return {
+                replace: true,
+                transclude: true,
+                scope: {
+                    sortField: '=field',
+                    sortVar: '=var'
+                },
+                template: '<i class="fa" ng-class="{\'fa-sort-up\':reverse,\'fa-sort-down\':reverse==false,\'fa-sort\':reverse==null}"></i>',
+                link: link
+            };
+
+        })
     ;

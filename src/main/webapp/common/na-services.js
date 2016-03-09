@@ -76,7 +76,7 @@ angular.module('north.services', ['ngResource'])
             }
         })
     }])
-     .service('GridService', ['$http', '$q', '$resource', 'appConfigs', function ($http, $q, $resource, appConfigs) {
+    .service('GridService', ['$http', '$q', '$resource', 'appConfigs', function ($http, $q, $resource, appConfigs) {
 
         return $resource(appConfigs.context + '/GridFull?filter0=id_Etapa,eq,:idEtapa&filter1=id_Config,eq,:idConfig', {}, {
             get: {
@@ -103,6 +103,11 @@ angular.module('north.services', ['ngResource'])
                 isArray: false,
                 url: appConfigs.context + '/InscricaoFull?filter0=id_Trekker,eq,:idTrekker&filter1=id_Etapa,eq,:idEtapa',
                 transformResponse: jsonTransformQueryGetSingle
+            },
+             query4Equipe: {
+                isArray: true,
+                url: appConfigs.context + '/InscricaoFull?filter0=id_Equipe,eq,:id&filter1=id_Etapa,eq,:idEtapa',
+                transformResponse: jsonTransformQuery
             },
             query: {
                 isArray: true,
@@ -157,7 +162,8 @@ angular.module('north.services', ['ngResource'])
         return $resource(appConfigs.context + '/Categoria/:id', {}, {
             query: {
                 isArray: true,
-                transformResponse: jsonTransformQuery
+                transformResponse: jsonTransformQuery,
+                cache: true
             }
         });
 
