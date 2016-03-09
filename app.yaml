@@ -5,10 +5,14 @@ version: 1
 
 
 handlers:
-- url: /api.php
+
+- url: /rest/.*
   script: src/main/php/api.php
-- url: /rest/.*/?.*
+  login: admin
+
+- url: /rest/.*/.*
   script: src/main/php/api.php
+  login: admin
 
 - url: /SetPago.do
   script:  src/main/php/marcarPaga.php
@@ -16,6 +20,17 @@ handlers:
 
 - url: /Inscrever.do
   script:  src/main/php/inscrever.php
+
+
+- url: /app/rest/.*
+  script: src/main/php/apiPub.php
+
+- url: /app/rest/.*/.*
+  script: src/main/php/apiPub.php
+
+- url: /app/enhanced/.*
+  script: src/main/php/app.php
+
 
 - url: /admin/*
   static_dir: src/main/webapp/admin/
@@ -55,3 +70,11 @@ handlers:
 - url: /endpoints/Login
   script: src/main/php/login.php
   secure: always
+
+- url: /endpoints/User
+  script: src/main/php/userManagement.php
+
+- url: /endpoints/Register
+  script: src/main/php/userRegister.php
+
+
