@@ -127,7 +127,8 @@ angular.module('north.services', ['ngResource'])
             marcarPagto: {
                 method: 'PUT',
                 isArray: false,
-                url: appConfigs.contextRoot + '/SetPago.do'//"http://localhost/northServer/marcarPaga.php"
+                url: appConfigs.contextRoot + '/SetPago.do'
+                // url:"http://localhost/northServer/marcarPaga.php"
             }
         })
     }])

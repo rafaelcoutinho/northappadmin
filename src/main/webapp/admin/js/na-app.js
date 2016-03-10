@@ -3,7 +3,7 @@ var angularModule =
         .constant("appConfigs", {
             "context": "//cumeqetrekking.appspot.com/rest",
             // "context": "//localhost/northServer/api.php",
-            "contextRoot": "//cumeqetrekking.appspot.com/"
+            "contextRoot": "//cumeqetrekking.appspot.com"
 
         }).config(['$routeProvider', function ($routeProvider, $rootScope) {
             $routeProvider.when('/', {
@@ -89,7 +89,10 @@ var angularModule =
 
             '$scope', '$timeout', '$window', '$routeParams', 'GridService', '$location', 'CategoriaService',
             function ($scope, $timeout, $window, $routeParams, GridService, $location, CategoriaService) {
-                $scope.inscOrder = "data";
+                $scope.sortItem = {
+                    field: "largada",
+                    reverse: false
+                };
                 $scope.gridConfig = 1;
                 $scope.categoriaGrid = 1;
                 $scope.categorias = CategoriaService.query({}, function (data) {
@@ -159,6 +162,9 @@ var angularModule =
 
                         });
                 }
+                $scope.cancel = function () {
+                    $location.path("/gridconfs");
+                }
             }])
         .controller('InscricoesListCtrl', [
 
@@ -167,8 +173,18 @@ var angularModule =
                 $scope.inscOrder = "data";
                 $scope.idEtapa = $routeParams.idEtapa;
                 $scope.items = InscricaoService.query({ filter0: "id_Etapa,eq," + $routeParams.idEtapa });
-                $scope.sortBy = function (col) {
-                    $scope.inscOrder = col;
+                $scope.go = function (n) {
+                    $scope.currentPage += n;
+                }
+                $scope.sortItem = {
+                    field: "data",
+                    reverse: false
+                }
+                $scope.currentPage = 0;
+                $scope.pageSize = 10;
+
+                $scope.numberOfPages = function () {
+                    return Math.ceil($scope.items.length / $scope.pageSize);
                 }
                 $scope.marcarPago = function (item, state) {
                     var p = item.paga;
@@ -226,8 +242,8 @@ var angularModule =
                     $scope.currentPage += n;
                 }
                 $scope.sortItem = {
-                    field:"nome",
-                    reverse:false   
+                    field: "nome",
+                    reverse: false
                 }
                 $scope.currentPage = 0;
                 $scope.pageSize = 10;
@@ -343,11 +359,35 @@ var angularModule =
             }])
 
         .controller('EquipeListCtrl', [
-            '$scope', '$timeout', '$window', '$routeParams', 'EquipesService', '$location',
-            function ($scope, $timeout, $window, $routeParams, EquipesService, $location) {
+            '$scope', '$timeout', '$window', '$routeParams', 'EquipesService', '$location', 'CategoriaService',
+            function ($scope, $timeout, $window, $routeParams, EquipesService, $location, CategoriaService) {
+                $scope.go = function (n) {
+                    $scope.currentPage += n;
+                }
+                $scope.sortItem = {
+                    field: "nome",
+                    reverse: false
+                }
+                $scope.currentPage = 0;
+                $scope.pageSize = 10;
 
-                $scope.equipes = EquipesService.query();
+                $scope.numberOfPages = function () {
+                    return Math.ceil($scope.equipes.length / $scope.pageSize);
+                }
+                $scope.equipes = [];
+                $scope.categorias = CategoriaService.query({}, function () {
+                    $scope.equipes = EquipesService.query();
+                });
+                $scope.getCategoriaLabel = function (id) {
+                    for (var index = 0; index < $scope.categorias.length; index++) {
+                        var element = $scope.categorias[index];
+                        if (element.id == id) {
+                            return element.nome;
+                        }
 
+                    }
+                    return "?";
+                }
                 $scope.novo = function () {
                     $location.path("/equipe/-1");
                 }
@@ -356,14 +396,17 @@ var angularModule =
             '$scope', '$timeout', '$location', '$routeParams', 'EquipesService', 'CategoriaService', '$rootScope', '$uibModal', 'AlertService', 'CompetidorService',
             function ($scope, $timeout, $location, $routeParams, EquipesService, CategoriaService, $rootScope, $uibModal, AlertService, CompetidorService) {
 
-                if ($routeParams.id == -1) {
-                    $scope.equipe = {}
-                } else {
-                    $scope.equipe = EquipesService.get({ id: $routeParams.id }, function (equipe) {
-                        $scope.competidores = CompetidorService.query({ filter0: "id_Equipe,eq," + equipe.id });
-                    });
-                }
-                $scope.categorias = CategoriaService.query();
+
+                $scope.categorias = CategoriaService.query({}, function () {
+                    if ($routeParams.id == -1) {
+                        $scope.equipe = {}
+                    } else {
+                        $scope.equipe = EquipesService.get({ id: $routeParams.id }, function (equipe) {
+                            $scope.competidores = CompetidorService.query({ filter0: "id_Equipe,eq," + equipe.id });
+                            $scope.val = 3
+                        });
+                    }
+                });
                 $scope.saveData = function () {
                     EquipesService.save({ id: $routeParams.id != -1 ? $routeParams.id : null }, $scope.equipe,
 
@@ -668,26 +711,26 @@ var angularModule =
             }])
         .directive('colSorter', function () {
             function link(scope, element, attrs) {
-                
+
                 scope.reverse = true;
                 element.on('click', function (event) {
-                    if(scope.sortVar.field != scope.sortField){    
+                    if (scope.sortVar.field != scope.sortField) {
                         scope.sortVar.field = scope.sortField;
                     }
-                    
-                     scope.reverse = ! scope.reverse;
-                     scope.sortVar.reverse=scope.reverse;
-                    
+
+                    scope.reverse = !scope.reverse;
+                    scope.sortVar.reverse = scope.reverse;
+
                     scope.$apply();
                 });
-                 
-                  scope.$watch('sortVar', function (value) {
-                      
-                      if(value!=scope.sortField){                          
-                          scope.reverse = null;
-                      }
-                 })
-               
+
+                scope.$watch('sortVar', function (value) {
+
+                    if (value != scope.sortField) {
+                        scope.reverse = null;
+                    }
+                })
+
 
                 element.on('$destroy', function () {
 
@@ -705,5 +748,27 @@ var angularModule =
                 link: link
             };
 
-        })
+        }).directive('loading', ['$http', function ($http) {
+            return {
+                restrict: 'A',
+                link: function (scope, elm, attrs) {
+                    scope.isLoading = function () {
+                        return $http.pendingRequests.length > 0;
+                    };
+
+                    scope.$watch(scope.isLoading, function (v) {
+                        try {
+                            if (v) {
+                                elm.show();
+                            } else {
+                                elm.hide();
+                            }
+                        } catch (e) {
+
+                        }
+                    });
+                }
+            };
+
+        }])
     ;

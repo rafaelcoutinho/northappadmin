@@ -8,7 +8,7 @@
     <div class="box box-info">
         <div class="box-header with-border">
             <h3 class="box-title">Grid Config</h3>
-            
+
         </div>
         <!-- /.box-header -->
         <!-- form start -->
@@ -25,28 +25,30 @@
                     <label for="inputDesc" class="col-sm-2 control-label">Início</label>
 
                     <div class="col-sm-10">
-                        <input type="text" class="form-control" id="inputDesc" placeholder="" ng-model="item.inicio">
+                        <input type="number" id="inputDesc" placeholder="hora" ng-model="item.inicio_hora"  max="23" min="00">:
+                        <input type="number" id="inputDesc" placeholder="minuto" ng-model="item.inicio_minuto" max="59" min="00">
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="inputDesc" class="col-sm-2 control-label">Intervalo 1</label>
 
                     <div class="col-sm-10">
-                        <input type="text" class="form-control" id="inputDesc" placeholder="" ng-model="item.intervalo1">
+                        <input type="number" class="form-control" id="inputDesc" placeholder="em minutos" ng-model="item.intervalo1">
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="inputDesc" class="col-sm-2 control-label">Total utilizando intervalo 1</label>
+                    <label for="inputquota_intervalo1" class="col-sm-2 control-label">Total utilizando intervalo 1</label>
 
                     <div class="col-sm-10">
-                        <input type="text" class="form-control" id="inputDesc" placeholder="" ng-model="item.quota_intervalo1">
+                        <input type="number" class="form-control" id="inputquota_intervalo1" placeholder="número de equipes até mudar para intervalo 2"
+                        ng-model="item.quota_intervalo1">
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="inputDesc" class="col-sm-2 control-label">Intervalo 2</label>
+                    <label for="inputintervalo2" class="col-sm-2 control-label">Intervalo 2</label>
 
                     <div class="col-sm-10">
-                        <input type="text" class="form-control" id="inputDesc" placeholder="" ng-model="item.intervalo2">
+                        <input type="number" class="form-control" id="inputintervalo2" placeholder="minutos" ng-model="item.intervalo2">
                     </div>
                 </div>
 

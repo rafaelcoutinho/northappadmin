@@ -1,5 +1,5 @@
 <section class="content-header" ng-include="'partials/breadcrumb.html'" ng-init="title = 'Etapa';
-   bcs=[{title:'Home',url:'#/'},{title:'Etapas',url:'#/etapas'},{title:'Etapa',url:'#/etapa/{{etapa.id}}'},{title:'Inscrições',url:'#/etapa//grid'}]"></section>
+   bcs=[{title:'Home',url:'#/'},{title:'Etapas',url:'#/etapas'},{title:'Etapa',url:'#/etapa/{{etapa.id}}'},{title:'Grid',url:''}]"></section>
 <section class="content">
 
     <div class="row">
@@ -9,15 +9,15 @@
 
 
                     <h3 class="box-title">Grid </h3>
-
-                    <div class="form-group " >
-                        <label for="inputCategoria ">Categoria</label>
-                        <select class="form-control " ng-model="categoriaGrid " ng-change="updateGrid()">
+                    <div class="input-group input-group-sm" style="width: 150px;">
+                        <select class="input-group input-group-sm" ng-model="categoriaGrid " ng-change="updateGrid()">
                             <option ng-repeat="categoria in categorias " value="{{categoria.id}} ">{{categoria.nome}}</option>
                         </select>
-                        
+
                     </div>
+
                     <div class="pull-right box-tools">
+
                         <div class="input-group input-group-sm" style="width: 150px;">
                             <input type="text" name="table_search" class="form-control pull-right" placeholder="Search" ng-model="searchText">
 
@@ -32,14 +32,20 @@
                     <table class="table table-bordered">
                         <tbody>
                             <tr>
-                                <th ng-click="sortBy('categoria')">Categoria</th>
-                                <th ng-click="sortBy('nome_Equipe')">Equipe</th>
-                                <th ng-click="sortBy('desc_Equipe')">Cidade</th>
+                                <th>Categoria
+                                    <col-sorter field="'categoria'" var="sortItem"></col-sorter>
+                                </th>
+                                <th>Equipe
+                                    <col-sorter field="'equipe'" var="sortItem"></col-sorter>
+                                </th>
+                                <th>Cidade</th>
 
-                                <th ng-click="sortBy('largada')">Largada</th>
+                                <th>Largada
+                                    <col-sorter field="'largada'" var="sortItem"></col-sorter>
+                                </th>
 
                             </tr>
-                            <tr ng-repeat="item in items| filter:searchText| orderBy : inscOrder ">
+                            <tr ng-repeat="item in items| filter:searchText|  orderBy : sortItem.field:sortItem.reverse ">
                                 <td>{{getLabelCategoria(item.categoria_Equipe)}}</td>
                                 <td>{{item.nome_Equipe}}</td>
                                 <td>{{item.desc_Equipe}}</td>
