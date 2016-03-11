@@ -172,7 +172,7 @@
 <script type="text/ng-template" id="customTemplateEquipe.html" title="Template para autocomplete de equipe">
                                 <a>
 
-                                    <span ng-bind-html="match.model.nome + ' - '+ (match.model.descricao) | uibTypeaheadHighlight:query "></span>
+                                    <span ng-bind-html="match.model.nome + ' - '+ (match.model.descricao) + ' ('+getNomeCategoria(match.model)+')'| uibTypeaheadHighlight:query "></span>
                                 </a>
 </script>
 

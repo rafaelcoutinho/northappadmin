@@ -161,15 +161,23 @@ var angularModule =
             $scope.categorias = categorias;
             $scope.ok = function () {
                 if ($scope.novaEquipe.id == null) {
-                    if ($scope.equipeForm.equipe.$valid == false || $scope.equipeForm.categoria.$valid==false) {
+                    if ($scope.equipeForm.equipe.$valid == false || $scope.equipeForm.categoria.$valid == false) {
                         AlertService.showError("Por favor corrija os erros do formulário.");
                         return;
                     }
-                    
+
                 }
                 $uibModalInstance.close($scope.novaEquipe);
             };
-
+            $scope.getNomeCategoria = function (item) {
+                for (var index = 0; index < categorias.length; index++) {
+                    var element = categorias[index];
+                    if (element.id == item.id_Categoria) {
+                        return element.nome;
+                    }
+                }
+                return "";
+            }
             $scope.cancel = function () {
                 $uibModalInstance.dismiss('cancel');
             };

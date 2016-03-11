@@ -18,6 +18,11 @@ handlers:
   script:  src/main/php/marcarPaga.php
   login: admin
 
+- url: /AlteraGrid.do
+  script:  src/main/php/alteraGrid.php
+  login: admin
+
+
 - url: /Inscrever.do
   script:  src/main/php/inscrever.php
 

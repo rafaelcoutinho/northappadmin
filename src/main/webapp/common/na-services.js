@@ -93,6 +93,12 @@ angular.module('north.services', ['ngResource'])
                 method: 'POST',
                 isArray: false,
                 url: appConfigs.context + '/Grid'
+            },
+            update: {
+                method: 'POST',
+                isArray: false,
+                url: appConfigs.contextRoot + '/AlteraGrid.do'
+                // url: "http://localhost/northServer/alteraGrid.php"
             }
         })
     }])
@@ -104,7 +110,7 @@ angular.module('north.services', ['ngResource'])
                 url: appConfigs.context + '/InscricaoFull?filter0=id_Trekker,eq,:idTrekker&filter1=id_Etapa,eq,:idEtapa',
                 transformResponse: jsonTransformQueryGetSingle
             },
-             query4Equipe: {
+            query4Equipe: {
                 isArray: true,
                 url: appConfigs.context + '/InscricaoFull?filter0=id_Equipe,eq,:id&filter1=id_Etapa,eq,:idEtapa',
                 transformResponse: jsonTransformQuery
@@ -128,7 +134,7 @@ angular.module('north.services', ['ngResource'])
                 method: 'PUT',
                 isArray: false,
                 url: appConfigs.contextRoot + '/SetPago.do'
-                // url:"http://localhost/northServer/marcarPaga.php"
+                // url: "http://localhost/northServer/marcarPaga.php"
             }
         })
     }])
@@ -137,6 +143,7 @@ angular.module('north.services', ['ngResource'])
         return $resource(appConfigs.context + '/GridConfig/:id', {}, {
             query: {
                 isArray: true,
+                cache: true,
                 transformResponse: jsonTransformQuery
             }
         })

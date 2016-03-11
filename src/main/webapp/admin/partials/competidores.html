@@ -11,7 +11,7 @@
                     <input type="text" name="table_search" class="form-control pull-right" placeholder="buscar" ng-model="searchText">
 
                     <div class="input-group-btn">
-                        <button type="submit" class="btn btn-default"><i class="fa fa-search"></i></button>
+                        <button type="submit" class="btn btn-sm"><i class="fa fa-search"></i></button>
                     </div>
                     <button type="button" class="btn btn-sm  pull-right" data-toggle="tooltip" title="Novo" ng-click="novo()">
                         <i class="fa fa-plus"></i></button>
@@ -32,7 +32,9 @@
                         <th>Nome
                             <col-sorter field="'nome'" var="sortItem"></col-sorter>
                         </th>
-                        <th>E-mail <col-sorter field="'email'" var="sortItem"></col-sorter></th>
+                        <th>E-mail
+                            <col-sorter field="'email'" var="sortItem"></col-sorter>
+                        </th>
                         <th>Equipe
                             <col-sorter field="'equipe'" var="sortItem"></col-sorter>
                         </th>
@@ -54,11 +56,11 @@
         </div>
         <div class="box-footer clearfix">
             <ul class="pagination pagination-sm no-margin pull-right">
-                <li><a ng-if="(currentPage)==1" ng-click="go(-1)">«</a></li>
+                <li><a ng-hide="(currentPage)==0" ng-click="go(-1)">«</a></li>
 
                 <li><a>{{currentPage+1}}/{{numberOfPages()}}</a></li>
 
-                <li><a ng-if="(currentPage)==numberOfPages()" ng-click="go(1)">»</a></li>
+                <li><a ng-hide="(currentPage+1)==numberOfPages()" ng-click="go(1)">»</a></li>
             </ul>
         </div>
     </div>

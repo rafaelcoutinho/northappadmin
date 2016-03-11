@@ -1,3 +1,9 @@
+<style>
+    .manualUpdate {
+        background-color: #D2D6DE;
+    }
+</style>
+
 <section class="content-header" ng-include="'partials/breadcrumb.html'" ng-init="title = 'Etapa';
    bcs=[{title:'Home',url:'#/'},{title:'Etapas',url:'#/etapas'},{title:'Etapa',url:'#/etapa/{{etapa.id}}'},{title:'Grid',url:''}]"></section>
 <section class="content">
@@ -10,22 +16,43 @@
 
                     <h3 class="box-title">Grid </h3>
                     <div class="input-group input-group-sm" style="width: 150px;">
-                        <select class="input-group input-group-sm" ng-model="categoriaGrid " ng-change="updateGrid()">
-                            <option ng-repeat="categoria in categorias " value="{{categoria.id}} ">{{categoria.nome}}</option>
+
+                        <select class="form-control input-group input-group-sm" ng-model="gridConfig " ng-change="updateGrid()" ng-options="grid.id as grid.nome for grid in grids">
+
                         </select>
 
                     </div>
-
                     <div class="pull-right box-tools">
+                        <div class="btn-group">
+                            <div class="btn-group " ng-show="etapa.id!=null && etapa.id!=-1" ng-cloak>
+                                <button type="button" class="btn btn-warning btn-sm dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                                    <i class="fa fa-bars"></i></button>
+                                <ul class="dropdown-menu pull-right" role="menu">
 
-                        <div class="input-group input-group-sm" style="width: 150px;">
-                            <input type="text" name="table_search" class="form-control pull-right" placeholder="Search" ng-model="searchText">
+                                    <li><a href="#/etapa/{{etapa.id}}/inscricoes" ng-cloak="" class="text-red">Inscrições</a></li>
+                                    <li class="divider"></li>
 
-                            <div class="input-group-btn">
-                                <button type="submit" class="btn btn-default"><i class="fa fa-search"></i></button>
+                                </ul>
                             </div>
+                            <button type="" class="btn btn-sm"><i class="fa fa-refresh" ng-click="refresh()"></i></button>
+                            <div class="input-group input-group-sm" style="width: 150px;">
+                                <input type="text" name="table_search" class="form-control pull-right ng-pristine ng-untouched ng-valid ng-empty" placeholder="buscar"
+                                ng-model="searchText">
+
+                                <div class="input-group-btn">
+
+                                    <button type="submit" class="btn btn-sm"><i class="fa fa-search"></i></button>
+                                </div>
+                            </div>
+
+
                         </div>
+
+
                     </div>
+
+
+
 
                 </div>
                 <div class="box-body">
@@ -41,15 +68,15 @@
                                 <th>Cidade</th>
 
                                 <th>Largada
-                                    <col-sorter field="'largada'" var="sortItem"></col-sorter>
+                                    <col-sorter field="['hora','minuto']" var="sortItem"></col-sorter>
                                 </th>
 
                             </tr>
-                            <tr ng-repeat="item in items| filter:searchText|  orderBy : sortItem.field:sortItem.reverse ">
+                            <tr ng-repeat="item in items| filter:searchText|  orderBy : sortItem.field:sortItem.reverse " ng-class="{'manualUpdate':item.t==1}">
                                 <td>{{getLabelCategoria(item.categoria_Equipe)}}</td>
                                 <td>{{item.nome_Equipe}}</td>
                                 <td>{{item.desc_Equipe}}</td>
-                                <td>{{item.largada|date:'hh:mm'}}</td>
+                                <td ng-click="updateLargada(item)"><i class="fa fa-clock-o"></i> {{item.hora}}:{{item.minuto|zeroLeadNumber}}</td>
 
                             </tr>
 
@@ -60,3 +87,42 @@
             </div>
         </div>
 </section>
+
+<script type="text/ng-template" id="largadaModalContent.html ">
+    <div class="modal-header ">
+        <h3 class="modal-title ">Alterar horário de largada</h3>
+    </div>
+    <div class="modal-body ">
+        <form name="largadaForm" role="form " class="css-form " novalidate autocomplete="none">
+            <div class="box-body ">
+
+                <div class="row ">
+                    Equipe: {{gridInfo.nome_Equipe}}
+                </div>
+                <div class="row ">
+                    Categoria: {{gridInfo.categoria_Equipe}}
+                </div>
+                <label for="inputDesc" class="control-label">Novo horário</label>
+                <div class="form-group">
+
+
+                    <div>
+                        <input type="number" name="hora" ng-required id="inputDesc" placeholder="hh" ng-model="gridInfo.hora" max="23" min="00">:
+                        <input type="number" name="minuto" ng-required id="inputDesc" placeholder="mm" ng-model="gridInfo.minuto" value="{{gridInfo.minuto|zeroLeadNumber}}"
+                        max="59" min="00">
+                    </div>
+                    <span class="text-red " ng-show="largadaForm.hora.$error.required">Hora é obrigatório</span>
+                    <span class="text-red " ng-show="largadaForm.hora.$error.max || largadaForm.hora.$error.min">Hora deve ser entre 0 e 23 horas</span>
+                    <span class="text-red " ng-show="largadaForm.minuto.$error.max || largadaForm.minuto.$error.min">Minuto deve ser entre 0 e 59 minutos</span>
+                    <span class="text-red " ng-show="largadaForm.minuto.$error.required">Minuto é obrigatório</span>
+                </div>
+
+
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer ">
+        <button class="btn btn-primary " type="button " ng-click="ok() ">Alterar</button>
+        <button class="btn btn-warning " type="button " ng-click="cancel() ">Cancelar</button>
+    </div>
+</script>

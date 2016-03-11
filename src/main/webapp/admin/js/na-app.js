@@ -9,54 +9,55 @@ var angularModule =
             $routeProvider.when('/', {
                 templateUrl: 'partials/main.html'
 
-            }).when('/etapas/', {
-                templateUrl: 'partials/etapas.html',
-                controller: 'EtapasCtrl'
-            }).when('/etapa/:id', {
-                templateUrl: 'partials/etapa.html',
-                controller: 'EtapaDetailsCtrl'
-            }).when('/localidades', {
-                templateUrl: 'partials/locations.html',
-                controller: 'LocationListCtrl'
-            }).when('/localidade/:id', {
-                templateUrl: 'partials/location.html',
-                controller: 'LocationDetailsCtrl'
-            }).when('/destaques', {
-                templateUrl: 'partials/destaques.html',
-                controller: 'DestaqueListCtrl'
-            }).when('/destaque/:id', {
-                templateUrl: 'partials/destaque.html',
-                controller: 'DestaqueDetailsCtrl'
-            }).when('/equipes', {
-                templateUrl: 'partials/equipes.html',
-                controller: 'EquipeListCtrl'
-            }).when('/equipe/:id', {
-                templateUrl: 'partials/equipe.html',
-                controller: 'EquipeDetailsCtrl'
-            }).when('/competidores', {
-                templateUrl: 'partials/competidores.html',
-                controller: 'CompetidoresListCtrl'
-            }).when('/competidor/:id', {
-                templateUrl: 'partials/competidor.html',
-                controller: 'CompetidorDetailsCtrl'
-            }).when('/etapa/:idEtapa/grid', {
-                templateUrl: 'partials/grid.html',
-                controller: 'GridListCtrl'
-            }).when('/gridconfs', {
-                templateUrl: 'partials/gridConfigs.html',
-                controller: 'GridConfListCtrl'
-            }).when('/gridconf/:id', {
-                templateUrl: 'partials/gridConf.html',
-                controller: 'GridConfDetailsCtrl'
-            }).when('/etapa/:idEtapa/inscricoes', {
-                templateUrl: 'partials/inscricoes.html',
-                controller: 'InscricoesListCtrl'
-            }).when('/etapa/:idEtapa/inscricoes/:idTrekker', {
-                templateUrl: 'partials/inscricao.html',
-                controller: 'InscricaoDetailsCtrl'
-            }).otherwise({
-                redirectTo: '/'
-            });
+            })
+                .when('/etapas/', {
+                    templateUrl: 'partials/etapas.html',
+                    controller: 'EtapasCtrl'
+                }).when('/etapa/:id', {
+                    templateUrl: 'partials/etapa.html',
+                    controller: 'EtapaDetailsCtrl'
+                }).when('/localidades', {
+                    templateUrl: 'partials/locations.html',
+                    controller: 'LocationListCtrl'
+                }).when('/localidade/:id', {
+                    templateUrl: 'partials/location.html',
+                    controller: 'LocationDetailsCtrl'
+                }).when('/destaques', {
+                    templateUrl: 'partials/destaques.html',
+                    controller: 'DestaqueListCtrl'
+                }).when('/destaque/:id', {
+                    templateUrl: 'partials/destaque.html',
+                    controller: 'DestaqueDetailsCtrl'
+                }).when('/equipes', {
+                    templateUrl: 'partials/equipes.html',
+                    controller: 'EquipeListCtrl'
+                }).when('/equipe/:id', {
+                    templateUrl: 'partials/equipe.html',
+                    controller: 'EquipeDetailsCtrl'
+                }).when('/competidores', {
+                    templateUrl: 'partials/competidores.html',
+                    controller: 'CompetidoresListCtrl'
+                }).when('/competidor/:id', {
+                    templateUrl: 'partials/competidor.html',
+                    controller: 'CompetidorDetailsCtrl'
+                }).when('/etapa/:idEtapa/grid', {
+                    templateUrl: 'partials/grid.html',
+                    controller: 'GridListCtrl'
+                }).when('/gridconfs', {
+                    templateUrl: 'partials/gridConfigs.html',
+                    controller: 'GridConfListCtrl'
+                }).when('/gridconf/:id', {
+                    templateUrl: 'partials/gridConf.html',
+                    controller: 'GridConfDetailsCtrl'
+                }).when('/etapa/:idEtapa/inscricoes', {
+                    templateUrl: 'partials/inscricoes.html',
+                    controller: 'InscricoesListCtrl'
+                }).when('/etapa/:idEtapa/inscricoes/:idTrekker', {
+                    templateUrl: 'partials/inscricao.html',
+                    controller: 'InscricaoDetailsCtrl'
+                }).otherwise({
+                    redirectTo: '/'
+                });
 
         }]).filter("sanitize", ['$sce', function ($sce) {
             return function (htmlCode) {
@@ -71,7 +72,37 @@ var angularModule =
                 };
             };
         })
+        .filter('zeroLeadNumber', function ($filter) {
+            return function (input) {
+                if (isNaN(input)) {
+                    return "-";
+                } else {
+                    if (input < 10) {
+                        return '0' + input;
+                    } else {
+                        return input;
+                    }
 
+                };
+            };
+        })
+        .service('RelatorioService', ['$http', '$q', '$resource', 'appConfigs', function ($http, $q, $resource, appConfigs) {
+            return $resource(appConfigs.context + '/RelatorioEtapa/:id', {}, {
+                query: {
+                    isArray: true,
+                    transformResponse: jsonTransformQuery
+                }
+            });
+        }])
+        .controller('PrintCtrl', function ($scope, RelatorioService) {
+
+            $scope.title = "sdfasdf";
+            $scope.data = new Date();
+            $scope.report = RelatorioService.query({}, function () {
+                // window.print();
+            });
+
+        })
         .controller('ConfirmModalCrtl', function ($scope, $uibModalInstance, title, message) {
 
             $scope.title = title;
@@ -84,31 +115,55 @@ var angularModule =
                 $uibModalInstance.dismiss('cancel');
             };
         })
+        .controller('ModalLargadaCtrl', function ($scope, $uibModalInstance, gridConfig, gridInfo, etapa, AlertService, GridService) {
+            $scope.gridConfig = gridConfig;
+            $scope.gridInfo = gridInfo;
+            $scope.etapa = etapa;
 
+
+            $scope.ok = function () {
+                if ($scope.largadaForm.$valid == false) {
+                    console.log($scope.largadaForm)
+                    return;
+                }
+                var newGridInfo = $scope.gridInfo;
+                console.log("newGridInfo", newGridInfo)
+                GridService.update(newGridInfo, function (data) {
+                    console.log("Data", data)
+                    $uibModalInstance.close(newGridInfo);
+                }, function (error) {
+                    console.log("Error", error)
+                });
+
+
+            };
+
+            $scope.cancel = function () {
+                $uibModalInstance.dismiss('cancel');
+            };
+
+        })
         .controller('GridListCtrl', [
 
-            '$scope', '$timeout', '$window', '$routeParams', 'GridService', '$location', 'CategoriaService',
-            function ($scope, $timeout, $window, $routeParams, GridService, $location, CategoriaService) {
+            '$scope', '$timeout', '$window', '$routeParams', 'GridService', '$location', 'CategoriaService', 'GridConfService', '$uibModal', '$log', 'EtapasService',
+            function ($scope, $timeout, $window, $routeParams, GridService, $location, CategoriaService, GridConfService, $uibModal, $log, EtapasService) {
                 $scope.sortItem = {
-                    field: "largada",
+                    field: ["hora", "minuto"],
                     reverse: false
                 };
                 $scope.gridConfig = 1;
-                $scope.categoriaGrid = 1;
-                $scope.categorias = CategoriaService.query({}, function (data) {
+                $scope.grids = GridConfService.query({}, function (data) {
                     $scope.items = GridService.query({ idEtapa: $routeParams.idEtapa, idConfig: $scope.gridConfig });
                 });
-
-                $scope.updateGrid = function () {
-                    //hardcoded
-                    if ($scope.categoriaGrid == 2 || $scope.categoriaGrid == 1) {//TREKKERs
-                        $scope.gridConfig = 1;
-
-                    } else {
-                        $scope.gridConfig = $scope.categoriaGrid;
-                    }
+                $scope.refresh = function () {
                     $scope.items = GridService.query({ idEtapa: $routeParams.idEtapa, idConfig: $scope.gridConfig });
                 }
+                $scope.categorias = CategoriaService.query({});
+
+                $scope.updateGrid = function () {
+                    $scope.items = GridService.query({ idEtapa: $routeParams.idEtapa, idConfig: $scope.gridConfig });
+                }
+                $scope.etapa = EtapasService.get({ id: $routeParams.idEtapa });
                 $scope.getLabelCategoria = function (id) {
                     for (var index = 0; index < $scope.categorias.length; index++) {
                         var element = $scope.categorias[index];
@@ -121,7 +176,44 @@ var angularModule =
                 $scope.sortBy = function (col) {
                     $scope.inscOrder = col;
                 }
+                $scope.updateLargada = function (item) {
+                    var modalInstance = $uibModal.open({
+                        animation: $scope.animationsEnabled,
+                        templateUrl: 'largadaModalContent.html',
+                        controller: 'ModalLargadaCtrl',
+                        size: 'sm',
+                        resolve: {
+                            gridConfig: function () {
+                                for (var index = 0; index < $scope.grids.length; index++) {
+                                    var element = $scope.grids[index];
+                                    if (element.id == $scope.gridConfig) {
+                                        return element;
+                                    }
+                                }
+                                return null;
+                            },
+                            gridInfo: function () {
+                                return item;
+                            },
+                            etapa: function () {
+                                return $scope.etapa;
+                            },
+                        }
+                    });
 
+                    modalInstance.result.then(function (selecionado) {
+                        for (var index = 0; index < $scope.items.length; index++) {
+                            var element = $scope.items[index];
+                            if (element.id_Equipe == selecionado.id_Equipe) {
+                                console.log("atualizando")
+                                $scope.items[index] = selecionado;
+                                return;
+                            }
+                        }
+                    }, function () {
+                        $log.info('Modal dismissed at: ' + new Date());
+                    });
+                }
             }])
         .controller('GridConfListCtrl', [
 
@@ -168,10 +260,14 @@ var angularModule =
             }])
         .controller('InscricoesListCtrl', [
 
-            '$scope', '$timeout', '$window', '$routeParams', 'InscricaoService', '$location',
-            function ($scope, $timeout, $window, $routeParams, InscricaoService, $location) {
+            '$scope', '$timeout', '$window', '$routeParams', 'InscricaoService', 'EtapasService', '$location',
+            function ($scope, $timeout, $window, $routeParams, InscricaoService, EtapasService, $location) {
                 $scope.inscOrder = "data";
                 $scope.idEtapa = $routeParams.idEtapa;
+                $scope.etapa = EtapasService.get({ id: $routeParams.idEtapa });
+                $scope.refresh = function () {
+                    $scope.items = InscricaoService.query({ filter0: "id_Etapa,eq," + $routeParams.idEtapa });
+                }
                 $scope.items = InscricaoService.query({ filter0: "id_Etapa,eq," + $routeParams.idEtapa });
                 $scope.go = function (n) {
                     $scope.currentPage += n;
@@ -724,12 +820,14 @@ var angularModule =
                     scope.$apply();
                 });
 
-                scope.$watch('sortVar', function (value) {
+                scope.$watch('sortVar.field', function (value) {
 
                     if (value != scope.sortField) {
                         scope.reverse = null;
+                        console.log("mudou ", value, scope.sortField);
                     }
-                })
+
+                }, true)
 
 
                 element.on('$destroy', function () {
