@@ -5,7 +5,7 @@
         <div class="box-header ">
 
 
-            <h3 class="box-title">Competidores</h3>
+            <h3 class="box-title">Competidores ({{competidores.length}})</h3>
             <div class="pull-right box-tools">
                 <div class="input-group input-group-sm" style="width: 150px;">
                     <input type="text" name="table_search" class="form-control pull-right" placeholder="buscar" ng-model="searchText">
@@ -28,7 +28,7 @@
             <table class="table table-bordered">
                 <tbody>
                     <tr>
-                        <th style="width: 10px">#</th>
+
                         <th>Nome
                             <col-sorter field="'nome'" var="sortItem"></col-sorter>
                         </th>
@@ -41,14 +41,15 @@
                         <th>Categoria
                             <col-sorter field="'categoria'" var="sortItem"></col-sorter>
                         </th>
+                        <th> <col-sorter field="'state'" var="sortItem"></col-sorter></th>
 
                     </tr>
                     <tr ng-repeat="item in competidores| filter:searchText| orderBy : sortItem.field:sortItem.reverse| limitTo : pageSize : currentPage*pageSize ">
-                        <td></td>
                         <td><a href="#/competidor/{{item.id}}">{{item.nome}}</a></td>
                         <td><a href="#/competidor/{{item.id}}">{{item.email}}</a></td>
                         <td><a href="#/competidor/{{item.id}}">{{item.equipe}}</a></td>
                         <td><a href="#/competidor/{{item.id}}">{{item.categoria}}</a></td>
+                        <td><a href="#/competidor/{{item.id}}">{{getEstado(item)}}</a></td>
                     </tr>
 
                 </tbody>

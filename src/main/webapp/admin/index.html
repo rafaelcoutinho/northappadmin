@@ -22,18 +22,19 @@
         <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
         <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
+
 </head>
 
 <body class="hold-transition skin-yellow sidebar-mini" id="adminApp">
     <div class="wrapper">
-        <header class="main-header">
+        <header class="main-header no-print">
 
             <a href="/" class="logo"> <span class="logo-mini"><b>North</b></span>
                 <span class="logo-lg">NorthBrasil <b>Web</b>Admin</span>
             </a>
-            
+
             <nav class="navbar navbar-static-top" role="navigation">
-                <a  class="sidebar-toggle" data-toggle="offcanvas" role="button"> <span class="sr-only">Toggle navigation</span>
+                <a class="sidebar-toggle" data-toggle="offcanvas" role="button"> <span class="sr-only">Toggle navigation</span>
                 </a>
                 <div class="navbar-custom-menu">
                     <ul class="nav navbar-nav">
@@ -63,31 +64,31 @@
                 </div>
             </nav>
         </header>
-        
+
     </div>
-    <aside class="main-sidebar">
+    <aside class="main-sidebar no-print">
 
-            <section class="sidebar">
-                <ul class="sidebar-menu">
-                    <li class="header">Administração</li>
+        <section class="sidebar no-print">
+            <ul class="sidebar-menu">
+                <li class="header">Administração</li>
 
-                    <li><a href="#/"><i class="fa fa-dashboard"></i> <span>Home</span></a></li>
-                    <li><a href="#/destaques"><i class="fa  ion-alert"></i> <span>Destaques</span></a></li>
-                    <li><a href="#/etapas"><i class="fa  fa-calendar-o"></i> <span>Etapas</span></a></li>
-                    <li><a href="#/localidades"><i class="fa fa-map-marker"></i> <span>Localidades</span></a></li>
-                    <li><a href="#/equipes"><i class="fa  ion-ios-people"></i> <span>Equipes</span></a></li>
-                    <li><a href="#/competidores"><i class="fa  fa-user"></i> <span>Competidores</span></a></li>
-                     <li><a href="#/gridconfs"><i class="fa  fa-clock-o "></i> <span>Configurações Grid</span></a></li>
+                <li><a href="#/"><i class="fa fa-dashboard"></i> <span>Home</span></a></li>
+                <li><a href="#/destaques"><i class="fa  ion-alert"></i> <span>Destaques</span></a></li>
+                <li><a href="#/etapas"><i class="fa  fa-calendar-o"></i> <span>Etapas</span></a></li>
+                <li><a href="#/localidades"><i class="fa fa-map-marker"></i> <span>Localidades</span></a></li>
+                <li><a href="#/equipes"><i class="fa  ion-ios-people"></i> <span>Equipes</span></a></li>
+                <li><a href="#/competidores"><i class="fa  fa-user"></i> <span>Competidores</span></a></li>
+                <li><a href="#/gridconfs"><i class="fa  fa-clock-o "></i> <span>Configurações Grid</span></a></li>
 
-                </ul>
-            </section>
-        </aside>
+            </ul>
+        </section>
+    </aside>
     <script type="text/ng-template" id="alert.html">
         <div class="alert" style="background-color:#fa39c3;color:white;" role="alert">
             <div ng-transclude></div>
         </div>
     </script>
-    
+
 
     <div class="content-wrapper" ng-view style="min-height: 400px;"></div>
 
@@ -97,7 +98,7 @@
 		href="http://northbrasil.com.br/">NorthBrasil</a>.
 	</strong>
     </footer>
-    
+
     <uib-alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)" dismiss-on-timeout="3000" style="position: fixed;top: 10%;  z-index: 1110; width: 50%;  left: 25%;">{{alert.msg}}</uib-alert>
     <script type="text/javascript" data-main="js/run-admin" src="../bower_components/requirejs/require.js"></script>
 </body>

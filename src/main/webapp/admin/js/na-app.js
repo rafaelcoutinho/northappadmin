@@ -16,6 +16,16 @@ var angularModule =
                 }).when('/etapa/:id', {
                     templateUrl: 'partials/etapa.html',
                     controller: 'EtapaDetailsCtrl'
+                }).when('/etapa/:id/relatorio', {
+                    templateUrl: 'partials/printEtapa.html',
+                    resolve: {
+                        idEtapa: function ($route) {
+
+                            return $route.current.params.id;
+
+                        }
+                    },
+                    controller: 'PrintCtrl'
                 }).when('/localidades', {
                     templateUrl: 'partials/locations.html',
                     controller: 'LocationListCtrl'
@@ -94,13 +104,15 @@ var angularModule =
                 }
             });
         }])
-        .controller('PrintCtrl', function ($scope, RelatorioService) {
-
-            $scope.title = "sdfasdf";
+        .controller('PrintCtrl', function ($scope, RelatorioService, idEtapa, EtapasService) {
+            $scope.etapa = EtapasService.get({ id: idEtapa });
             $scope.data = new Date();
-            $scope.report = RelatorioService.query({}, function () {
-                // window.print();
+            $scope.report = RelatorioService.query({ filter0: 'paga,eq,1' }, function () {
+
             });
+            $scope.printIt = function () {
+                window.print();
+            }
 
         })
         .controller('ConfirmModalCrtl', function ($scope, $uibModalInstance, title, message) {
@@ -349,6 +361,18 @@ var angularModule =
                 }
                 $scope.novo = function () {
                     $location.path("/competidor/-1");
+                }
+                $scope.getEstado = function (competidor) {
+                    switch (competidor.state) {
+                        case "PASSIVE":
+                            return "Adicionado";
+                        case "PASSIVE_EMAIL":
+                            return "Erro Email";
+                        case "INSCRIPTION":
+                            return "Lider";
+                            case "ACTIVE":
+                            return "OK";
+                    }
                 }
             }])
         .controller('CompetidorDetailsCtrl', [

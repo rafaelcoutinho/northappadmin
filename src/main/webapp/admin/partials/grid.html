@@ -59,6 +59,7 @@
                     <table class="table table-bordered">
                         <tbody>
                             <tr>
+                                <th></th>
                                 <th>Categoria
                                     <col-sorter field="'categoria'" var="sortItem"></col-sorter>
                                 </th>
@@ -73,6 +74,7 @@
 
                             </tr>
                             <tr ng-repeat="item in items| filter:searchText|  orderBy : sortItem.field:sortItem.reverse " ng-class="{'manualUpdate':item.t==1}">
+                                <td>{{$index + 1}}</td>
                                 <td>{{getLabelCategoria(item.categoria_Equipe)}}</td>
                                 <td>{{item.nome_Equipe}}</td>
                                 <td>{{item.desc_Equipe}}</td>

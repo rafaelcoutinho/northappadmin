@@ -25,18 +25,18 @@
             <table class="table table-bordered">
                 <tbody>
                     <tr>
-                        <th style="width: 10px">#</th>
+
                         <th>Nome
                             <col-sorter field="'nome'" var="sortItem"></col-sorter>
                         </th>
                         <th>Descrição</th>
                         <th>Categoria
-                            <col-sorter field="'categoria'" var="sortItem"></col-sorter>
+                            <col-sorter field="'id_Categoria'" var="sortItem"></col-sorter>
                         </th>
 
                     </tr>
                     <tr ng-repeat="item in equipes| filter:searchText| orderBy : sortItem.field:sortItem.reverse| limitTo : pageSize : currentPage*pageSize ">
-                        <td></td>
+
                         <td><a href="#/equipe/{{item.id}}">{{item.nome}}</a></td>
                         <td><a href="#/equipe/{{item.id}}">{{item.descricao}}</a></td>
                         <td><a href="#/equipe/{{item.id}}">{{getCategoriaLabel(item.id_Categoria)}}</a></td>
