@@ -76,6 +76,11 @@ handlers:
   script: src/main/php/login.php
   secure: always
 
+- url: /endpoints/senha/.*
+  script: src/main/php/senha.php
+  secure: always
+
+
 - url: /endpoints/User
   script: src/main/php/userManagement.php
 
