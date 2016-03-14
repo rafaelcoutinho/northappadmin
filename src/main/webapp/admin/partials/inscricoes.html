@@ -64,8 +64,12 @@
                                 <td>{{item.data|date:'dd-MM-yyyy'}}</td>
                                 <td><a href="#/competidor/{{item.id_Trekker}}" title="Editar Competidor">{{item.nome}}</a></td>
                                 <td><a href="#/competidor/{{item.id_Trekker}}" title="Editar Competidor">{{item.email}}</a></td>
-                                <td><a href="#/competidor/{{item.id_Equipe}}" title="Editar Equipe">{{item.equipe}}</a></td>
+                                <td><a href="#/competidor/{{item.id_Equipe}}" title="Editar Equipe">{{item.nome_Equipe}}</a> 
+                                       <span ng-if="item.id_Equipe!=item.competidor_Id_Equipe && item.competidor_Id_Equipe!=null">Alteração de Equipe, era '{{item.competidor_Equipe}}'</span>
+                                       <span ng-if="item.competidor_Id_Equipe==null">Competidor sem equipe atualmente</span>
+                                </td>
                                 <td>{{item.categoria}}</td>
+                                
                                 <td>
                                     <div class="input-group-btn" style="width:100%">
                                         <button type="button" class="btn dropdown-toggle" ng-class="{'btn-warning':item.paga!=true,'btn-success':item.paga==true}"

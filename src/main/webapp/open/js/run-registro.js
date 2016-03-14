@@ -99,4 +99,7 @@ require(['registroApp'], function () {
 
     angular.bootstrap(document.getElementById('registroApp'), ['registroApp']);
 
+}, function (erro) {
+    console.log("Erro carregando bibliotecas");
+    alert("Houve um problema carregando esta página, por favor recarregue a página.");
 });

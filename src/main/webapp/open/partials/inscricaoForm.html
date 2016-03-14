@@ -136,16 +136,16 @@
                         </dl>
                         <dl>
                             <dt>3) VALOR DE INSCRIÇÃO POR PARTICIPANTE</dt>
-                            <dd>VALOR C/ DESCONTO (para pagto antecipado, até 22 de setembro): R$56,00 + Prova Social</dd>
-                            <dd>VALOR NORMAL R$65,00 + Prova Social*</dd>
-
-
+                            <dd>Valor normal R$ {{inscricao.etapa.precoLote3}} + Prova Social</dd>
+                            <dd>Até {{inscricao.etapa.dataLimiteLote1|date:'dd-MM-yyyy'}} R$ {{inscricao.etapa.precoLote1}} + Prova Social</dd>
+                            <dd>Até {{inscricao.etapa.dataLimiteLote2|date:'dd-MM-yyyy'}} R$ {{inscricao.etapa.precoLote2}} + Prova Social</dd>
+                            
                         </dl>
                         <dl>
                             <dt>Prova Social</dt>
                             <dd>Item para doação desta etapa:</dd>
                             <ul>
-                                <li>1 kg de alimento não perecível ou 1 livro usado (por participante)</li>
+                                <li>{{inscricao.etapa.provaSocial}}</li>
                             </ul>
                             <dd> A doação deve ser entregue no Check-in. O não cumprimento da prova social pode implicar em penalização da equipe
                                 (em pontos), conforme Regulamento. Todo material arrecadado será revertido para entidades sociais e famílias

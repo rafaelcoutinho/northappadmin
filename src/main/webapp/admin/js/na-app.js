@@ -297,7 +297,13 @@ var angularModule =
                 $scope.marcarPago = function (item, state) {
                     var p = item.paga;
                     item.pagoTemp = true;
-                    InscricaoService.marcarPagto({ id_Trekker: item.id_Trekker, id_Etapa: $routeParams.idEtapa, paga: state }, function (successo) {
+                    InscricaoService.marcarPagto(
+                        { 
+                            id_Trekker: item.id_Trekker,
+                            id_Equipe: item.id_Equipe,  
+                            id_Etapa: $routeParams.idEtapa, 
+                            
+                            paga: state }, function (successo) {
                         item.paga = state;
                         item.pagoTemp = false;
                     }, function (error) {
@@ -370,7 +376,7 @@ var angularModule =
                             return "Erro Email";
                         case "INSCRIPTION":
                             return "Lider";
-                            case "ACTIVE":
+                        case "ACTIVE":
                             return "OK";
                     }
                 }
@@ -674,22 +680,37 @@ var angularModule =
 
                             var datevar = new Date(parseInt($scope.etapa.data));
                             $scope.formData = datevar;
+                            if ($scope.etapa.dataLimiteLote1) {
+                                $scope.dataLimiteLote1 = new Date(parseInt($scope.etapa.dataLimiteLote1));
+                            }
+                            if ($scope.etapa.dataLimiteLote2) {
+                                $scope.dataLimiteLote2 = new Date(parseInt($scope.etapa.dataLimiteLote2));
+                            }
+                            if ($scope.etapa.dataLimiteLote3) {
+                                $scope.dataLimiteLote3 = new Date(parseInt($scope.etapa.dataLimiteLote3));
+                            }
                         });
                 }
                 $scope.$watch('formData', function (newValue) {
-
                     try {
-
                         $scope.etapa.data = newValue.getTime();
                     } catch (e) {
                     }
                 });
 
-                // $scope.$watch('etapa.data', function (newValue) {
-                //     console.log('valor etapa',newValue)
-                    
-                // });
+
                 $scope.saveData = function () {
+                    if ($scope.dataLimiteLote1) {
+                        $scope.etapa.dataLimiteLote1 = $scope.dataLimiteLote1.getTime();
+                    }
+                    if ($scope.dataLimiteLote2) {
+                        $scope.etapa.dataLimiteLote2 = $scope.dataLimiteLote2.getTime();
+                    }
+                    if ($scope.dataLimiteLote3) {
+                        $scope.etapa.dataLimiteLote3 = $scope.dataLimiteLote3.getTime();
+                    }
+
+
                     EtapasService.save({ id: $routeParams.id != -1 ? $routeParams.id : null }, $scope.etapa, function (data) {
                         if ($scope.etapa.id == null || $scope.etapa.id == -1) {
                             $scope.etapa = data;
@@ -886,7 +907,7 @@ var angularModule =
                                 elm.hide();
                             }
                         } catch (e) {
-
+                            console.log(e)
                         }
                     });
                 }
