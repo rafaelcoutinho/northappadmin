@@ -896,18 +896,20 @@ var angularModule =
                 restrict: 'A',
                 link: function (scope, elm, attrs) {
                     scope.isLoading = function () {
+                        
                         return $http.pendingRequests.length > 0;
                     };
 
                     scope.$watch(scope.isLoading, function (v) {
                         try {
+                            
                             if (v) {
-                                elm.show();
+                                elm[0].className = "fa fa-spin fa-refresh"
                             } else {
-                                elm.hide();
+                                elm[0].className = "ng-hide"
                             }
                         } catch (e) {
-                            console.log(e)
+                            console.log(e);
                         }
                     });
                 }
