@@ -1,7 +1,12 @@
 <section class="content-header" ng-include="'partials/breadcrumb.html'" ng-init="title = 'Inscrições';
    bcs=[{title:'Home',url:'#/'},{title:'Etapas',url:'#/etapas'},{title:'Etapa',url:'#/etapa/{{etapa.id}}'},{title:'Inscrições',url:'#/etapa//inscricoes',active:true}]"></section>
 <section class="content">
-
+<style>
+    .info{
+           font-size: x-small;
+    font-style: italic;
+    }
+    </style>
     <div class="row">
         <div class="col-xs-12">
             <div class="box box-primary">
@@ -15,7 +20,7 @@
                                 <button type="button" class="btn btn-warning btn-sm dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
                                     <i class="fa fa-bars"></i></button>
                                 <ul class="dropdown-menu pull-right" role="menu">
-                                    
+
                                     <li><a href="#/etapa/{{etapa.id}}/grid" ng-cloak="" class="text-red">Grid</a></li>
                                     <li class="divider"></li>
 
@@ -64,12 +69,14 @@
                                 <td>{{item.data|date:'dd-MM-yyyy'}}</td>
                                 <td><a href="#/competidor/{{item.id_Trekker}}" title="Editar Competidor">{{item.nome}}</a></td>
                                 <td><a href="#/competidor/{{item.id_Trekker}}" title="Editar Competidor">{{item.email}}</a></td>
-                                <td><a href="#/competidor/{{item.id_Equipe}}" title="Editar Equipe">{{item.nome_Equipe}}</a> 
-                                       <span ng-if="item.id_Equipe!=item.competidor_Id_Equipe && item.competidor_Id_Equipe!=null">Alteração de Equipe, era '{{item.competidor_Equipe}}'</span>
-                                       <span ng-if="item.competidor_Id_Equipe==null">Competidor sem equipe atualmente</span>
+                                <td><a href="#/equipe/{{item.id_Equipe}}" title="Editar Equipe">{{item.nome_Equipe}}</a>
+
+                                    <div ng-if="item.id_Equipe!=item.competidor_Id_Equipe && item.competidor_Id_Equipe!=null" class="info">Alteração de Equipe, era '{{item.competidor_Equipe}}'</div>
+
+                                    <div ng-if="item.competidor_Id_Equipe==null" class="info">Competidor sem equipe atualmente</div>
                                 </td>
                                 <td>{{item.categoria}}</td>
-                                
+
                                 <td>
                                     <div class="input-group-btn" style="width:100%">
                                         <button type="button" class="btn dropdown-toggle" ng-class="{'btn-warning':item.paga!=true,'btn-success':item.paga==true}"

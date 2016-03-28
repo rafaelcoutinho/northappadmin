@@ -129,6 +129,7 @@ angular.module('north.services', ['ngResource'])
                 method: 'POST',
                 isArray: false,
                 url: appConfigs.contextRoot + '/Inscrever.do'
+                // url: "http://localhost/northServer/inscrever.php"
             },
             marcarPagto: {
                 method: 'PUT',

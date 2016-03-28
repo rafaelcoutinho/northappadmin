@@ -41,7 +41,7 @@
                     <div class="row" ng-show="inscricao.lider!=null">
                         <div class="col col-sm-12">
                             <div class="pull-right box-tools">
-                                <button class="btn btn-warning btn-xs" " ng-cloak ng-click="selectCompetidor(); ">Alterar</button>
+                                <button class="btn btn-warning btn-xs" " ng-cloak ng-click="selectCompetidor(); "  ng-disabled="inscricaoServer!=null ">Alterar</button>
                             </div>
                             <span class=" text-green stepClass ">1. {{inscricao.lider.nome}} <i class="fa fa-check "  ></i></span>
                         </div>
@@ -62,7 +62,8 @@
                     <div class="row " ng-show="inscricao.equipe!=null ">
                         <div class="col col-sm-12 ">
                             <div class="pull-right box-tools ">
-                                <button class="btn btn-warning btn-xs " ng-cloak ng-click="selectEquipe(); ">Alterar</button>
+                                <button class="btn btn-warning btn-xs " ng-cloak ng-click="selectEquipe();
+                                "  ng-disabled="inscricaoServer!=null ">Alterar</button>
                             </div>
                             <span class=" text-green stepClass ">2. {{inscricao.equipe.nome}} <i class="fa fa-check "  ></i></span>
                         </div>
@@ -97,12 +98,18 @@
 
                     <button type="submit " class="btn btn-primary btn-block pull-right " ng-cloak ng-click="inscrever()
                                 " ng-show="inscricaoServer==null ">Inscrever</button>
+                                
+                                
 
                 </div>
             </div>
                 <div class="box box-default animate-show " ng-show="inscricaoServer!=null ">
                     <div class="box-header with-border ">
                         <h3 class="box-title ">Inscrição efetuada</h3>
+                         <div class="pull-right box-tools ">
+                        <button type="submit " class="btn btn-warning btn-block pull-right " ng-cloak ng-click="limpaCampos()
+                                " ng-show="inscricaoServer!=null ">Fazer outra inscrição</button>
+                         </div>
                     </div>
                     <div class="box-body ">
 
@@ -164,54 +171,56 @@
 
 
 
-<script type="text/ng-template" id="customTemplate.html" title="Template para autocomplete de competidor">
+<script type="text/ng-template " id="customTemplate.html " title="Template para autocomplete de competidor ">
     <a> <span ng-bind-html="match.model.nome + ' - '+ (match.model.equipe!=null?match.model.equipe: 'Sem Equipe') | uibTypeaheadHighlight:query "></span>
                             </a>
 </script>
 
-<script type="text/ng-template" id="customTemplateEquipe.html" title="Template para autocomplete de equipe">
+<script type="text/ng-template " id="customTemplateEquipe.html " title="Template para autocomplete de equipe ">
                                 <a>
 
-                                    <span ng-bind-html="match.model.nome + ' - '+ (match.model.descricao) + ' ('+getNomeCategoria(match.model)+')'| uibTypeaheadHighlight:query "></span>
+                                    <span ng-bind-html="match.model.nome + ' - '+ (match.model.descricao) + ' ('+getNomeCategoria(match.model)+
+                                ')'| uibTypeaheadHighlight:query "></span>
                                 </a>
 </script>
 
-                            <script type="text/ng-template" id="competidorModalContent.html" title="Template para formulário de competidor>
-                                <div class="modal-header ">
-                                    <h3 class="modal-title ">Adicionar Competidor</h3>
-                                </div>
+                            <script type="text/ng-template " id="competidorModalContent.html " title="Template para formulário
+                                de competidor>
+                                    <div class="modal-header ">
+                                        <h3 class="modal-title ">Adicionar Competidor</h3>
+                                    </div>
 
-                                <div class="modal-body ">
-                                    <form name="competidorForm " class="css-form " novalidate autocomplete="off ">
-                                        <div class="box-body ">
-                                            <div class="row ">
-                                                <label for="inputTrekker " class="col-sm-2 control-label ">*Nome</label>
-                                                <div class="col-sm-10 ">
-                                                    <input type="text " autocomplete="off " ng-blur="exitFilterCompetidor()
+                                    <div class="modal-body ">
+                                        <form name="competidorForm " class="css-form " novalidate autocomplete="off ">
+                                            <div class="box-body ">
+                                                <div class="row ">
+                                                    <label for="inputTrekker " class="col-sm-2 control-label ">*Nome</label>
+                                                    <div class="col-sm-10 ">
+                                                        <input type="text " autocomplete="off " ng-blur="exitFilterCompetidor()
                                 " ng-model="novoCompetidor " id="inputTrekker " placeholder="Nome " name="nome
                                 " typeahead-show-hint="true " uib-typeahead="g as g.nome for g in competidores | filter:{nome:$viewValue} | limitTo:8
                                 " typeahead-editable="true " class="form-control " typeahead-select-on-exact="true " typeahead-template-url="customTemplate.html
                                 " typeahead-min-length="0 " typeahead-no-results="noResult ">
+                                                    </div>
                                                 </div>
-                                            </div>
-                                            <div class="animate-show " ng-show="noResult "> 
+                                                <div class="animate-show " ng-show="noResult ">
 
-                                            <div class="form-group " >
-                                                <h3>Criar novo cadastro</h3>
-                                            </div>
-                                            <div class="form-group " ng-show="noResult ">
-                                                <label for="inputEmail " class="col-sm-2 control-label ">*E-mail</label>
-                                                <input type="email " ng-model-options="{ updateOn: 'blur' }" required ng-model="novoCompetidor.email " name="competidorEmail " id="inputEmail "
-                                                " placeholder="xxx@xxx.xxx " class="form-control ">
+                                                    <div class="form-group ">
+                                                        <h3>Criar novo cadastro</h3>
+                                                    </div>
+                                                    <div class="form-group " ng-show="noResult ">
+                                                        <label for="inputEmail " class="col-sm-2 control-label ">*E-mail</label>
+                                                        <input type="email " ng-model-options="{ updateOn: 'blur' }" required ng-model="novoCompetidor.email " name="competidorEmail "
+                                                        id="inputEmail " " placeholder="xxx@xxx.xxx " class="form-control ">
                                     </input>
-                                    <span class="text-red " ng-show="competidorForm.competidorEmail.$error.email">Formato inválido de email</span>
+                                    <span class="text-red " ng-show="competidorForm.competidorEmail.$error.email ">Formato inválido de email</span>
                                     <span class="text-red " ng-show="competidorForm.competidorEmail.$error.required ">E-mail é obrigatório</span>
                             </div>
 
                             <div class="form-group " ng-show="noResult ">
                                 <label for="inputtelefone " class="col-sm-2 control-label ">Telefone</label>
                                 <input type="tel " ng-model="novoCompetidor.telefone " id="inputtelefone
-                                                " placeholder="(XX) XXXXX-XXXX " class="form-control ">
+                                                        " placeholder="(XX) XXXXX-XXXX " class="form-control ">
                             </div>
                         </div>
                     </div>
@@ -224,24 +233,26 @@
                 </script>
 
 
-                <script type="text/ng-template" id="equipeModalContent.html ">
+                <script type="text/ng-template " id="equipeModalContent.html ">
                     <div class="modal-header ">
                         <h3 class="modal-title ">Definir equipe</h3>
                     </div>
                     <div class="modal-body ">
-                        <form name="equipeForm" role="form " class="css-form " novalidate autocomplete="none">
+                        <form name="equipeForm " role="form " class="css-form " novalidate autocomplete="none ">
                             <div class="box-body ">
 
                                 <div class="row ">
                                     <label for="inputEquipe " class="col-sm-2 control-label ">*Nome da equipe</label>
                                     <div class="col-sm-10 ">
 
-                                        <input type="text " name="equipe" ng-blur="exitFilterEquipe()" ng-model="novaEquipe" id="inputEquipe " placeholder="Nome Equipe "
-                                        typeahead-show-hint="true" autocomplete="none" ng-required="true" uib-typeahead="g as g.nome for g in equipes | filter:{nome:$viewValue}
-                                                | limitTo:8 " typeahead-editable="true" class="form-control
-                                                " typeahead-select-on-exact="true " typeahead-template-url="customTemplateEquipe.html
-                                                " typeahead-min-length="0" typeahead-no-results="noResultEquipe ">
-                                                <span class="text-red " ng-show="equipeForm.equipe.$error.required">Um nome é obrigatório</span>                                    
+                                        <input type="text " name="equipe " ng-blur="exitFilterEquipe() " ng-model="novaEquipe
+                                                        " id="inputEquipe " placeholder="Nome Equipe "
+                                        typeahead-show-hint="true " autocomplete="none " ng-required="true
+                                                        " uib-typeahead="g as g.nome for g in equipes | filter:{nome:$viewValue} | limitTo:8
+                                                        " typeahead-editable="true " class="form-control " typeahead-select-on-exact="true
+                                                        " typeahead-template-url="customTemplateEquipe.html " typeahead-min-length="0
+                                                        " typeahead-no-results="noResultEquipe ">
+                                                <span class="text-red " ng-show="equipeForm.equipe.$error.required ">Um nome é obrigatório</span>                                    
                                     </div>
                                 </div>
 
@@ -261,10 +272,11 @@
                                 <div class="form-group " ng-show="noResultEquipe ">
                                     <label for="inputCategoria ">Categoria</label>
                                     <select class="form-control " ng-model="novaEquipe.id_Categoria " id="inputCategoria
-                                                " ng-disabled="novaEquipe.id!=null " placeholder="Selecione a categoria " ng-required="true" name="categoria">
+                                                        " ng-disabled="novaEquipe.id!=null " placeholder="Selecione a categoria
+                                                        " ng-required="true " name="categoria ">
                                         <option ng-repeat="categoria in categorias " value="{{categoria.id}} ">{{categoria.nome}}</option>
                                     </select>
-                                     <span class="text-red " ng-show="equipeForm.categoria.$error.required">Categoria é obrigatório</span>
+                                     <span class="text-red " ng-show="equipeForm.categoria.$error.required ">Categoria é obrigatório</span>
                                     <p class="help-block ">(*Para alterar uma equipe existente utilize o aplicativo da North)</p>
                                 </div>
 

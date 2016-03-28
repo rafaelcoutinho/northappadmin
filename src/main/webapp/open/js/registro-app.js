@@ -11,7 +11,7 @@ var angularModule =
             controller: 'InscricaoCtrl',
             templateUrl: 'partials/inscricao.html',
         }).otherwise({
-            redirectTo: '/1'
+            redirectTo: '/'
         });
 
 
@@ -443,6 +443,16 @@ var angularModule =
                         $rootScope.$broadcast('dialogs.wait.complete');
                     })
                 };
+                $scope.limpaCampos = function () {
+                    var etapa = $scope.inscricao.etapa;
+                    $scope.inscricao = {
+                        integrantes: [],
+                        lider: null,
+                        etapa: etapa,
+                        equipe: null
+                    };
+                    $scope.inscricaoServer = null;
+                };
                 $scope.updateWithFB();
                 $scope.inscrever = function () {
 
@@ -464,6 +474,8 @@ var angularModule =
                                 AlertService.showError("Houve um erro ao salvar");
 
                             });
+                    } else {
+                        console.log("Erro, não há etapa definida");
                     }
                 }
 
