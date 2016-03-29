@@ -65,7 +65,7 @@
                                     <col-sorter field="'paga'" var="sortItem"></col-sorter>
                                 </th>
                             </tr>
-                            <tr ng-repeat="item in items| filter:searchText| orderBy : sortItem.field:sortItem.reverse| limitTo : pageSize : currentPage*pageSize ">
+                            <tr ng-repeat="item in items| filter:searchText| orderBy : sortItem.field:sortItem.reverse ">
                                 <td>{{item.data|date:'dd-MM-yyyy'}}</td>
                                 <td><a href="#/competidor/{{item.id_Trekker}}" title="Editar Competidor">{{item.nome}}</a></td>
                                 <td><a href="#/competidor/{{item.id_Trekker}}" title="Editar Competidor">{{item.email}}</a></td>
@@ -97,13 +97,7 @@
                     </table>
                 </div>
                 <div class="box-footer clearfix">
-                    <ul class="pagination pagination-sm no-margin pull-right">
-                        <li><a ng-hide="(currentPage)==0" ng-click="go(-1)">«</a></li>
-
-                        <li><a>{{currentPage+1}}/{{numberOfPages()}}</a></li>
-
-                        <li><a ng-hide="(currentPage+1)==numberOfPages()" ng-click="go(1)">»</a></li>
-                    </ul>
+                 
                 </div>
 
             </div>

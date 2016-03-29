@@ -1,9 +1,9 @@
 var angularModule =
     angular.module('adminApp', ['north.services', 'ngRoute', 'ui.bootstrap', 'ngResource'])
         .constant("appConfigs", {
-            "context": "//cumeqetrekking.appspot.com/rest",
-            // "context": "//localhost/northServer/api.php",
-            "contextRoot": "//cumeqetrekking.appspot.com"
+            // "context": "//cumeqetrekking.appspot.com/rest",
+            "context": "//localhost/northServer/api.php",
+            // "contextRoot": "//cumeqetrekking.appspot.com"
 
         }).config(['$routeProvider', function ($routeProvider, $rootScope) {
             $routeProvider.when('/', {
@@ -104,7 +104,7 @@ var angularModule =
                 }
             });
         }])
-        .controller('PrintCtrl', function ($scope, RelatorioService, idEtapa, EtapasService) {
+        .controller('PrintCtrl', function ($scope, RelatorioService, idEtapa, EtapasService,CategoriaNameService) {
             $scope.etapa = EtapasService.get({ id: idEtapa });
             $scope.data = new Date();
             $scope.report = RelatorioService.query({ filter0: 'paga,eq,1' }, function () {
@@ -113,6 +113,7 @@ var angularModule =
             $scope.printIt = function () {
                 window.print();
             }
+            $scope.getLabelCategoria= CategoriaNameService.getLabelCategoria;
 
         })
         .controller('ConfirmModalCrtl', function ($scope, $uibModalInstance, title, message) {
@@ -158,7 +159,7 @@ var angularModule =
         .controller('GridListCtrl', [
 
             '$scope', '$timeout', '$window', '$routeParams', 'GridService', '$location', 'CategoriaService', 'GridConfService', '$uibModal', '$log', 'EtapasService',
-            function ($scope, $timeout, $window, $routeParams, GridService, $location, CategoriaService, GridConfService, $uibModal, $log, EtapasService) {
+            function ($scope, $timeout, $window, $routeParams, GridService, $location, CategoriaService, GridConfService, $uibModal, $log, EtapasService,CategoriaNameService) {
                 $scope.sortItem = {
                     field: ["hora", "minuto"],
                     reverse: false
@@ -176,14 +177,7 @@ var angularModule =
                     $scope.items = GridService.query({ idEtapa: $routeParams.idEtapa, idConfig: $scope.gridConfig });
                 }
                 $scope.etapa = EtapasService.get({ id: $routeParams.idEtapa });
-                $scope.getLabelCategoria = function (id) {
-                    for (var index = 0; index < $scope.categorias.length; index++) {
-                        var element = $scope.categorias[index];
-                        if (element.id == id) {
-                            return element.nome;
-                        }
-                    }
-                }
+                $scope.getLabelCategoria = CategoriaNameService.getLabelCategoria
                 $scope.inscOrder = "largada";
                 $scope.sortBy = function (col) {
                     $scope.inscOrder = col;
@@ -288,12 +282,7 @@ var angularModule =
                     field: "data",
                     reverse: false
                 }
-                $scope.currentPage = 0;
-                $scope.pageSize = 10;
-
-                $scope.numberOfPages = function () {
-                    return Math.ceil($scope.items.length / $scope.pageSize);
-                }
+               
                 $scope.marcarPago = function (item, state) {
                     var p = item.paga;
                     item.pagoTemp = true;
@@ -404,7 +393,7 @@ var angularModule =
 
                         }, function (response) {
                             if (response.data.errorMsg && response.data.errorMsg.indexOf("Duplicate entry") > -1) {
-                                AlertService.showError("Nome da competidor já existe");
+                                AlertService.showError("Nome ou email de competidor já existente");
                             } else {
                                 AlertService.showError("Houve um erro ao salvar");
                             }
