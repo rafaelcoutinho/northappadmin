@@ -128,14 +128,14 @@ angular.module('north.services', ['ngResource'])
             inscrever: {
                 method: 'POST',
                 isArray: false,
-                url: appConfigs.contextRoot + '/Inscrever.do'
-                // url: "http://localhost/northServer/inscrever.php"
+                // url: appConfigs.contextRoot + '/Inscrever.do'
+                url: "http://localhost/northServer/inscrever.php"
             },
             marcarPagto: {
                 method: 'PUT',
                 isArray: false,
-                url: appConfigs.contextRoot + '/SetPago.do'
-                // url: "http://localhost/northServer/marcarPaga.php"
+                // url: appConfigs.contextRoot + '/SetPago.do'
+                url: "http://localhost/northServer/marcarPaga.php"
             }
         })
     }])
@@ -176,6 +176,20 @@ angular.module('north.services', ['ngResource'])
             }
         });
 
+    }])
+    .service('CategoriaNameService', ['$http', '$q', '$resource', 'appConfigs', 'CategoriaService', function ($http, $q, $resource, appConfigs, CategoriaService) {
+        var cats = CategoriaService.query();
+        return {
+            getLabelCategoria: function (id) {
+                for (var index = 0; index < cats.length; index++) {
+                    var element = cats[index];
+                    if (element.id == id) {
+                        return element.nome;
+                    }
+                }
+            }
+
+        }
     }])
     .service('EquipesService', ['$http', '$q', '$resource', 'appConfigs', function ($http, $q, $resource, appConfigs) {
         return $resource(appConfigs.context + '/Equipe/:id', {}, {
