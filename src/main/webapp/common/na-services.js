@@ -92,10 +92,17 @@ angular.module('north.services', ['ngResource'])
             save: {
                 method: 'POST',
                 isArray: false,
-                url: appConfigs.context + '/Grid'
+                url: appConfigs.contextRoot + '/AlteraGrid.do'
+                // url: "http://localhost/northServer/alteraGrid.php"
+            },
+            remove: {
+                method: 'DELETE',
+                isArray: false,
+                url: appConfigs.contextRoot + '/AlteraGrid.do'
+                // url: "http://localhost/northServer/alteraGrid.php"
             },
             update: {
-                method: 'POST',
+                method: 'PUT',
                 isArray: false,
                 url: appConfigs.contextRoot + '/AlteraGrid.do'
                 // url: "http://localhost/northServer/alteraGrid.php"
@@ -109,6 +116,12 @@ angular.module('north.services', ['ngResource'])
                 isArray: false,
                 url: appConfigs.context + '/InscricaoFull?filter0=id_Trekker,eq,:idTrekker&filter1=id_Etapa,eq,:idEtapa',
                 transformResponse: jsonTransformQueryGetSingle
+            },
+            
+            queryCompetidores: {
+                isArray: true,
+                url: appConfigs.contextRoot  + '/app/enhanced/CompetidorInscricao/:idEtapa'
+                
             },
             query4Equipe: {
                 isArray: true,
@@ -124,18 +137,24 @@ angular.module('north.services', ['ngResource'])
                 isArray: false,
                 url: appConfigs.context + '/Inscricao'
             },
+            remove: {
+                method: 'DELETE',
+                isArray: false,
+                url: appConfigs.contextRoot + '/Inscrever.do'
+                // url: "http://localhost/northServer/inscrever.php"
+            },
 
             inscrever: {
                 method: 'POST',
                 isArray: false,
-                // url: appConfigs.contextRoot + '/Inscrever.do'
-                url: "http://localhost/northServer/inscrever.php"
+                url: appConfigs.contextRoot + '/Inscrever.do'
+                // url: "http://localhost/northServer/inscrever.php"
             },
             marcarPagto: {
                 method: 'PUT',
                 isArray: false,
-                // url: appConfigs.contextRoot + '/SetPago.do'
-                url: "http://localhost/northServer/marcarPaga.php"
+                url: appConfigs.contextRoot + '/SetPago.do'
+                // url: "http://localhost/northServer/marcarPaga.php"
             }
         })
     }])

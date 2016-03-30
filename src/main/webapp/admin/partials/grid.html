@@ -35,6 +35,8 @@
                                 </ul>
                             </div>
                             <button type="" class="btn btn-sm"><i class="fa fa-refresh" ng-click="refresh()"></i></button>
+                            <button type="button" class="btn btn-sm  " data-toggle="tooltip" title="Adiciona Equipe" ng-click="addEquipe()">
+                                <i class="fa fa-plus"></i></button>
                             <div class="input-group input-group-sm" style="width: 150px;">
                                 <input type="text" name="table_search" class="form-control pull-right ng-pristine ng-untouched ng-valid ng-empty" placeholder="buscar"
                                 ng-model="searchText">
@@ -59,7 +61,7 @@
                     <table class="table table-bordered">
                         <tbody>
                             <tr>
-                                <th></th>
+
                                 <th>Categoria
                                     <col-sorter field="'categoria'" var="sortItem"></col-sorter>
                                 </th>
@@ -71,14 +73,16 @@
                                 <th>Largada
                                     <col-sorter field="['hora','minuto']" var="sortItem"></col-sorter>
                                 </th>
+                                <th></th>
 
                             </tr>
-                            <tr ng-repeat="item in items| filter:searchText|  orderBy : sortItem.field:sortItem.reverse " ng-class="{'manualUpdate':item.t==1}">
-                                <td>{{$index + 1}}</td>
+                            <tr ng-repeat="item in items| filter:searchText| orderBy : sortItem.field:sortItem.reverse " ng-class="{'manualUpdate':item.t==1}">
+
                                 <td>{{getLabelCategoria(item.categoria_Equipe)}}</td>
                                 <td>{{item.nome_Equipe}}</td>
                                 <td>{{item.desc_Equipe}}</td>
                                 <td ng-click="updateLargada(item)"><i class="fa fa-clock-o"></i> {{item.hora}}:{{item.minuto|zeroLeadNumber}}</td>
+                                <td><a href="" ng-click="removerDoGrid(item)"><i class="fa fa-remove"></i> Remover</a></td>
 
                             </tr>
 
@@ -97,12 +101,13 @@
     <div class="modal-body ">
         <form name="largadaForm" role="form " class="css-form " novalidate autocomplete="none">
             <div class="box-body ">
-
-                <div class="row ">
+                
+                <div class="row " >
                     Equipe: {{gridInfo.nome_Equipe}}
+                    <input type="text" autocomplete="off " ng-if="isNew==true" ng-model="gridInfo.equipe" typeahead-show-hint="true " uib-typeahead="g as g.nome for g in equipes | filter:{nome:$viewValue} | limitTo:8" typeahead-editable="true " class="form-control " typeahead-select-on-exact="true " typeahead-min-length="0 " typeahead-no-results="noResult">
                 </div>
                 <div class="row ">
-                    Categoria: {{gridInfo.categoria_Equipe}}
+                    Categoria: {{getLabelCategoria(gridInfo.categoria_Equipe)}}
                 </div>
                 <label for="inputDesc" class="control-label">Novo horário</label>
                 <div class="form-group">

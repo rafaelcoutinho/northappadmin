@@ -1,9 +1,11 @@
+// var SERVER_ROOT ="//2-dot-cumeqetrekking.appspot.com"; 
+var SERVER_ROOT ="//cumeqetrekking.appspot.com";  
 var angularModule =
     angular.module('adminApp', ['north.services', 'ngRoute', 'ui.bootstrap', 'ngResource'])
         .constant("appConfigs", {
-            // "context": "//cumeqetrekking.appspot.com/rest",
-            "context": "//localhost/northServer/api.php",
-            // "contextRoot": "//cumeqetrekking.appspot.com"
+            "context": SERVER_ROOT+"/rest",
+            // "context": SERVER_ROOT+"/api.php",
+            "contextRoot": SERVER_ROOT
 
         }).config(['$routeProvider', function ($routeProvider, $rootScope) {
             $routeProvider.when('/', {
@@ -101,15 +103,20 @@ var angularModule =
                 query: {
                     isArray: true,
                     transformResponse: jsonTransformQuery
+                },
+                queryOutOfGrid:{
+                    isArray: true,                    
+                    url:appConfigs.contextRoot + '/app/enhanced/Etapa/:id/OutOfGrid'
+                //    url: "http://localhost/northServer/app.php/Etapa/:id/OutOfGrid"
+                    
                 }
             });
         }])
         .controller('PrintCtrl', function ($scope, RelatorioService, idEtapa, EtapasService,CategoriaNameService) {
             $scope.etapa = EtapasService.get({ id: idEtapa });
             $scope.data = new Date();
-            $scope.report = RelatorioService.query({ filter0: 'paga,eq,1' }, function () {
-
-            });
+            $scope.report = RelatorioService.query({ filter0: 'id_Etapa,eq,'+idEtapa });
+            $scope.reportOutOfGrid = RelatorioService.queryOutOfGrid({ id:idEtapa });
             $scope.printIt = function () {
                 window.print();
             }
@@ -128,25 +135,72 @@ var angularModule =
                 $uibModalInstance.dismiss('cancel');
             };
         })
-        .controller('ModalLargadaCtrl', function ($scope, $uibModalInstance, gridConfig, gridInfo, etapa, AlertService, GridService) {
+        .controller('ModalLargadaCtrl', function ($scope, $uibModalInstance, gridConfig, gridInfo, etapa, equipes, AlertService, GridService,EquipesService,CategoriaNameService) {
             $scope.gridConfig = gridConfig;
+            
             $scope.gridInfo = gridInfo;
             $scope.etapa = etapa;
+            $scope.equipes = [];
+            $scope.equipesNoGrid = equipes;
+            console.log("$scope.equipesNoGrid",$scope.equipesNoGrid)
+            $scope.isNew=false;
+            
+            $scope.getLabelCategoria = CategoriaNameService.getLabelCategoria;
+            if (gridInfo == null) {
+                $scope.isNew = true;
+                $scope.gridInfo = {
+                    id_Etapa:$scope.etapa.id
+                    
+                };
+                EquipesService.query({}, function (data) {
+                    for (var index = 0; index < data.length; index++) {
+                        var element = data[index];
+                        var found = false;
+                        for (var j = 0; j < $scope.equipesNoGrid.length; j++) {
+                            
+                            if (element.id == $scope.equipesNoGrid[j].id_Equipe) {
+                                found = true;
+                                
+                                break;
+                            }
+                        }
+                        if (found == false) {
+                            $scope.equipes.push(element);
+                        }
+                    }
+                });
+            }
 
 
             $scope.ok = function () {
                 if ($scope.largadaForm.$valid == false) {
-                    console.log($scope.largadaForm)
                     return;
                 }
-                var newGridInfo = $scope.gridInfo;
-                console.log("newGridInfo", newGridInfo)
-                GridService.update(newGridInfo, function (data) {
-                    console.log("Data", data)
-                    $uibModalInstance.close(newGridInfo);
-                }, function (error) {
-                    console.log("Error", error)
-                });
+                if ($scope.isNew == true) {
+                    
+
+                    $scope.gridInfo.id_Equipe = $scope.gridInfo.equipe.id;
+                    $scope.gridInfo.id_Etapa = $scope.etapa.id;
+                    $scope.gridInfo.nome_Equipe = $scope.gridInfo.equipe.nome;
+                    $scope.gridInfo.categoria_Equipe = $scope.gridInfo.equipe.id_Categoria;
+                    $scope.gridInfo.type = 1;
+
+                    GridService.save($scope.gridInfo, function (data) {
+                        $uibModalInstance.close(newGridInfo);
+                    }, function (error) {
+                        console.log("Error", error)
+                        AlertService.showError("Houve um erro ao inserir no grid: "+error);
+                    });
+                } else {
+                    var newGridInfo = $scope.gridInfo;
+
+                    GridService.update(newGridInfo, function (data) {
+
+                        $uibModalInstance.close(newGridInfo);
+                    }, function (error) {
+                        AlertService.showError("Houve um erro ao atualizar o grid: "+error);
+                    });
+                }
 
 
             };
@@ -158,8 +212,8 @@ var angularModule =
         })
         .controller('GridListCtrl', [
 
-            '$scope', '$timeout', '$window', '$routeParams', 'GridService', '$location', 'CategoriaService', 'GridConfService', '$uibModal', '$log', 'EtapasService',
-            function ($scope, $timeout, $window, $routeParams, GridService, $location, CategoriaService, GridConfService, $uibModal, $log, EtapasService,CategoriaNameService) {
+            '$scope', '$timeout', '$window', '$routeParams', 'GridService', '$location', 'CategoriaService', 'GridConfService', '$uibModal', '$log', 'EtapasService','CategoriaNameService','AlertService',
+            function ($scope, $timeout, $window, $routeParams, GridService, $location, CategoriaService, GridConfService, $uibModal, $log, EtapasService,CategoriaNameService,AlertService) {
                 $scope.sortItem = {
                     field: ["hora", "minuto"],
                     reverse: false
@@ -176,13 +230,7 @@ var angularModule =
                 $scope.updateGrid = function () {
                     $scope.items = GridService.query({ idEtapa: $routeParams.idEtapa, idConfig: $scope.gridConfig });
                 }
-                $scope.etapa = EtapasService.get({ id: $routeParams.idEtapa });
-                $scope.getLabelCategoria = CategoriaNameService.getLabelCategoria
-                $scope.inscOrder = "largada";
-                $scope.sortBy = function (col) {
-                    $scope.inscOrder = col;
-                }
-                $scope.updateLargada = function (item) {
+                $scope.addEquipe = function(){
                     var modalInstance = $uibModal.open({
                         animation: $scope.animationsEnabled,
                         templateUrl: 'largadaModalContent.html',
@@ -198,20 +246,101 @@ var angularModule =
                                 }
                                 return null;
                             },
+                            gridConfigs:function(){
+                                return $scope.grids;
+                            },
+                            equipes:function(){
+                                return $scope.items;
+                            },  
                             gridInfo: function () {
-                                return item;
+                                return null;
                             },
                             etapa: function () {
                                 return $scope.etapa;
-                            },
+                            }
                         }
                     });
 
                     modalInstance.result.then(function (selecionado) {
                         for (var index = 0; index < $scope.items.length; index++) {
                             var element = $scope.items[index];
-                            if (element.id_Equipe == selecionado.id_Equipe) {
-                                console.log("atualizando")
+                            if (element.id_Equipe == selecionado.id_Equipe) {                                
+                                $scope.items[index] = selecionado;
+                                return;
+                            }
+                        }
+                    }, function () {
+                        $log.info('Modal dismissed at: ' + new Date());
+                    });
+                }
+                $scope.etapa = EtapasService.get({ id: $routeParams.idEtapa });
+                $scope.getLabelCategoria = CategoriaNameService.getLabelCategoria;
+                $scope.inscOrder = "largada";
+                $scope.sortBy = function (col) {
+                    $scope.inscOrder = col;
+                }
+                $scope.removerDoGrid = function(item){
+                     var modalInstance = $uibModal.open({
+                        animation: $scope.animationsEnabled,
+                        templateUrl: 'partials/modal.html',
+                        controller: 'ConfirmModalCrtl',
+                        size: 'sm',
+                        resolve: {
+                            title: function () {
+                                return "Apagar";
+                            },
+                            message: function () {
+                                return "Você tem certeza que deseja remover esta equipe do Grid?";
+                            }
+                        }
+                    });
+                    modalInstance.result.then(function () {
+                        GridService.remove(item,
+                            function (data) {                                
+                                AlertService.showSuccess("Inscrição removida");
+                                 $scope.refresh();
+
+                            }, function (data) {
+                                AlertService.showError("Houve um erro ao remover");
+                            });
+                    }, function () {
+                        // $log.info('Modal dismissed at: ' + new Date());
+                    });
+                }
+                $scope.updateLargada = function (item) {
+                    var modalInstance = $uibModal.open({
+                        animation: $scope.animationsEnabled,
+                        templateUrl: 'largadaModalContent.html',
+                        controller: 'ModalLargadaCtrl',
+                        size: 'sm',
+                        resolve: {
+                            gridConfigs:function(){
+                                return $scope.grids;
+                            },
+                            gridConfig: function () {
+                                for (var index = 0; index < $scope.grids.length; index++) {
+                                    var element = $scope.grids[index];
+                                    if (element.id == $scope.gridConfig) {
+                                        return element;
+                                    }
+                                }
+                                return null;
+                            },
+                            gridInfo: function () {
+                                return item;
+                            },equipes:function(){
+                                return [];
+                            },  
+                            etapa: function () {
+                                return $scope.etapa;
+                            }
+                        }
+                    });
+
+                    modalInstance.result.then(function (selecionado) {
+                        for (var index = 0; index < $scope.items.length; index++) {
+                            var element = $scope.items[index];
+                            if (element.id_Equipe == selecionado.id_Equipe) {                                
                                 $scope.items[index] = selecionado;
                                 return;
                             }
@@ -266,8 +395,8 @@ var angularModule =
             }])
         .controller('InscricoesListCtrl', [
 
-            '$scope', '$timeout', '$window', '$routeParams', 'InscricaoService', 'EtapasService', '$location',
-            function ($scope, $timeout, $window, $routeParams, InscricaoService, EtapasService, $location) {
+            '$scope', '$timeout', '$window', '$routeParams', 'InscricaoService', 'EtapasService', '$location','$uibModal','AlertService',
+            function ($scope, $timeout, $window, $routeParams, InscricaoService, EtapasService, $location,$uibModal,AlertService) {
                 $scope.inscOrder = "data";
                 $scope.idEtapa = $routeParams.idEtapa;
                 $scope.etapa = EtapasService.get({ id: $routeParams.idEtapa });
@@ -281,6 +410,34 @@ var angularModule =
                 $scope.sortItem = {
                     field: "data",
                     reverse: false
+                }
+                $scope.apagar =function(item){
+                    var modalInstance = $uibModal.open({
+                        animation: $scope.animationsEnabled,
+                        templateUrl: 'partials/modal.html',
+                        controller: 'ConfirmModalCrtl',
+                        size: 'sm',
+                        resolve: {
+                            title: function () {
+                                return "Apagar";
+                            },
+                            message: function () {
+                                return "Você tem certeza que deseja remover esta Inscrição?";
+                            }
+                        }
+                    });
+                    modalInstance.result.then(function () {
+                        InscricaoService.remove(item,
+                            function (data) {                                
+                                AlertService.showSuccess("Inscrição removida");
+                                 $scope.refresh();
+
+                            }, function (data) {
+                                AlertService.showError("Houve um erro ao remover");
+                            });
+                    }, function () {
+                        // $log.info('Modal dismissed at: ' + new Date());
+                    });
                 }
                
                 $scope.marcarPago = function (item, state) {

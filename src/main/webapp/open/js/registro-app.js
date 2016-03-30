@@ -1,8 +1,10 @@
+// var SERVER_ROOT ="//2-dot-cumeqetrekking.appspot.com";
+var SERVER_ROOT ="//cumeqetrekking.appspot.com";  
 var angularModule =
     angular.module('registroApp', ['ngRoute', 'ngAnimate', 'dialogs.main', 'north.services', 'ui.bootstrap', 'ngResource', 'ngSanitize']).constant("appConfigs", {
-        "context": "//cumeqetrekking.appspot.com/app/rest",
-        "contextRoot": "//cumeqetrekking.appspot.com/"
-        // "context": "//localhost/northServer/api.php"
+        "context": SERVER_ROOT+"/app/rest",
+        "contextRoot": SERVER_ROOT+"/"
+        // "context": SERVER_ROOT+"/api.php"
     }).config(['$routeProvider', function ($routeProvider) {
         $routeProvider.when('/:id', {
             controller: 'RegistroCtrl',
@@ -132,12 +134,15 @@ var angularModule =
             $scope.novoCompetidor = { nome: "" };
 
             $scope.ok = function () {
-                if ($scope.novoCompetidor.id == null) {
+                if ($scope.novoCompetidor.id_Trekker == null) {
                     //novo cadastro
-                    if ($scope.competidorForm.competidorEmail.$valid == false) {
-                        AlertService.showError("Por favor corrija os erros do formulário.");
+                    if (!$scope.checkEmail()) {
                         return;
-                    }
+                    } else
+                        if ($scope.competidorForm.competidorEmail.$valid == false) {
+                            AlertService.showError("Por favor corrija os erros do formulário.");
+                            return;
+                        }
 
                 }
                 $uibModalInstance.close($scope.novoCompetidor);
@@ -146,9 +151,27 @@ var angularModule =
             $scope.cancel = function () {
                 $uibModalInstance.dismiss('cancel');
             };
+            $scope.selectDupe = function () {
+                $scope.novoCompetidor = $scope.competidorDuplicado;
+                $scope.ok();
+            }
+            $scope.checkEmail = function () {
+                for (var i = 0; i < $scope.competidores.length; i++) {
+                    var element = $scope.competidores[i];
+
+                    if (element.email == $scope.novoCompetidor.email) {
+                        $scope.competidorForm.competidorEmail.$valid = false;
+                        $scope.competidorForm.competidorEmail.$error.dupeEmail = true;
+                        $scope.competidorDuplicado = element;
+                        AlertService.showError("Já existe um competidor com este e-email: Nome: '" + element.nome + "'");
+                        return false;
+                    }
+                }
+                return true;
+            }
             $scope.exitFilterCompetidor = function () {
-                console.log($scope.noResult)
-                if ($scope.noResult) {
+                
+                if ($scope.noResult==true) {
                     var nome = $scope.novoCompetidor;
                     $scope.novoCompetidor = {
                         nome: nome
@@ -230,7 +253,7 @@ var angularModule =
                     }
                     if (!$scope.competidores) {
                         dialogs.wait("Carregando informações", "Por favor aguarde", 10);
-                        $scope.competidores = CompetidorService.query({}, function () {
+                        $scope.competidores = InscricaoService.queryCompetidores({ idEtapa: $routeParams.id }, function () {
                             $rootScope.$broadcast('dialogs.wait.complete');
                             openModal();
                         });
@@ -276,12 +299,38 @@ var angularModule =
 
                     };
                 }
-                $scope.removeIntegrante = function (integrante, index) {
-                    $scope.inscricao.integrantes.splice(index, 1);
+                $scope.disableAlterarEquipe = function () {
+                    if ($scope.inscricaoServer == null) {
+                        return false;
+                    } else {
+                        if ($scope.inscricao.lider.paga != null && $scope.inscricao.lider.paga == 1) {
+                            return true;
+                        } else {
+                            if ($scope.alterarInscritos == true) {
+                                return false;
+                            } else {
+                                return true;
+                            }
+                        }
+                    }
+
+                }
+                $scope.removeIntegrante = function (integrante) {
+                    var finalarray = [];
+                    for (var i = 0; i < $scope.inscricao.integrantes.length; i++) {
+
+                        var element = $scope.inscricao.integrantes[i];
+
+                        if (element != integrante) {
+                            finalarray.push(element);
+                        }
+
+                    }
+                    $scope.inscricao.integrantes = finalarray;
                 }
                 $scope.selectIntegrante = function () {
                     if (!$scope.competidores) {
-                        $scope.competidores = CompetidorService.query();
+                        $scope.competidores = InscricaoService.queryCompetidores({ idEtapa: $routeParams.id });
                     }
                     var modalInstance = $uibModal.open({
                         animation: $scope.animationsEnabled,
@@ -311,21 +360,33 @@ var angularModule =
                     $scope.inscricaoServer = null;
                     dialogs.wait("Carregando informações", "Por favor aguarde enquanto carregamos informações de sua equipe.", 10);
                     InscricaoService.query4Equipe({ id: idEquipe, idEtapa: $routeParams.id }, function (data) {
+                        var principalJaInscrito = null;
+
                         if (data.length > 0) {
                             for (var index = 0; index < data.length; index++) {
                                 var element = data[index];
-                                $scope.inscricao.integrantes.push({
-                                    id: element.id_Trekker,
-                                    id_Equipe: element.id_Equipe,
-                                    nome: element.nome
-
-                                });
+                                if ($scope.inscricao.lider.id == element.id_Trekker) {
+                                    $scope.inscricao.lider.paga = element.paga;
+                                    principalJaInscrito = element;
+                                } else {
+                                    $scope.inscricao.integrantes.push({
+                                        id: element.id_Trekker,
+                                        id_Equipe: element.id_Equipe,
+                                        nome: element.nome,
+                                        paga: element.paga
+                                    });
+                                }
 
                             }
 
                             $rootScope.$broadcast('dialogs.wait.complete');
                             $scope.inscricaoServer = data;
-                            AlertService.showError("Já existe uma inscrição da sua equipe nesta etapa.");
+                            if (principalJaInscrito != null) {
+
+                                AlertService.showError("Já existe uma inscrição sua nesta etapa.");
+                            } else {
+                                AlertService.showInfo("Sua equipe já possui inscritos para esta etapa. Inscreva-se.");
+                            }
                         } else {
                             carregaIntegrantes(idEquipe);
                         }
@@ -443,8 +504,10 @@ var angularModule =
                         $rootScope.$broadcast('dialogs.wait.complete');
                     })
                 };
+
                 $scope.limpaCampos = function () {
                     var etapa = $scope.inscricao.etapa;
+                    $scope.alterarInscritos = false;
                     $scope.inscricao = {
                         integrantes: [],
                         lider: null,
@@ -457,6 +520,7 @@ var angularModule =
                 $scope.inscrever = function () {
 
                     if ($scope.inscricao.etapa.id) {
+                        $scope.alterarInscritos = false;
                         dialogs.wait("Inscrevendo equipe", "Por favor aguarde", 10);
 
                         InscricaoService.inscrever({}, $scope.inscricao,
@@ -469,6 +533,7 @@ var angularModule =
                                 }
                                 $scope.inscricaoServer = $scope.inscricao;
                                 $rootScope.$broadcast('dialogs.wait.complete');
+                                AlertService.showSuccess("Inscrição bem sucedida");
                             }, function (response) {
                                 $rootScope.$broadcast('dialogs.wait.complete');
                                 AlertService.showError("Houve um erro ao salvar");

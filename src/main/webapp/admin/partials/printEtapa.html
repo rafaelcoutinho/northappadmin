@@ -12,6 +12,7 @@
 </div>
 <div class="row">
     <div class="col-xs-12 table-responsive">
+        <h2>Equipes no Grid inscritas</h2>
         <table class="table table-striped">
             <thead>
                 <tr>
@@ -19,7 +20,8 @@
                     <th>Largada</th>
                     <th>Equipe</th>
                     <th>Categoria</th>
-                    <th>Integrantes Pagto Confirmado</th>
+                    <th>Pgtos</th>
+                    <th>Inscritos</th>
                 </tr>
             </thead>
             <tbody>
@@ -29,6 +31,29 @@
                     <td>{{entry.nome_Equipe}}</td>
                     <td>{{getLabelCategoria(entry.categoria_Equipe)}}</td>
                     <td>{{entry.total}}</td>
+                    <td>{{entry.inscritos}}</td>
+
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="col-xs-12 table-responsive">
+        <h2>Inscritos fora do Grid</h2>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th></th>
+
+                    <th>Equipe</th>
+                    <th>Nome</th>
+
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="entry in reportOutOfGrid|orderBy:['nome_Equipe','nome']">
+                    <td>{{$index+1}}</td>
+                    <td>{{entry.nome_Equipe}}</td>
+                    <td>{{entry.nome}}</td>
 
                 </tr>
             </tbody>
