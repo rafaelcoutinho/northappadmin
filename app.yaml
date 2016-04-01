@@ -36,6 +36,9 @@ handlers:
 - url: /app/enhanced/.*
   script: src/main/php/app.php
 
+- url: /web/grid.*
+  script: src/main/php/old_grid.php
+
 
 - url: /admin/*
   static_dir: src/main/webapp/admin/

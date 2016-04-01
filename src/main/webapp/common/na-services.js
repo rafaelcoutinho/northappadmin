@@ -117,11 +117,11 @@ angular.module('north.services', ['ngResource'])
                 url: appConfigs.context + '/InscricaoFull?filter0=id_Trekker,eq,:idTrekker&filter1=id_Etapa,eq,:idEtapa',
                 transformResponse: jsonTransformQueryGetSingle
             },
-            
+
             queryCompetidores: {
                 isArray: true,
-                url: appConfigs.contextRoot  + '/app/enhanced/CompetidorInscricao/:idEtapa'
-                
+                url: appConfigs.contextRoot + '/app/enhanced/CompetidorInscricao/:idEtapa'
+
             },
             query4Equipe: {
                 isArray: true,
@@ -196,9 +196,19 @@ angular.module('north.services', ['ngResource'])
         });
 
     }])
-    .service('CategoriaNameService', ['$http', '$q', '$resource', 'appConfigs', 'CategoriaService', function ($http, $q, $resource, appConfigs, CategoriaService) {
+    .service('UtilsService', ['$http', '$q', '$resource', 'appConfigs', 'CategoriaService','GridConfService', function ($http, $q, $resource, appConfigs, CategoriaService, GridConfService) {
         var cats = CategoriaService.query();
+        var grids = GridConfService.query();
         return {
+            getGridInfo: function (id) {
+                for (var index = 0; index < grids.length; index++) {
+                    var element = grids[index];
+                    if (element.id == id) {
+                        return element;
+                    }
+                }
+                return null;
+            },
             getLabelCategoria: function (id) {
                 for (var index = 0; index < cats.length; index++) {
                     var element = cats[index];

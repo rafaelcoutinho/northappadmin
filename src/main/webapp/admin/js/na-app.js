@@ -1,10 +1,11 @@
 // var SERVER_ROOT ="//2-dot-cumeqetrekking.appspot.com"; 
-var SERVER_ROOT ="//cumeqetrekking.appspot.com";  
+ var SERVER_ROOT ="//cumeqetrekking.appspot.com";
+    
 var angularModule =
     angular.module('adminApp', ['north.services', 'ngRoute', 'ui.bootstrap', 'ngResource'])
         .constant("appConfigs", {
             "context": SERVER_ROOT+"/rest",
-            // "context": SERVER_ROOT+"/api.php",
+            // "context": "//localhost/northServer/api.php",
             "contextRoot": SERVER_ROOT
 
         }).config(['$routeProvider', function ($routeProvider, $rootScope) {
@@ -112,15 +113,26 @@ var angularModule =
                 }
             });
         }])
-        .controller('PrintCtrl', function ($scope, RelatorioService, idEtapa, EtapasService,CategoriaNameService) {
+        .controller('PrintCtrl', function ($scope, RelatorioService, idEtapa, EtapasService,UtilsService) {
             $scope.etapa = EtapasService.get({ id: idEtapa });
             $scope.data = new Date();
-            $scope.report = RelatorioService.query({ filter0: 'id_Etapa,eq,'+idEtapa });
+           $scope.report=  RelatorioService.query({ filter0: 'id_Etapa,eq,'+idEtapa });
+            $scope.lastChangeIndex=-1;
+            $scope.lastChangeCat=-1;
+            $scope.getNumeracao=function(item,index){
+                if($scope.lastChangeCat!=item.categoria_Equipe){
+                    $scope.lastChangeIndex=index;
+                    $scope.lastChangeCat=item.categoria_Equipe;
+                }
+                var gridCat = item.categoria_Equipe<3?1:item.categoria_Equipe;
+                
+                return index+UtilsService.getGridInfo(gridCat).numeracao - $scope.lastChangeIndex;
+            }
             $scope.reportOutOfGrid = RelatorioService.queryOutOfGrid({ id:idEtapa });
             $scope.printIt = function () {
                 window.print();
             }
-            $scope.getLabelCategoria= CategoriaNameService.getLabelCategoria;
+            $scope.getLabelCategoria= UtilsService.getLabelCategoria;
 
         })
         .controller('ConfirmModalCrtl', function ($scope, $uibModalInstance, title, message) {
@@ -135,7 +147,7 @@ var angularModule =
                 $uibModalInstance.dismiss('cancel');
             };
         })
-        .controller('ModalLargadaCtrl', function ($scope, $uibModalInstance, gridConfig, gridInfo, etapa, equipes, AlertService, GridService,EquipesService,CategoriaNameService) {
+        .controller('ModalLargadaCtrl', function ($scope, $uibModalInstance, gridConfig, gridInfo, etapa, equipes, AlertService, GridService,EquipesService,UtilsService) {
             $scope.gridConfig = gridConfig;
             
             $scope.gridInfo = gridInfo;
@@ -145,7 +157,7 @@ var angularModule =
             console.log("$scope.equipesNoGrid",$scope.equipesNoGrid)
             $scope.isNew=false;
             
-            $scope.getLabelCategoria = CategoriaNameService.getLabelCategoria;
+            $scope.getLabelCategoria = UtilsService.getLabelCategoria;
             if (gridInfo == null) {
                 $scope.isNew = true;
                 $scope.gridInfo = {
@@ -212,13 +224,15 @@ var angularModule =
         })
         .controller('GridListCtrl', [
 
-            '$scope', '$timeout', '$window', '$routeParams', 'GridService', '$location', 'CategoriaService', 'GridConfService', '$uibModal', '$log', 'EtapasService','CategoriaNameService','AlertService',
-            function ($scope, $timeout, $window, $routeParams, GridService, $location, CategoriaService, GridConfService, $uibModal, $log, EtapasService,CategoriaNameService,AlertService) {
+            '$scope', '$timeout', '$window', '$routeParams', 'GridService', '$location', 'CategoriaService', 'GridConfService', '$uibModal', '$log', 'EtapasService','UtilsService','AlertService',
+            function ($scope, $timeout, $window, $routeParams, GridService, $location, CategoriaService, GridConfService, $uibModal, $log, EtapasService,UtilsService,AlertService) {
                 $scope.sortItem = {
                     field: ["hora", "minuto"],
                     reverse: false
                 };
                 $scope.gridConfig = 1;
+                $scope.getGridConf = UtilsService.getGridInfo;
+                
                 $scope.grids = GridConfService.query({}, function (data) {
                     $scope.items = GridService.query({ idEtapa: $routeParams.idEtapa, idConfig: $scope.gridConfig });
                 });
@@ -238,13 +252,8 @@ var angularModule =
                         size: 'sm',
                         resolve: {
                             gridConfig: function () {
-                                for (var index = 0; index < $scope.grids.length; index++) {
-                                    var element = $scope.grids[index];
-                                    if (element.id == $scope.gridConfig) {
-                                        return element;
-                                    }
-                                }
-                                return null;
+                                return $scope.getGridConf(); 
+                                
                             },
                             gridConfigs:function(){
                                 return $scope.grids;
@@ -274,7 +283,7 @@ var angularModule =
                     });
                 }
                 $scope.etapa = EtapasService.get({ id: $routeParams.idEtapa });
-                $scope.getLabelCategoria = CategoriaNameService.getLabelCategoria;
+                $scope.getLabelCategoria = UtilsService.getLabelCategoria;
                 $scope.inscOrder = "largada";
                 $scope.sortBy = function (col) {
                     $scope.inscOrder = col;
