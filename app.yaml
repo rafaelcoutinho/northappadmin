@@ -22,6 +22,9 @@ handlers:
   script:  src/main/php/alteraGrid.php
   login: admin
 
+- url: /GerenciaResultado.do
+  script:  src/main/php/resultados.php
+  login: admin
 
 - url: /Inscrever.do
   script:  src/main/php/inscrever.php

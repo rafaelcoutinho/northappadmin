@@ -68,6 +68,26 @@ var angularModule =
                 }).when('/etapa/:idEtapa/inscricoes/:idTrekker', {
                     templateUrl: 'partials/inscricao.html',
                     controller: 'InscricaoDetailsCtrl'
+                }).when('/etapa/:idEtapa/resultadoEdit', {
+                    templateUrl: 'partials/resultadoEtapaForm.html',
+                    controller: 'ResultadoFormCtrl',
+                    resolve: {
+                        idEtapa: function ($route) {
+
+                            return $route.current.params.idEtapa;
+
+                        }
+                    }
+                }).when('/etapa/:idEtapa/resultados', {
+                    templateUrl: 'partials/resultados.html',
+                    controller: 'ResultadosCtrl',
+                    resolve: {
+                        idEtapa: function ($route) {
+
+                            return $route.current.params.idEtapa;
+
+                        }
+                    }
                 }).otherwise({
                     redirectTo: '/'
                 });
@@ -113,6 +133,170 @@ var angularModule =
                 }
             });
         }])
+        .service('ResultadoAdminService', ['$http', '$q', '$resource', 'appConfigs', function ($http, $q, $resource, appConfigs) {
+            return $resource(appConfigs.context + '/RelatorioEtapa/:id', {}, {
+                query: {
+                    isArray: true,
+                    transformResponse: jsonTransformQuery
+                },
+                saveResultados: {
+                    method: "PUT",
+                    isArray: false,                    
+                    url:appConfigs.contextRoot + '/GerenciaResultado.do'
+                    // url: "http://localhost/northServer/resultados.php"
+                },
+                processCSV: {
+                    method: "POST",
+                    isArray: true,                    
+                    url:appConfigs.contextRoot + '/GerenciaResultado.do'
+                    // url: "http://localhost/northServer/resultados.php"
+
+                }
+            });
+        }])
+        .controller('ModalEditResultadoCtrl', function ($scope, $uibModalInstance, etapa, entry, results, AlertService, GridService, EquipesService, UtilsService) {
+            $scope.etapa = etapa;
+            $scope.equipes = [];
+            $scope.equipe = entry.equipe;
+            if ($scope.equipe == null) {
+                $scope.equipe = { nome: '' };
+            }
+            $scope.isNew = true;
+            $scope.entry = entry;
+
+            $scope.results = results;
+
+            $scope.getLabelCategoria = UtilsService.getLabelCategoria;
+
+            EquipesService.query({}, function (data) {
+                for (var index = 0; index < data.length; index++) {
+                    var element = data[index];
+                    var found = false;
+                    for (var j = 0; j < $scope.results.length; j++) {
+                        if ($scope.results[j].grid != null && element.id == $scope.results[j].grid.id) {
+                            found = true;
+
+                            break;
+                        }
+                    }
+                    if (found == false) {
+                        $scope.equipes.push(element);
+                    }
+                }
+            });
+
+
+
+            $scope.ok = function () {
+                $scope.entry.grid = $scope.equipe;
+                console.log("#", $scope.equipe);
+                if ($scope.equipe == null) {
+                    return;
+                }
+
+                $uibModalInstance.close($scope.entry);
+
+
+
+
+            };
+
+            $scope.cancel = function () {
+                $uibModalInstance.dismiss('cancel');
+            };
+
+        })
+          
+        .controller('ResultadosCtrl', function ($scope, idEtapa, EtapasService, UtilsService, $uibModal,CategoriaService,$location) {
+            $scope.etapa = EtapasService.get({ id: idEtapa });
+            $scope.categorias = CategoriaService.query({},function(data){
+                 $scope.categoria= {id_Categoria:data[0].id};
+                
+            });
+            $scope.resultados = EtapasService.getResultados({ id: idEtapa });
+            $scope.getLabelCategoria = UtilsService.getLabelCategoria;
+            
+            $scope.importCSV = function () {
+                    $location.path("/etapa/"+idEtapa+"/resultadoEdit");
+                };
+
+        })
+       
+        .controller('ResultadoFormCtrl', function ($scope, idEtapa, EtapasService, UtilsService, ResultadoAdminService, $uibModal, $log) {
+            $scope.etapa = EtapasService.get({ id: idEtapa });
+            $scope.processCsv = function () {
+                ResultadoAdminService.processCSV({ etapa: idEtapa }, $scope.csvData, function (data) {
+                    $scope.preResultados = data;
+                    
+                }, function (error) {
+                    console.log("erro", error);
+                });
+            }
+            $scope.salvarResultados = function () {
+                ResultadoAdminService.saveResultados({ etapa: idEtapa }, $scope.preResultados);
+            }
+ 
+            $scope.accentsTidy = function (s) {
+                var r = s.toLowerCase();
+                r = r.replace(new RegExp(/\s/g), "");
+                r = r.replace(new RegExp(/[àáâãäå]/g), "a");
+                r = r.replace(new RegExp(/æ/g), "ae");
+                r = r.replace(new RegExp(/ç/g), "c");
+                r = r.replace(new RegExp(/[èéêë]/g), "e");
+                r = r.replace(new RegExp(/[ìíîï]/g), "i");
+                r = r.replace(new RegExp(/ñ/g), "n");
+                r = r.replace(new RegExp(/[òóôõö]/g), "o");
+                r = r.replace(new RegExp(/œ/g), "oe");
+                r = r.replace(new RegExp(/[ùúûü]/g), "u");
+                r = r.replace(new RegExp(/[ýÿ]/g), "y");
+                r = r.replace(new RegExp(/\W/g), "");
+                return r;
+            };
+            $scope.diffNames = function (item) {
+                return item.grid != null && $scope.accentsTidy(item.grid.nome) != $scope.accentsTidy(item.Piloto);
+            }
+            $scope.selecao = {};
+            $scope.editEquipe = function (item) {
+                var modalInstance = $uibModal.open({
+                    animation: $scope.animationsEnabled,
+                    templateUrl: 'equipeModal.html',
+                    controller: 'ModalEditResultadoCtrl',
+                    size: 'sm',
+                    resolve: {
+                        entry: function () {
+                            return item;
+                        },
+                        results: function () {
+                            return $scope.preResultados;
+                        },
+                        etapa: function () {
+                            return $scope.etapa;
+                        }
+                    }
+                });
+
+                modalInstance.result.then(function (selecionado) {
+                    for (var index = 0; index < $scope.preResultados.length; index++) {
+                        var element = $scope.preResultados[index];
+                        console.log(element, selecionado);
+                        if (element.Num == selecionado.Num) {
+                            $scope.preResultados[index] = selecionado;
+                            return;
+                        }
+                    }
+                }, function () {
+                    $log.info('Modal dismissed at: ' + new Date());
+                });
+
+            }
+            $scope.getLabelCategoria = UtilsService.getLabelCategoria;
+            $scope.updateBreadcrumb = function () {
+                $scope.title = 'Gerenciar Resultados ' ;
+                
+                $scope.bcs = [{ title: 'Home', url: '#/' }, { title: 'Etapas', url: '#/etapas' }, { title: 'Etapa', url: '#/etapa/' + idEtapa }, { title: 'Importar CSV', url: '',active:true }]
+            }
+
+        })
         .controller('PrintCtrl', function ($scope, RelatorioService, idEtapa, EtapasService,UtilsService) {
             $scope.etapa = EtapasService.get({ id: idEtapa });
             $scope.data = new Date();

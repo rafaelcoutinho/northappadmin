@@ -174,7 +174,13 @@ angular.module('north.services', ['ngResource'])
             query: {
                 isArray: true,
                 transformResponse: jsonTransformQuery
+            },
+            getResultados:{
+                isArray: true,                
+                 url: appConfigs.contextRoot + '/app/enhanced/Etapa/:id/Resultado'
+                // url: "http://localhost/northServer/app.php/Etapa/:id/Resultado"
             }
+            
         })
     }])
     .service('LocationService', ['$http', '$q', '$resource', 'appConfigs', function ($http, $q, $resource, appConfigs) {

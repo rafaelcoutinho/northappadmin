@@ -1,0 +1,115 @@
+<section class="content-header" ng-include="'partials/breadcrumb.html'" ng-init="title = 'Resultados Etapa';
+   bcs=[{title:'Home',url:'#/'},{title:'Etapas',url:'#/etapas'},{title:'Etapa',url:'#/etapa/{{etapa.id}}'},{title:'Resultados',url:'',active:true}]">
+</section>
+<section class="content">
+
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="box box-primary">
+                <div class="box-header ">
+
+
+                    <h3 class="box-title">Resultados </h3>
+                    <div class="input-group input-group-sm" style="width: 150px;">
+
+                        <select class="form-control input-group input-group-sm" ng-model="categoria.id_Categoria" ng-options="cat.id as cat.nome for cat in categorias">
+
+                        </select>
+
+                    </div>
+                    <div class="pull-right box-tools">
+                        <div class="btn-group">
+                           <button type="button" class="btn btn-sm  " data-toggle="tooltip" title="Importar dados" ng-click="importCSV()">
+                                <i class="fa fa-cloud-upload"></i></button>
+                            
+                            <button type="button" class="btn btn-sm  " data-toggle="tooltip" title="Adiciona Resultado" ng-click="addResultado()">
+                                <i class="fa fa-plus"></i></button>
+                             <ul class="dropdown-menu pull-right" role="menu">
+
+                                    <li><a href="#/etapa/{{etapa.id}}/inscricoes" ng-cloak="" class="text-red">Inscrições</a></li>
+                                    <li><a href="#/etapa/{{etapa.id}}/grid" ng-cloak="" class="text-red">Grid</a></li>                                    
+                                    <li class="divider"></li>
+
+                                </ul>
+
+                        </div>
+
+
+                    </div>
+
+
+
+
+                </div>
+                <div class="box-body">
+                    <table class="table table-bordered">
+                        <tbody>
+                            <tr>
+                                <th>Posição</th>
+                                <th>Categoria </th>
+                                <th>Equipe</th>
+                                <th>Pontos perdidos</th>
+                                <th>PCs Zerados</th>
+                                <th>PCs Pegos</th>
+
+                            </tr>
+                            <tr ng-repeat="item in resultados|filter:categoria | orderBy : ['id_Categoria','colocacao'] " ng-class="{'manualUpdate':item.t==1}">
+                                <td>{{item.colocacao}}</td>
+                                <td>{{getLabelCategoria(item.id_Categoria)}}</td>
+                                <td>{{item.nome}}</td>
+                                <td>{{item.pontos_perdidos}}</td>
+                                <td>{{item.pcs_zerados}}</td>
+                                <td>{{item.pcs_pegos}}</td>
+
+
+                            </tr>
+
+                        </tbody>
+                    </table>
+                </div>
+                <!-- /.box -->
+            </div>
+        </div>
+</section>
+
+<script type="text/ng-template" id="modalResultadoContent.html ">
+    <div class="modal-header ">
+        <h3 class="modal-title ">Alterar Resultado</h3>
+    </div>
+    <div class="modal-body ">
+        <form name="largadaForm" role="form " class="css-form " novalidate autocomplete="none">
+            <div class="box-body ">
+
+                <div class="row ">
+                    Equipe: {{gridInfo.nome_Equipe}}
+                    <input type="text" autocomplete="off " ng-if="isNew==true" ng-model="gridInfo.equipe" typeahead-show-hint="true " uib-typeahead="g as g.nome for g in equipes | filter:{nome:$viewValue} | limitTo:8"
+                    typeahead-editable="true " class="form-control " typeahead-select-on-exact="true " typeahead-min-length="0 "
+                    typeahead-no-results="noResult">
+                </div>
+                <div class="row ">
+                    Categoria: {{getLabelCategoria(gridInfo.categoria_Equipe)}}
+                </div>
+                <label for="inputDesc" class="control-label">Novo horário</label>
+                <div class="form-group">
+
+
+                    <div>
+                        <input type="number" name="hora" ng-required id="inputDesc" placeholder="hh" ng-model="gridInfo.hora" max="23" min="00">:
+                        <input type="number" name="minuto" ng-required id="inputDesc" placeholder="mm" ng-model="gridInfo.minuto" value="{{gridInfo.minuto|zeroLeadNumber}}"
+                        max="59" min="00">
+                    </div>
+                    <span class="text-red " ng-show="largadaForm.hora.$error.required">Hora é obrigatório</span>
+                    <span class="text-red " ng-show="largadaForm.hora.$error.max || largadaForm.hora.$error.min">Hora deve ser entre 0 e 23 horas</span>
+                    <span class="text-red " ng-show="largadaForm.minuto.$error.max || largadaForm.minuto.$error.min">Minuto deve ser entre 0 e 59 minutos</span>
+                    <span class="text-red " ng-show="largadaForm.minuto.$error.required">Minuto é obrigatório</span>
+                </div>
+
+
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer ">
+        <button class="btn btn-primary " type="button " ng-click="ok() ">Alterar</button>
+        <button class="btn btn-warning " type="button " ng-click="cancel() ">Cancelar</button>
+    </div>
+</script>

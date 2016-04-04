@@ -1,0 +1,110 @@
+<style>
+    .manualUpdate {
+        background-color: #D2D6DE;
+    }
+    
+    .missing {
+        background-color: #ff3131;
+    }
+    .investigate {
+        background-color: yellow;
+    }
+    .diff {
+       font-size: x-small;
+       font-weight: bold;
+       font-style: italic;
+    }
+</style>
+
+<section class="content-header" ng-include="'partials/breadcrumb.html'" ng-init="updateBreadcrumb()"></section>
+<section class="content">
+
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="box box-primary">
+                <div class="box-header ">
+
+
+                    <h3 class="box-title">Gerenciar Resultados da Etapa <b>{{etapa.titulo}}</b></h3>
+                    <div><small class="text-red">*Esta ação irá substituir qualquer resultado existente para a etapa</small></div>
+                    <div class="input-group input-group-sm">
+                        <textarea ng-model="csvData">
+                        </textarea>
+                    </div>
+                    <button type="button" class="btn btn-sm " ng-click="processCsv()">Processar CSV</button>
+                </div>
+                <div class="box-body">
+                    <table class="table table-bordered">
+                        <tbody>
+                            <tr>
+
+                                <th>#</th>
+                                <th>Largada</th>
+                                <th>Categoria</th>
+                                <th>Equipe</th>
+                                <th>Pontos Perdidos</th>
+                                <th>Colocação</th>
+                                <th>PCZerados</th>
+                                <th>PCs</th>
+                                <th>Total PCs</th>
+
+
+
+                            </tr>
+                            <tr ng-repeat="item in preResultados| filter:searchText| orderBy : ['hora','minuto'] " ng-class="{missing:(item.grid==null), investigate:diffNames(item)}">
+                                <td>{{item.Num}}</td>
+                                <td>{{item.HoraLargada}}</td>
+                                <td>{{getLabelCategoria(item.grid.id_Categoria)}}</td>
+                                <td>{{item.grid.nome}} {{item.grid.descricao}} <i class="fa fa-edit pull-right" ng-click="editEquipe(item)"></i>
+                                <div ng-if="diffNames(item)||item.grid==null" class="diff">Dados originais: '{{item.Piloto}}'</div></td>
+                                <td>{{item.PtsPerdidos}}</td>
+                                <td>{{item.Col}}</td>
+                                <td>{{item.PCZerado}}</td>
+                                <td>{{item.PCPassou}}</td>
+                                <td>{{item.PCValido}}</td>
+                            </tr>
+
+                        </tbody>
+                    </table>
+                </div>
+                <div class="box-footer " ng-show="preResultados!=null" ng-cloak>
+
+                    <button type="submit " class="btn btn-primary btn-block pull-right " ng-cloak ng-click="salvarResultados()"
+                                >Salvar Resultados</button>
+                                
+                                
+
+                </div>
+                <!-- /.box -->
+            </div>
+        </div>
+</section>
+
+<script type="text/ng-template" id="equipeModal.html ">
+    <div class="modal-header ">
+        <h3 class="modal-title ">Configurar Equipe</h3>
+    </div>
+    <div class="modal-body ">
+        <form name="largadaForm" role="form " class="css-form " novalidate autocomplete="none">
+            <div class="box-body ">
+
+                <div class="row ">
+                    Equipe: {{equipe.nome}}
+                    <input type="text" autocomplete="off " ng-model="equipe" typeahead-show-hint="true " 
+                    uib-typeahead="g as g.nome for g in equipes | filter:{nome:$viewValue} | limitTo:8"
+                    typeahead-editable="true " class="form-control " typeahead-select-on-exact="true " typeahead-min-length="0 "
+                    typeahead-no-results="noResult">
+                </div>
+                <div class="row ">
+                    Informação do CSV: {{entry.HoraLargada}}:{{entry.Piloto}} {{entry.Cidade}}
+                </div>
+
+
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer ">
+        <button class="btn btn-primary " type="button " ng-click="ok() ">Setar</button>
+        <button class="btn btn-warning " type="button " ng-click="cancel() ">Cancelar</button>
+    </div>
+</script>
