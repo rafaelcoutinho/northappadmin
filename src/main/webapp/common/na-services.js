@@ -175,6 +175,11 @@ angular.module('north.services', ['ngResource'])
                 isArray: true,
                 transformResponse: jsonTransformQuery
             },
+            getEtapaAtual:{
+                isArray: false,
+                url: appConfigs.contextRoot + '/app/enhanced/EtapaAtual'
+                // url: "http://localhost/northServer/app.php/EtapaAtual"
+            },
             getResultados:{
                 isArray: true,                
                  url: appConfigs.contextRoot + '/app/enhanced/Etapa/:id/Resultado'

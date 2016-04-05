@@ -41,7 +41,7 @@
                     <div class="row" ng-show="inscricao.lider!=null">
                         <div class="col col-sm-12">
                             <div class="pull-right box-tools">
-                                <button class="btn btn-warning btn-xs" " ng-cloak ng-click="selectCompetidor(); "  ng-disabled="inscricaoServer!=null ">Alterar</button>
+                                <button class="btn btn-warning btn-xs no-print" ng-cloak ng-click="selectCompetidor(); "  ng-disabled="inscricaoServer!=null ">Alterar</button>
                             </div>
                             <span class=" text-green stepClass ">1. {{inscricao.lider.nome}} <i class="fa fa-check "  ></i></span>
                         </div>
@@ -62,7 +62,7 @@
                     <div class="row " ng-show="inscricao.equipe!=null "> 
                         <div class="col col-sm-12 ">
                             <div class="pull-right box-tools ">
-                                <button class="btn btn-warning btn-xs " ng-cloak ng-click="selectEquipe();
+                                <button class="btn btn-warning btn-xs no-print" ng-cloak ng-click="selectEquipe();
                                 "  ng-disabled="disableAlterarEquipe() ">Alterar</button>
                             </div>
                             <span class=" text-green stepClass ">2. {{inscricao.equipe.nome}} <i class="fa fa-check "  ></i></span>
@@ -76,7 +76,7 @@
                     <div class="row ">
                         <div class="col col-sm-12 ">
                             <div class="pull-right box-tools ">
-                                <button class="btn btn-info btn-xs " ng-cloak ng-click="selectIntegrante();
+                                <button class="btn btn-info btn-xs no-print" ng-cloak ng-click="selectIntegrante();
                                 " ng-disabled="inscricaoServer!=null && alterarInscritos!=true ">Adicionar</button>
                             </div>
                             <span class=" text-muted stepClass ">3. Integrantes </span>
@@ -97,9 +97,9 @@
                         
                     </div>
                 </div>
-                 <div class="box-footer " ng-show="inscricao.lider!=null && inscricao.equipe!=null " ng-cloak>
+                 <div class="box-footer no-print" ng-show="inscricao.lider!=null && inscricao.equipe!=null " ng-cloak>
 
-                    <button type="submit " class="btn btn-primary btn-block pull-right " ng-cloak ng-click="inscrever()
+                    <button type="submit " class="btn btn-primary btn-block pull-right no-print" ng-cloak ng-click="inscrever()
                                 " ng-show="inscricaoServer==null || alterarInscritos==true ">Inscrever</button>
                                 
                                 
@@ -110,9 +110,9 @@
                     <div class="box-header with-border ">
                         <h3 class="box-title ">Inscrição efetuada</h3>
                          <div class="pull-right box-tools ">
-<button type="submit " class="btn btn-info " ng-cloak ng-click="alterarInscritos=true; " ng-show="inscricaoServer!=null
+<button type="submit " class="btn btn-info no-print" ng-cloak ng-click="alterarInscritos=true; " ng-show="inscricaoServer!=null
                                 && alterarInscritos!=true ">Alterar integrantes</button>                              
-                        <button type="submit " class="btn btn-warning " ng-cloak ng-click="limpaCampos() " ng-show="inscricaoServer!=null ">Fazer outra inscrição</button>
+                        <button type="submit " class="btn btn-warning no-print" ng-cloak ng-click="limpaCampos() " ng-show="inscricaoServer!=null ">Fazer outra inscrição</button>
                          </div>
                     </div>
                     <div class="box-body ">

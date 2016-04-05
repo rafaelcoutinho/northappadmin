@@ -1,13 +1,16 @@
 // var SERVER_ROOT ="//2-dot-cumeqetrekking.appspot.com";
-var SERVER_ROOT ="//cumeqetrekking.appspot.com";  
+var SERVER_ROOT = "//cumeqetrekking.appspot.com";
 var angularModule =
     angular.module('registroApp', ['ngRoute', 'ngAnimate', 'dialogs.main', 'north.services', 'ui.bootstrap', 'ngResource', 'ngSanitize']).constant("appConfigs", {
-        // "context": SERVER_ROOT+"/app/rest",
-        "context": "http://localhost/northServer/api.php",
-        "contextRoot": SERVER_ROOT+"/"
-        
+        "context": SERVER_ROOT+"/app/rest",
+        // "context": "http://localhost/northServer/api.php",
+        "contextRoot": SERVER_ROOT + "/"
+
     }).config(['$routeProvider', function ($routeProvider) {
-        $routeProvider.when('/:id', {
+        $routeProvider.when('/', {
+            controller: 'EntryCtrl',
+            templateUrl: 'partials/inscricaoForm.html',
+        }).when('/:id', {
             controller: 'RegistroCtrl',
             templateUrl: 'partials/inscricaoForm.html',
         }).when('/inscricao/:idEtapa/:idTrekker', {
@@ -156,10 +159,10 @@ var angularModule =
                 $scope.novoCompetidor = $scope.competidorDuplicado;
                 $scope.ok();
             }
-            $scope.clearErrors =function(){
-                 $scope.competidorForm.competidorEmail.$valid = true;
-                        $scope.competidorForm.competidorEmail.$error.dupeEmail = false;
-                        $scope.competidorDuplicado = null;
+            $scope.clearErrors = function () {
+                $scope.competidorForm.competidorEmail.$valid = true;
+                $scope.competidorForm.competidorEmail.$error.dupeEmail = false;
+                $scope.competidorDuplicado = null;
             }
             $scope.checkEmail = function () {
                 for (var i = 0; i < $scope.competidores.length; i++) {
@@ -171,7 +174,7 @@ var angularModule =
                         $scope.competidorDuplicado = element;
                         AlertService.showError("Já existe um competidor com este e-email: Nome: '" + element.nome + "'");
                         return false;
-                    }else{
+                    } else {
                         $scope.competidorForm.competidorEmail.$valid = true;
                         $scope.competidorForm.competidorEmail.$error.dupeEmail = false;
                         $scope.competidorDuplicado = null;
@@ -180,8 +183,8 @@ var angularModule =
                 return true;
             }
             $scope.exitFilterCompetidor = function () {
-                
-                if ($scope.noResult==true) {
+
+                if ($scope.noResult == true) {
                     var nome = $scope.novoCompetidor;
                     $scope.novoCompetidor = {
                         nome: nome
@@ -225,7 +228,14 @@ var angularModule =
             }
 
         })
-
+        .controller('EntryCtrl',
+            ['$scope', '$timeout', '$window', '$location', '$routeParams', 'EtapasService', '$log', 'dialogs',
+                function ($scope, $timeout, $window, $location, $routeParams, EtapasService, $log, dialogs) {
+                    dialogs.wait("Carregando informações da etapa atual", "Por favor aguarde", $scope.loadingVal);
+                    EtapasService.getEtapaAtual({}, function (etapa) {
+                        $location.path("/" + etapa.id);
+                    });
+                }])
         .controller('RegistroCtrl', [
             '$scope', '$timeout', '$window', 'facebookService', '$location', '$routeParams', 'EtapasService', 'CompetidorService', 'EquipesService', 'CategoriaService', 'InscricaoService', 'AlertService', '$rootScope', '$uibModal', '$log', 'dialogs',
             function ($scope, $timeout, $window, facebookService, $location, $routeParams, EtapasService, CompetidorService, EquipesService, CategoriaService, InscricaoService, AlertService, $rootScope, $uibModal, $log, dialogs) {
