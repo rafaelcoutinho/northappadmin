@@ -219,9 +219,10 @@
                                                         <input type="email " ng-model-options="{ updateOn: 'blur' }" required ng-model="novoCompetidor.email " name="competidorEmail "
                                                         id="inputEmail " " placeholder="xxx@xxx.xxx " class="form-control " >
                                     </input>
-                                    <span class="text-red " ng-show="competidorForm.competidorEmail.$error.dupeEmail
-                                                        ">Já existe um competidor com este email:<div> {{competidorDuplicado.nome}}<span ng-if="competidorDuplicado.equipe!=null
-                                                        "> atualmente na equipe {{competidorDuplicado.equipe}} na categoria  {{competidorDuplicado.categoria}} </span></div><button class="btn btn-primary " type="button " ng-click="selectDupe() ">Selecionar '{{competidorDuplicado.nome}}'</button></span>
+                                    <span class="text-red " ng-show="competidorForm.competidorEmail.$error.dupeEmail">Já existe um competidor com este email:<div> {{competidorDuplicado.nome}}
+                                                            <span ng-if="competidorDuplicado.equipe!=null"> atualmente na equipe {{competidorDuplicado.equipe}} na categoria  {{competidorDuplicado.categoria}} </span>
+                                                        </div>
+                                                        <button ng-if="competidorDuplicado!=null" class="btn btn-primary " type="button " ng-click="selectDupe()">Selecionar '{{competidorDuplicado.nome}}'</button></span>
                                     <span class="text-red " ng-show="competidorForm.competidorEmail.$error.email ">Formato inválido de email</span>
                                     <span class="text-red " ng-show="competidorForm.competidorEmail.$error.required ">E-mail é obrigatório</span>
                             </div>
