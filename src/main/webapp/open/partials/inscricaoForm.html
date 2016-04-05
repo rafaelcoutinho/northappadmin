@@ -204,9 +204,7 @@
                                                     <label for="inputTrekker " class="col-sm-2 control-label ">*Nome</label>
                                                     <div class="col-sm-10 ">
                                                         <input type="text " autocomplete="off " ng-blur="exitFilterCompetidor()" ng-model="novoCompetidor " id="inputTrekker " placeholder="Nome "
-                                                        name="nome
-                                " typeahead-show-hint="true " uib-typeahead="g as g.nome for g in competidores | filter:{nome:$viewValue} | limitTo:8 | orderBy:['paga','equipe','nome']                          " typeahead-editable="true " class="form-control " typeahead-select-on-exact="true " typeahead-template-url="customTemplate.html
-                                " typeahead-min-length="0 " typeahead-no-results="noResult ">
+                                                        name="nome" typeahead-show-hint="true " uib-typeahead="g as g.nome for g in competidores | filter:{nome:$viewValue} | limitTo:8 | orderBy:['paga','equipe','nome']                          " typeahead-editable="true " class="form-control " typeahead-select-on-exact="true " typeahead-template-url="customTemplate.html" typeahead-min-length="0 " typeahead-no-results="noResult ">
                                                     </div>
                                                 </div>
                                                 <div class="animate-show " ng-show="noResult ">
@@ -216,13 +214,14 @@
                                                     </div>
                                                     <div class="form-group " ng-show="noResult ">
                                                         <label for="inputEmail " class="col-sm-2 control-label ">*E-mail</label>
-                                                        <input type="email " ng-model-options="{ updateOn: 'blur' }" required ng-model="novoCompetidor.email " name="competidorEmail "
-                                                        id="inputEmail " " placeholder="xxx@xxx.xxx " class="form-control " >
+                                                        <input type="email " ng-model-options="{ updateOn: 'blur' }" required ng-model="novoCompetidor.email " name="competidorEmail"
+                                                        ng-keyup="clearErrors()"
+                                                        id="inputEmail "  placeholder="xxx@xxx.xxx " class="form-control " >
                                     </input>
                                     <span class="text-red " ng-show="competidorForm.competidorEmail.$error.dupeEmail">Já existe um competidor com este email:<div> {{competidorDuplicado.nome}}
                                                             <span ng-if="competidorDuplicado.equipe!=null"> atualmente na equipe {{competidorDuplicado.equipe}} na categoria  {{competidorDuplicado.categoria}} </span>
                                                         </div>
-                                                        <button ng-if="competidorDuplicado!=null" class="btn btn-primary " type="button " ng-click="selectDupe()">Selecionar '{{competidorDuplicado.nome}}'</button></span>
+                                                        <div ng-if="competidorDuplicado!=null" class="btn btn-primary " type="button " ng-click="selectDupe()">Selecionar '{{competidorDuplicado.nome}}'</div></span>
                                     <span class="text-red " ng-show="competidorForm.competidorEmail.$error.email ">Formato inválido de email</span>
                                     <span class="text-red " ng-show="competidorForm.competidorEmail.$error.required ">E-mail é obrigatório</span>
                             </div>

@@ -2,9 +2,10 @@
 var SERVER_ROOT ="//cumeqetrekking.appspot.com";  
 var angularModule =
     angular.module('registroApp', ['ngRoute', 'ngAnimate', 'dialogs.main', 'north.services', 'ui.bootstrap', 'ngResource', 'ngSanitize']).constant("appConfigs", {
-        "context": SERVER_ROOT+"/app/rest",
+        // "context": SERVER_ROOT+"/app/rest",
+        "context": "http://localhost/northServer/api.php",
         "contextRoot": SERVER_ROOT+"/"
-        // "context": SERVER_ROOT+"/api.php"
+        
     }).config(['$routeProvider', function ($routeProvider) {
         $routeProvider.when('/:id', {
             controller: 'RegistroCtrl',
@@ -155,6 +156,11 @@ var angularModule =
                 $scope.novoCompetidor = $scope.competidorDuplicado;
                 $scope.ok();
             }
+            $scope.clearErrors =function(){
+                 $scope.competidorForm.competidorEmail.$valid = true;
+                        $scope.competidorForm.competidorEmail.$error.dupeEmail = false;
+                        $scope.competidorDuplicado = null;
+            }
             $scope.checkEmail = function () {
                 for (var i = 0; i < $scope.competidores.length; i++) {
                     var element = $scope.competidores[i];
@@ -165,6 +171,10 @@ var angularModule =
                         $scope.competidorDuplicado = element;
                         AlertService.showError("Já existe um competidor com este e-email: Nome: '" + element.nome + "'");
                         return false;
+                    }else{
+                        $scope.competidorForm.competidorEmail.$valid = true;
+                        $scope.competidorForm.competidorEmail.$error.dupeEmail = false;
+                        $scope.competidorDuplicado = null;
                     }
                 }
                 return true;
