@@ -23,7 +23,7 @@ handlers:
   login: admin
 
 - url: /GerenciaResultado.do
-  script:  src/main/php/resultados.php
+  script:  src/main/php/performance.php
   login: admin
 
 - url: /Inscrever.do

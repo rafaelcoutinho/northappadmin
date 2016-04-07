@@ -78,6 +78,16 @@ var angularModule =
 
                         }
                     }
+                }).when('/etapa/:idEtapa/performanceEdit', {
+                    templateUrl: 'partials/performanceEtapaForm.html',
+                    controller: 'PerformanceFormCtrl',
+                    resolve: {
+                        idEtapa: function ($route) {
+
+                            return $route.current.params.idEtapa;
+
+                        }
+                    }
                 }).when('/etapa/:idEtapa/resultados', {
                     templateUrl: 'partials/resultados.html',
                     controller: 'ResultadosCtrl',
@@ -151,18 +161,19 @@ var angularModule =
                     method: "PUT",
                     isArray: false,                    
                     url:appConfigs.contextRoot + '/GerenciaResultado.do'
-                    // url: "http://localhost/northServer/resultados.php"
+                    // url: "http://localhost/northServer/performance.php"
                 },
-                
-                processCSV: {
+                 processPerformanceCSV: {
                     method: "POST",
                     isArray: true,                    
                     url:appConfigs.contextRoot + '/GerenciaResultado.do'
-                    // url: "http://localhost/northServer/resultados.php"
+                    // url: "http://localhost/northServer/performance.php"
 
                 }
             });
         }])
+        
+        
         .controller('ModalEditResultadoCtrl', function ($scope, $uibModalInstance, etapa, entry, results, AlertService, GridService, EquipesService, UtilsService) {
             $scope.etapa = etapa;
             $scope.equipes = [];
@@ -182,14 +193,8 @@ var angularModule =
                     var element = data[index];
                     var found = false;
                     for (var j = 0; j < $scope.results.length; j++) {
-                        if($scope.results[j].grid){                            
-                            if ($scope.results[j].grid != null && element.id == $scope.results[j].grid.id) {
-                                found = true;
-
-                                break;
-                            }
-                        }else{
-                            if ($scope.results[j].id_Equipe != null && element.id == $scope.results[j].id_Equipe) {
+                        if($scope.results[j].grid.equipe){
+                            if ($scope.results[j].grid.equipe != null && element.id == $scope.results[j].grid.equipe.id_Equipe) {
                                 found = true;
 
                                 break;
@@ -205,7 +210,15 @@ var angularModule =
 
 
             $scope.ok = function () {
-                $scope.entry.grid = $scope.equipe;
+                $scope.entry.grid.equipe={
+                    id_Equipe:$scope.equipe.id,
+                    nome:$scope.equipe.nome,
+                    id_Categoria:$scope.equipe.id_Categoria,
+                    descricao:$scope.equipe.descricao,
+                    hora:$scope.entry.grid.hora,
+                    minuto:$scope.entry.grid.minuto
+                }
+               
                 console.log("#", $scope.equipe);
                 if ($scope.equipe == null) {
                     return;
@@ -220,7 +233,28 @@ var angularModule =
             };
 
         })
-        
+        .controller('ModalDetalhesPCSCtrl', function ($scope, $uibModalInstance,  entry, AlertService, GridService, EquipesService, UtilsService) {
+            $scope.entry=entry;
+            $scope.getTipoLabel = function (tipo) {
+                switch (tipo) {
+                    case 1:
+                        return "Tempo";
+                        break;
+                    case 2:
+                        return "Virtual";
+                        break;
+                    case 3:
+                        return "Cancelado";
+                        break;
+                    default:
+                        break;
+                }
+
+            }
+            $scope.cancel = function () {
+                $uibModalInstance.dismiss('cancel');
+            };
+        })
         .controller('ResultadosCtrl', function ($scope, idEtapa, EtapasService, UtilsService, $uibModal,CategoriaService,$location,$log,ResultadoAdminService,AlertService) {
             $scope.etapa = EtapasService.get({ id: idEtapa });
             $scope.categorias = CategoriaService.query({}, function (data) {
@@ -233,6 +267,10 @@ var angularModule =
             $scope.importCSV = function () {
                 $location.path("/etapa/" + idEtapa + "/resultadoEdit");
             };
+            $scope.importPerformanceCSV = function () {
+                $location.path("/etapa/" + idEtapa + "/performanceEdit");
+            };
+            
             $scope.remover = function (item) {
                 var modalInstance = $uibModal.open({
                     animation: $scope.animationsEnabled,
@@ -303,6 +341,154 @@ var angularModule =
                 }, function () {
                     $log.info('Modal dismissed at: ' + new Date());
                 });
+            }
+            $scope.showDetalhes = function (item) {
+                 if(!item.pcs){
+                    item.pcs = EtapasService.getPerformance({ id: idEtapa, id_Equipe:item.id_Equipe });
+                } 
+                var modalInstance = $uibModal.open({
+                    animation: $scope.animationsEnabled,
+                    templateUrl: 'modalPCS.html',
+                    controller: 'ModalDetalhesPCSCtrl',
+                    size: 'sm',
+                    resolve: {
+                        entry: function () {
+                            return item;
+                        }
+                    }
+                });
+
+                modalInstance.result.then(function () {
+
+                    
+                }, function () {
+                    
+                });
+            }
+        })
+        
+        .controller('PerformanceFormCtrl', function ($scope, idEtapa, EtapasService, UtilsService, ResultadoAdminService, $uibModal, $log) {
+            $scope.processCsv = function () {
+                ResultadoAdminService.processPerformanceCSV({ etapa: idEtapa }, $scope.csvData, function (data) {
+                    $scope.preResultados = data;
+
+                }, function (error) {
+                    console.log("erro", error);
+                });
+            }
+            $scope.getPoints = function (item) {
+                var pcs = item.pcs;
+                
+                var totalPerdido = 0;
+                var totalZerados = 0;
+                var pcsNaoPassados = 0;
+                for (var index = 0; index < pcs.length; index++) {
+                    var element = pcs[index];
+                    if (element.Tmp) {
+                        if (isNaN(element.Tmp)) {
+                            if (element.Tmp == "*900") {
+                                pcsNaoPassados++;
+                                totalPerdido += 900;
+                            } else {
+                                console.log("err", element,item);
+                            }
+                        } else {
+                            if(element.Tmp==0){
+                                totalZerados++;
+                            }
+                            totalPerdido += Math.abs(element.Tmp);
+                        }
+                    } else if (element.Virt) {
+                        if (isNaN(element.Virt)) {
+                            if (element.Virt == "*900") {
+                                pcsNaoPassados++;
+                                totalPerdido += 900;
+                            } else {
+                                console.log("err", element,item);
+                            }
+                        } else {
+                            if(element.Virt==0){
+                                totalZerados++;
+                            }
+                            totalPerdido += Math.abs(element.Virt);
+                        }
+                    }
+
+                }
+                item.PtsPerdidos=totalPerdido;
+                item.PCZerado=totalZerados;
+                item.PtsPerdidos=totalPerdido;
+                item.PCPassou=(pcs.length-pcsNaoPassados);
+                if(item.grid){//todo mover pra outro lugar
+                    item=item.grid.id_Equipe;
+                }
+                return totalPerdido;
+            }
+            $scope.accentsTidy = function (s) {
+                var r = s.toLowerCase();
+                r = r.replace(new RegExp(/\s/g), "");
+                r = r.replace(new RegExp(/[àáâãäå]/g), "a");
+                r = r.replace(new RegExp(/æ/g), "ae");
+                r = r.replace(new RegExp(/ç/g), "c");
+                r = r.replace(new RegExp(/[èéêë]/g), "e");
+                r = r.replace(new RegExp(/[ìíîï]/g), "i");
+                r = r.replace(new RegExp(/ñ/g), "n");
+                r = r.replace(new RegExp(/[òóôõö]/g), "o");
+                r = r.replace(new RegExp(/œ/g), "oe");
+                r = r.replace(new RegExp(/[ùúûü]/g), "u");
+                r = r.replace(new RegExp(/[ýÿ]/g), "y");
+                r = r.replace(new RegExp(/\W/g), "");
+                return r;
+            };
+            $scope.diffNames = function (item) {
+                if(!item.grid.equipe){
+                    return true;
+                }
+                return item.grid.equipe != null && $scope.accentsTidy(item.grid.equipe.nome) != $scope.accentsTidy(item.Piloto);
+            }
+            $scope.getLabelCategoria = UtilsService.getLabelCategoria;
+            $scope.salvarResultados = function () {
+                ResultadoAdminService.saveResultados({ etapa: idEtapa }, $scope.preResultados);
+            }
+            $scope.selecao = {};
+            $scope.editEquipe = function (item) {
+                var modalInstance = $uibModal.open({
+                    animation: $scope.animationsEnabled,
+                    templateUrl: 'equipeModal.html',
+                    controller: 'ModalEditResultadoCtrl',
+                    size: 'sm',
+                    resolve: {
+                        entry: function () {
+                            return item;
+                        },
+                        results: function () {
+                            return $scope.preResultados;
+                        },
+                        etapa: function () {
+                            return $scope.etapa;
+                        }
+                    }
+                });
+
+                modalInstance.result.then(function (selecionado) {
+                    for (var index = 0; index < $scope.preResultados.length; index++) {
+                        var element = $scope.preResultados[index];
+                        console.log(element, selecionado);
+                        if (element.Num == selecionado.Num) {
+                            $scope.preResultados[index] = selecionado;
+                            return;
+                        }
+                    }
+                }, function () {
+                    $log.info('Modal dismissed at: ' + new Date());
+                });
+
+            }
+            $scope.getLabelCategoria = UtilsService.getLabelCategoria;
+            $scope.updateBreadcrumb = function () {
+                $scope.title = 'Gerenciar Resultados ' ;
+                
+                $scope.bcs = [{ title: 'Home', url: '#/' }, { title: 'Etapas', url: '#/etapas' }, { title: 'Etapa', url: '#/etapa/' + idEtapa }, { title: 'Importar CSV', url: '',active:true }]
             }
         })
        

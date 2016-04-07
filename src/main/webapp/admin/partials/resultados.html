@@ -19,8 +19,9 @@
                     </div>
                     <div class="pull-right box-tools">
                         <div class="btn-group">
-                            <button type="button" class="btn btn-sm  " data-toggle="tooltip" title="Importar dados" ng-click="importCSV()">
-                                <i class="fa fa-cloud-upload"></i></button>
+
+                            <button type="button" class="btn btn-sm  " data-toggle="tooltip" title="Importar performance dados" ng-click="importPerformanceCSV()">
+                                <i class="fa fa-upload"></i></button>
 
                             <button type="button" class="btn btn-sm  " data-toggle="tooltip" title="Adiciona Resultado" ng-click="addResultado()">
                                 <i class="fa fa-plus"></i></button>
@@ -46,23 +47,26 @@
                         <tbody>
                             <tr>
                                 <th>Posição</th>
-                                <th>Categoria </th>
-                                <th>Equipe</th>
+                                <th>Número</th>
+                                <th>Penalidade</th>
                                 <th>Pontos perdidos</th>
+                                <th>Equipe</th>
                                 <th>PCs Zerados</th>
                                 <th>PCs Pegos</th>
-                                <th></th>
 
+                                <th></th>
+                                <th></th>
                             </tr>
-                            <tr ng-repeat="item in resultados|filter:categoria | orderBy : ['id_Categoria','colocacao'] " ng-class="{'manualUpdate':item.t==1}"
-                            >
+                            <tr ng-repeat="item in resultados|filter:categoria | orderBy : ['id_Categoria','colocacao'] " ng-class="{'manualUpdate':item.t==1}">
                                 <td ng-click="editItem(item)">{{item.colocacao}}</td>
-                                <td ng-click="editItem(item)">{{getLabelCategoria(item.id_Categoria)}}</td>
-                                <td ng-click="editItem(item)">{{item.nome}}</td>
+                                <td ng-click="editItem(item)">{{item.numero}}</td>
+                                <td ng-click="editItem(item)">{{item.penalidade}}</td>
                                 <td ng-click="editItem(item)">{{item.pontos_perdidos}}</td>
+                                <td ng-click="editItem(item)">{{item.nome}} {{item.descricao}}</td>
                                 <td ng-click="editItem(item)">{{item.pcs_zerados}}</td>
                                 <td ng-click="editItem(item)">{{item.pcs_pegos}}</td>
-                                  <td><a href="" ng-click="remover(item)"><i class="fa fa-remove"></i> Remover</a></td>
+                                <td><a href="" ng-click="remover(item)"><i class="fa fa-remove"></i> Remover</a></td>
+                                <td><a href="" ng-click="showDetalhes(item)"><i class="fa "></i> Detalhes</a></td>
 
                             </tr>
 
@@ -73,7 +77,52 @@
             </div>
         </div>
 </section>
+<script type="text/ng-template" id="modalPCS.html ">
+    <div class="modal-header ">
+        <h3 class="modal-title ">Detalhes PCs</h3>
+    </div>
+    <div class="modal-body ">
+        <form name="largadaForm" role="form " class="css-form " novalidate autocomplete="none">
+            <div class="box-body ">
 
+                <div class="row ">
+                    Equipe: {{entry.nome}}
+
+                </div>
+                <Tab <div class="box box-default">
+
+
+
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+
+                                <th>#</th>
+                                <th>Tipo</th>
+                                <th>Erro</th>
+                                <th>Até PC</th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="item in entry.pcs| orderBy : ['pc']">
+                                <td>{{item.numero}}</td>
+                                <td>{{getTipoLabel(item.tipo)}}</td>
+                                <td ng-class="{'bg-red':item.variacao==900}">{{item.variacao}}</td>
+                                <td>{{item.ate}}º</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+            </div>
+    </div>
+    </form>
+    </div>
+    <div class="modal-footer ">
+
+        <button class="btn btn-warning " type="button " ng-click="cancel() ">Fechar</button>
+    </div>
+</script>
 <script type="text/ng-template" id="modalResultadoContent.html ">
     <div class="modal-header ">
         <h3 class="modal-title ">Alterar Resultado</h3>

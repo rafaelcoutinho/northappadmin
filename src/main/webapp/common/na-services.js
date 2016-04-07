@@ -175,17 +175,22 @@ angular.module('north.services', ['ngResource'])
                 isArray: true,
                 transformResponse: jsonTransformQuery
             },
-            getEtapaAtual:{
+            getEtapaAtual: {
                 isArray: false,
                 url: appConfigs.contextRoot + '/app/enhanced/EtapaAtual'
                 // url: "http://localhost/northServer/app.php/EtapaAtual"
             },
-            getResultados:{
-                isArray: true,                
-                 url: appConfigs.contextRoot + '/app/enhanced/Etapa/:id/Resultado'
+            getPerformance: {
+                isArray: true,
+                url: appConfigs.contextRoot + '/app/enhanced/Etapa/:id/Resultado'
+                // url: "http://localhost/northServer/app.php/Etapa/:id/Performance/:id_Equipe"
+            },
+            getResultados: {
+                isArray: true,
+                url: appConfigs.contextRoot + '/app/enhanced/Etapa/:id/Resultado'
                 // url: "http://localhost/northServer/app.php/Etapa/:id/Resultado"
             }
-            
+
         })
     }])
     .service('LocationService', ['$http', '$q', '$resource', 'appConfigs', function ($http, $q, $resource, appConfigs) {
@@ -207,7 +212,7 @@ angular.module('north.services', ['ngResource'])
         });
 
     }])
-    .service('UtilsService', ['$http', '$q', '$resource', 'appConfigs', 'CategoriaService','GridConfService', function ($http, $q, $resource, appConfigs, CategoriaService, GridConfService) {
+    .service('UtilsService', ['$http', '$q', '$resource', 'appConfigs', 'CategoriaService', 'GridConfService', function ($http, $q, $resource, appConfigs, CategoriaService, GridConfService) {
         var cats = CategoriaService.query();
         var grids = GridConfService.query();
         return {
