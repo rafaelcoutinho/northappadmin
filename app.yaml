@@ -42,6 +42,10 @@ handlers:
 - url: /web/grid.*
   script: src/main/php/old_grid.php
 
+- url: /web/pgrid.*
+  script: src/main/php/old_pregrid.php
+
+
 
 - url: /admin/*
   static_dir: src/main/webapp/admin/
@@ -86,6 +90,8 @@ handlers:
   script: src/main/php/senha.php
   secure: always
 
+- url: /endpoints/RegisterInscription
+  script: src/main/php/userRegisterInscription.php
 
 - url: /endpoints/User
   script: src/main/php/userManagement.php

@@ -8,7 +8,7 @@ var angularModule =
             // "context": "//localhost/northServer/api.php",
             "contextRoot": SERVER_ROOT
 
-        }).config(['$routeProvider', function ($routeProvider, $rootScope) {
+        }).config(['$routeProvider','$httpProvider', function ($routeProvider, $httpProvider) {
             $routeProvider.when('/', {
                 templateUrl: 'partials/main.html'
 
@@ -101,6 +101,7 @@ var angularModule =
                 }).otherwise({
                     redirectTo: '/'
                 });
+                 $httpProvider.interceptors.push('REST_Interceptor');
 
         }]).filter("sanitize", ['$sce', function ($sce) {
             return function (htmlCode) {
