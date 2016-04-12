@@ -4,9 +4,9 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>North Brasil - Inscrição</title>
+    <title>NORTHBRASIL - Inscrição</title>
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
-    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="icon" type="image/gif" href="../img/animated_favicon1.gif">
     <link rel="stylesheet" href="../bower_components/admin-lte/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="//code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
@@ -42,13 +42,14 @@
             <div class="pull-right hidden-xs ">
                 <b>Versão</b> 0.0.1
             </div>
-            <strong>Copyright &copy; 2014-2015 <a href="http://northbrasil.com.br ">NorthBrasil</a>.</strong> Copa North.
+            <strong>Copyright &copy; 2014-2015 <a href="http://northbrasil.com.br ">NORTHBRASIL</a>.</strong> Copa North.
         </div>
 
     </footer>
 
     <script type="text/javascript" data-main="js/run-registro" src="../bower_components/requirejs/require.js"></script>
-    <uib-alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)" dismiss-on-timeout="3000" style="position: fixed;top: 10%;  z-index: 1110; width: 50%;  left: 25%;">{{alert.msg}}</uib-alert>
+    <uib-alert ng-cloak ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)" dismiss-on-timeout="3000"
+    style="position: fixed;top: 10%;  z-index: 1110; width: 50%;  left: 25%;">{{alert.msg}}</uib-alert>
 
     <script type="text/ng-template " id="loading.html ">
         <div class="modal-header ">

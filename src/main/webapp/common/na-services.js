@@ -49,6 +49,7 @@ angular.module('north.services', ['ngResource'])
             }
         }
     }])
+
     .service('CompetidorService', ['$http', '$q', '$resource', 'appConfigs', function ($http, $q, $resource, appConfigs) {
 
         return $resource(appConfigs.context + '/Competidor/:id', {}, {
@@ -126,6 +127,11 @@ angular.module('north.services', ['ngResource'])
                 method: "POST",
                 isArray: false,
                 url: appConfigs.contextRoot + '/endpoints/RegisterInscription'
+            },
+            startPwdRecovery: {
+                method: "POST",
+                isArray: false,
+                url: "https:" +appConfigs.contextRoot + "/endpoints/senha/LembrarSenha"
             },
             loginUser: {
                 method: "POST",
@@ -270,7 +276,7 @@ angular.module('north.services', ['ngResource'])
 
         function (appConfigs) {
             var DEBUG = false;
-            var V2 = false;
+            var V2 = true;
             var request = function (config) {
                 if (DEBUG) {
 
@@ -295,12 +301,13 @@ angular.module('north.services', ['ngResource'])
                         config.url = config.url.replace(appConfigs.contextRoot + "/rest", "http://localhost/northServer/api.php");
                     } else if (config.url.indexOf(appConfigs.contextRoot + '/SetPago.do') > -1) {
                         config.url = config.url.replace(appConfigs.contextRoot + "/SetPago.do", "http://localhost/northServer/marcarPaga.php");
-                    }
+                    }else if(config.url.indexOf(appConfigs.contextRoot + '/endpoints/senha/') > -1) {
+                        config.url = config.url.replace(appConfigs.contextRoot + '/endpoints/senha/', "http://localhost/northServer/senha.php/");                    }
 
                     if (url != config.url) {
-                        console.warn("Url alterada ", config.url, url)
+                        console.debug("Url alterada ", config.url, url)
                     } else {
-                        console.error("Url NAO alterada ", config.url, url)
+                        console.warn("Url NAO alterada ", config.url, url)
                     }
                 } else if (V2) {
                     var url = config.url;

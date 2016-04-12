@@ -4,7 +4,7 @@ var SERVER_ROOT = "//cumeqetrekking.appspot.com";
 var angularModule =
     angular.module('registroApp', ['ngRoute', 'ngAnimate', 'dialogs.main', 'north.services', 'ui.bootstrap', 'ngResource', 'ngSanitize']).constant("appConfigs", {
         "context": SERVER_ROOT + "/app/rest",
-        "contextRoot": SERVER_ROOT + "/"
+        "contextRoot": SERVER_ROOT 
 
     })
 
@@ -193,15 +193,65 @@ var angularModule =
                 }
             }
         })
-        .controller('ModalLider', function ($scope, $uibModalInstance, AlertService, InscricaoService, CompetidorService, dialogs,$rootScope) {
+        .controller('ConfirmModalCrtl', function ($scope, $uibModalInstance, title, message, instructions) {
+
+            $scope.title = title;
+            $scope.message = message;
+            $scope.instructions = instructions;
+            $scope.ok = function () {
+                $uibModalInstance.close(true);
+            };
+
+            $scope.cancel = function () {
+                $uibModalInstance.dismiss('cancel');
+            };
+        })
+        .controller('ModalLider', function ($scope, $uibModalInstance, AlertService, InscricaoService, CompetidorService, dialogs, $rootScope, $uibModal) {
             $scope.lider = {};
+            $scope.hasPwd = false;
+            $scope.usedFb = false;
+            $scope.newUser = false;
             $scope.lastPwdSentEmail = "";
+            $scope.connectFB = function () {
+                $uibModalInstance.close({ triggerFB: true });
+            }
+            $scope.resetPwd = function () {
+                var modalInstance = $uibModal.open({
+                    animation: $scope.animationsEnabled,
+                    templateUrl: 'partials/modal.html',
+                    controller: 'ConfirmModalCrtl',
+                    size: 'sm',
+                    resolve: {
+                        title: function () {
+                            return "Resetar Senha";
+                        },
+                        message: function () {
+                            return "Você deseja gerar uma nova senha?";
+                        },
+                        instructions: function () {
+                            return "Um link será enviado para seu e-mail para gerar a nova senha."
+                        }
+                    }
+                });
+                modalInstance.result.then(function () {
+                    InscricaoService.startPwdRecovery({}, { email: $scope.lider.email }, function () {
+                        AlertService.showInfo("Verifique sua caixa de e-mails para gerar uma nova senha.");
+                    }, function (erro) {
+                        AlertService.showError("Houve um erro ao solicitar o resete de sua senha. Por favor tente novamente.");
+                    });
+                }, function () {
+                    // $log.info('Modal dismissed at: ' + new Date());
+                });
+            }
             $scope.validateLider = function () {
                 if ($scope.lastPwdSentEmail == $scope.lider.email) {
                     return;
                 } else if ($scope.liderForm.liderEmail.$valid == false) {
                     return;
                 }
+                $scope.hasPwd = false;
+                $scope.usedFb = false;
+                $scope.newUser = false;
                 dialogs.wait("Por favor aguarde", "Confirmando informações do seu e-mail", 10);
                 InscricaoService.checkCompetidor({ email: $scope.lider.email },
                     function (data) {
@@ -209,21 +259,37 @@ var angularModule =
                         $scope.wasChecked = true;
                         $scope.lider.id = data.id;
                         $scope.lider.state = data.state;
+                        $scope.hasPwd = true;
                         $rootScope.$broadcast('dialogs.wait.complete');
                     }, function (err) {
                         console.log(err);
+                        $scope.hasPwd = false;
                         $scope.lastPwdSentEmail = $scope.lider.email;
                         $scope.wasChecked = true;
                         $scope.lider.id = null;
                         $rootScope.$broadcast('dialogs.wait.complete');
-                        if (err.data.errorCode == 912) {
-                            $scope.lider.state = "EXISTING";
-                        } else if (err.data.errorCode == 911) {
-                            $scope.lider.state = "NEW";
-                        }else{
-                             AlertService.showError("Houve um erro processando seu e-mail. Por favor tente novamente.");
+                        if (err.data.errorCode) {
+                            switch (err.data.errorCode) {
+                                case 912:
+                                    $scope.newUser = false;
+                                    $scope.lider.state = "EXISTING";
+                                    break;
+                                case 911:
+                                    $scope.newUser = true;
+                                    $scope.lider.state = "NEW";
+                                    break;
+                                case 914:
+                                    $scope.newUser = false;
+                                    $scope.usedFb = true;
+                                    $scope.lider.state = "EXISTING";
+                                    break;
+                                default:
+                                    AlertService.showError("Houve um erro processando seu e-mail. Por favor tente novamente.");
+                                    break;
+                            }
                         }
-                        
+
+
 
 
                     });
@@ -341,7 +407,9 @@ var angularModule =
                         });
 
                         modalInstance.result.then(function (selecionado) {
-                            if (selecionado) {
+                            if (selecionado && selecionado.triggerFB == true) {
+                                $scope.connectFB();
+                            } else if (selecionado) {
                                 $scope.setCompetidor(selecionado);
                             }
                         }, function () {
