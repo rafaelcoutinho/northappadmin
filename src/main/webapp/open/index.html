@@ -48,7 +48,7 @@
     </footer>
 
     <script type="text/javascript" data-main="js/run-registro" src="../bower_components/requirejs/require.js"></script>
-    <uib-alert ng-cloak ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)" dismiss-on-timeout="3000"
+    <uib-alert ng-cloak ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)" dismiss-on-timeout="5000"
     style="position: fixed;top: 10%;  z-index: 1110; width: 50%;  left: 25%;">{{alert.msg}}</uib-alert>
 
     <script type="text/ng-template " id="loading.html ">

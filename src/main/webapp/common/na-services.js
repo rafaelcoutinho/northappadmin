@@ -136,12 +136,16 @@ angular.module('north.services', ['ngResource'])
             loginUser: {
                 method: "POST",
                 isArray: false,
-                url: appConfigs.contextRoot + '/endpoints/Login'
+                url: "https:"+appConfigs.contextRoot + '/endpoints/Login'
             },
 
             queryCompetidores: {
                 isArray: true,
-                url: appConfigs.contextRoot + '/app/enhanced/CompetidorInscricao/:idEtapa/:idEquipe'
+                url: appConfigs.contextRoot + '/app/enhanced/InscricaoCompetidores/:idEtapa/:idEquipe'
+            },
+            getInscricaoCompetidor: {
+                isArray: false,
+                url: appConfigs.contextRoot + '/app/enhanced/InscricaoCompetidor/:idEtapa/:email'
             },
             query4Equipe: {
                 isArray: true,
@@ -293,9 +297,9 @@ angular.module('north.services', ['ngResource'])
                         config.url = "http://localhost/northServer/userRegisterInscription.php";
 
                     } else if (config.url.indexOf(appConfigs.contextRoot + '/endpoints/Login') > -1) {
-                        config.url = "http://localhost/northServer/login.php";
-                    } else if (config.url.indexOf(appConfigs.contextRoot + 'app/rest') > -1) {
-                        config.url = config.url.replace(appConfigs.contextRoot + "app/rest", "http://localhost/northServer/apiPub.php");
+                        config.url = "//localhost/northServer/login.php";
+                    } else if (config.url.indexOf(appConfigs.contextRoot + '/app/rest') > -1) {
+                        config.url = config.url.replace(appConfigs.contextRoot + "/app/rest", "http://localhost/northServer/apiPub.php");
 
                     } else if (config.url.indexOf(appConfigs.contextRoot + '/rest') > -1) {
                         config.url = config.url.replace(appConfigs.contextRoot + "/rest", "http://localhost/northServer/api.php");

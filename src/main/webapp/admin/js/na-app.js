@@ -857,10 +857,23 @@ var angularModule =
                     $location.path("/gridconfs");
                 }
             }])
+        .controller('ModalCompetidor', function ($scope, $uibModalInstance, competidores, AlertService) {
+            $scope.competidores = competidores;
+            $scope.novoCompetidor = { nome: "" };
+
+            $scope.ok = function () {
+                $uibModalInstance.close($scope.novoCompetidor);
+            };
+
+            $scope.cancel = function () {
+                $uibModalInstance.dismiss('cancel');
+            };
+
+        })
         .controller('InscricoesListCtrl', [
 
-            '$scope', '$timeout', '$window', '$routeParams', 'InscricaoService', 'EtapasService', '$location','$uibModal','AlertService',
-            function ($scope, $timeout, $window, $routeParams, InscricaoService, EtapasService, $location,$uibModal,AlertService) {
+            '$scope', '$timeout', '$window', '$routeParams', 'InscricaoService', 'EtapasService', '$location','$uibModal','AlertService','CompetidorService','$log',
+            function ($scope, $timeout, $window, $routeParams, InscricaoService, EtapasService, $location,$uibModal,AlertService,CompetidorService,$log) {
                 $scope.inscOrder = "data";
                 $scope.idEtapa = $routeParams.idEtapa;
                 $scope.etapa = EtapasService.get({ id: $routeParams.idEtapa });
@@ -875,6 +888,41 @@ var angularModule =
                     field: "data",
                     reverse: false
                 }
+                
+                $scope.addPreGrid = function () {
+                    if ($scope.competidores == null) {
+                        $scope.competidores = CompetidorService.query();
+                    }
+                    var modalInstance = $uibModal.open({
+                        animation: $scope.animationsEnabled,
+                        templateUrl: 'competidorModalContent.html',
+                        controller: 'ModalCompetidor',
+                        size: 'lg',
+                        resolve: {
+                            competidores: function () {
+                                return $scope.competidores;
+                            }
+                        }
+                    });
+
+                    modalInstance.result.then(function (selecionado) {
+                        if (selecionado) {
+                            InscricaoService.save({ id_Etapa: $routeParams.idEtapa, data: new Date().getTime(), id_Trekker: selecionado.id_Trekker, id_Equipe: selecionado.id_Equipe }, function () {
+                                AlertService.showInfo("Inserido no pré-grid com sucesso.");
+                                $scope.refresh();
+                            }, function (err) {
+                                if (err.data.errorMsg.indexOf("Duplicate") > 0) {
+                                    AlertService.showError("Competidor já está no PréGrid/Grid");
+                                } else {
+                                    AlertService.showError("Houve um erro ao inserí-lo.");
+                                }
+                            })
+                        }
+                    }, function () {
+                        $log.info('Modal dismissed at: ' + new Date());
+                    });
+                }
+                
                 $scope.apagar =function(item){
                     var modalInstance = $uibModal.open({
                         animation: $scope.animationsEnabled,

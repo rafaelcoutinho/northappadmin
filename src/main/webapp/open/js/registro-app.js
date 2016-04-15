@@ -4,7 +4,7 @@ var SERVER_ROOT = "//cumeqetrekking.appspot.com";
 var angularModule =
     angular.module('registroApp', ['ngRoute', 'ngAnimate', 'dialogs.main', 'north.services', 'ui.bootstrap', 'ngResource', 'ngSanitize']).constant("appConfigs", {
         "context": SERVER_ROOT + "/app/rest",
-        "contextRoot": SERVER_ROOT 
+        "contextRoot": SERVER_ROOT
 
     })
 
@@ -134,23 +134,38 @@ var angularModule =
                 }
                 $rootScope.$on('gotCompetidor', function (event, competidor) { console.log(competidor); $scope.competidor = competidor; });
             }])
-        .controller('ModalCompetidor', function ($scope, $uibModalInstance, competidores, AlertService) {
+        .controller('ModalCompetidor', function ($scope, $uibModalInstance, etapa, competidores, inscricao, AlertService, InscricaoService) {
+            $scope.etapa = etapa;
             $scope.competidores = competidores;
+            $scope.inscricao = inscricao;
             $scope.novoCompetidor = { nome: "" };
 
             $scope.ok = function () {
                 if ($scope.novoCompetidor.id_Trekker == null) {
-                    //novo cadastro
-                    if (!$scope.checkEmail()) {
+
+                    if ($scope.competidorForm.$valid == false) {
+                        AlertService.showError("Por favor corrija os erros do formulário.");
                         return;
-                    } else
-                        if ($scope.competidorForm.competidorEmail.$valid == false) {
-                            AlertService.showError("Por favor corrija os erros do formulário.");
-                            return;
-                        }
+                    }
 
                 }
-                $uibModalInstance.close($scope.novoCompetidor);
+                InscricaoService.getInscricaoCompetidor({ idEtapa: etapa.id, email: $scope.novoCompetidor.email }, function (results) {
+
+                    if (results == null || results.ins_EquipeId == null || results.ins_EquipeId == $scope.inscricao.equipe.id) {
+                        if (results.id_Trekker != null) {
+                            $scope.novoCompetidor.id_Trekker = results.id_Trekker;
+                        }
+                        $uibModalInstance.close($scope.novoCompetidor);
+                    } else {
+                        $scope.competidorForm.competidorEmail.$valid = false;
+                        $scope.competidorForm.competidorEmail.$error.jainscrito = true;
+                        AlertService.showError("Este Competidor já está inscrito nesta etapa em outra equipe.");
+                    }
+
+                }, function (error) {
+                    console.log("erro", error);
+                });
+
             };
 
             $scope.cancel = function () {
@@ -161,28 +176,12 @@ var angularModule =
                 $scope.ok();
             }
             $scope.clearErrors = function () {
+                $scope.competidorForm.competidorEmail.$error.jainscrito = false;
                 $scope.competidorForm.competidorEmail.$valid = true;
-                $scope.competidorForm.competidorEmail.$error.dupeEmail = false;
-                $scope.competidorDuplicado = null;
+                
+                // $scope.competidorDuplicado = null;
             }
-            $scope.checkEmail = function () {
-                for (var i = 0; i < $scope.competidores.length; i++) {
-                    var element = $scope.competidores[i];
 
-                    if (element.email == $scope.novoCompetidor.email) {
-                        $scope.competidorForm.competidorEmail.$valid = false;
-                        $scope.competidorForm.competidorEmail.$error.dupeEmail = true;
-                        $scope.competidorDuplicado = element;
-                        AlertService.showError("Já existe um competidor com este e-email: Nome: '" + element.nome + "'");
-                        return false;
-                    } else {
-                        $scope.competidorForm.competidorEmail.$valid = true;
-                        $scope.competidorForm.competidorEmail.$error.dupeEmail = false;
-                        $scope.competidorDuplicado = null;
-                    }
-                }
-                return true;
-            }
             $scope.exitFilterCompetidor = function () {
 
                 if ($scope.noResult == true) {
@@ -262,13 +261,14 @@ var angularModule =
                         $scope.hasPwd = true;
                         $rootScope.$broadcast('dialogs.wait.complete');
                     }, function (err) {
-                        console.log(err);
-                        $scope.hasPwd = false;
-                        $scope.lastPwdSentEmail = $scope.lider.email;
-                        $scope.wasChecked = true;
-                        $scope.lider.id = null;
+
                         $rootScope.$broadcast('dialogs.wait.complete');
                         if (err.data.errorCode) {
+                            console.log(err);
+                            $scope.hasPwd = false;
+                            $scope.lastPwdSentEmail = $scope.lider.email;
+                            $scope.wasChecked = true;
+                            $scope.lider.id = null;
                             switch (err.data.errorCode) {
                                 case 912:
                                     $scope.newUser = false;
@@ -287,6 +287,8 @@ var angularModule =
                                     AlertService.showError("Houve um erro processando seu e-mail. Por favor tente novamente.");
                                     break;
                             }
+                        } else {
+                            AlertService.showError("Houve um erro inesperado processando seu e-mail. Por favor tente novamente.");
                         }
 
 
@@ -332,14 +334,12 @@ var angularModule =
             };
 
 
-            $scope.checkEmail = function () {
 
-                return true;
-            }
         })
 
         .controller('ModalEquipe', function ($scope, $uibModalInstance, equipes, categorias, AlertService) {
             $scope.equipes = equipes;
+
             $scope.novaEquipe = { nome: "" };
             $scope.categorias = categorias;
             $scope.ok = function () {
@@ -348,7 +348,6 @@ var angularModule =
                         AlertService.showError("Por favor corrija os erros do formulário.");
                         return;
                     }
-
                 }
                 $uibModalInstance.close($scope.novaEquipe);
             };
@@ -444,7 +443,59 @@ var angularModule =
 
                         modalInstance.result.then(function (selecionado) {
                             if (selecionado) {
-                                $scope.setEquipe(selecionado);
+                                if (selecionado.id == null) {
+
+                                    var confirmModal = $uibModal.open({
+                                        animation: $scope.animationsEnabled,
+                                        templateUrl: 'partials/modal.html',
+                                        controller: 'ConfirmModalCrtl',
+                                        size: 'sm',
+                                        resolve: {
+                                            title: function () {
+                                                return "Criar nova equipe";
+                                            },
+                                            message: function () {
+                                                return "Você deseja realmente criar uma nova equipe?";
+                                            },
+                                            instructions: function () {
+                                                return "Você definiu uma nova equipe, ela será criada e você será associado a ela. Confirme se realmente deseja criar uma nova equipe."
+                                            }
+                                        }
+                                    });
+                                    modalInstance.result.then(function () {
+                                        $scope.setEquipe(selecionado);
+                                    }, function () {
+
+                                    });
+                                } else {
+                                    if (selecionado.id != $scope.inscricao.lider.id_Equipe)
+                                        var confirmModal = $uibModal.open({
+                                            animation: $scope.animationsEnabled,
+                                            templateUrl: 'partials/modal.html',
+                                            controller: 'ConfirmModalCrtl',
+                                            size: 'sm',
+                                            resolve: {
+                                                title: function () {
+                                                    return "Integrar nova equipe";
+                                                },
+                                                message: function () {
+                                                    return "Você realmente deseja se inscrever na equipe " + selecionado.nome + "?";
+                                                },
+                                                instructions: function () {
+                                                    return "Esta é a primeira vez que você se insecreve na equipe " + selecionado.nome + ", sua adesão será confirmada pela NORTHBRASIL."
+                                                }
+                                            }
+                                        });
+                                    modalInstance.result.then(function () {
+                                        $scope.setEquipe(selecionado);
+                                    }, function () {
+
+                                    });
+                                }
+
+
+
+
                             }
                         }, function () {
                             $log.info('Modal dismissed at: ' + new Date());
@@ -485,6 +536,10 @@ var angularModule =
 
                     }
                     $scope.inscricao.integrantes = finalarray;
+                    if (!$scope.inscricao.removidos) {
+                        $scope.inscricao.removidos = [];
+                    }
+                    $scope.inscricao.removidos.push(integrante);
                 }
                 $scope.selectIntegrante = function () {
                     if (!$scope.competidores) {
@@ -496,6 +551,12 @@ var angularModule =
                         controller: 'ModalCompetidor',
                         size: 'lg',
                         resolve: {
+                            etapa: function () {
+                                return $scope.inscricao.etapa;
+                            },
+                            inscricao: function () {
+                                return $scope.inscricao;
+                            },
                             competidores: function () {
                                 return $scope.competidores;
                             }
@@ -503,6 +564,15 @@ var angularModule =
                     });
 
                     modalInstance.result.then(function (selecionado) {
+                        if (selecionado.id_Trekker != null) {
+                            for (var index = 0; index < $scope.inscricao.integrantes.length; index++) {
+                                var element = $scope.inscricao.integrantes[index];
+                                if (selecionado.id_Trekker == element.id_Trekker) {
+                                    return;
+                                }
+
+                            }
+                        }
                         $scope.inscricao.integrantes.push(selecionado);
                     }, function () {
                         $log.info('Modal dismissed at: ' + new Date());
@@ -530,6 +600,7 @@ var angularModule =
                                 } else {
                                     $scope.inscricao.integrantes.push({
                                         id: element.id_Trekker,
+                                        id_Trekker: element.id_Trekker,
                                         id_Equipe: element.id_Equipe,
                                         nome: element.nome,
                                         paga: element.paga
@@ -586,7 +657,7 @@ var angularModule =
 
                         $scope.inscricao.lider = competidor;
                         InscricaoService.get({ idTrekker: competidor.id, idEtapa: $routeParams.id }, function (data) {
-                            if (data.length > 0) {
+                            if (data != null && data.id_Trekker == $scope.inscricao.lider.id) {
                                 AlertService.showError("Já existe uma inscrição sua nesta etapa.");
 
                                 $scope.setEquipe({ id: data.id_Equipe, nome: data.nome_Equipe });
@@ -709,8 +780,11 @@ var angularModule =
 
                                 $scope.inscricao.equipe.id = data.equipe.id;
                                 $scope.inscricao.lider.id = data.lider.id;
+                                if (data.lider.id_Equipe) {
+                                    $scope.inscricao.lider.id_Equipe = data.lider.id_Equipe;
+                                }
                                 for (var index = 0; index < $scope.inscricao.integrantes.length; index++) {
-                                    $scope.inscricao.integrantes[index].id = data.integrantes[index].id;//TODO talvez saida da ordem                                    
+                                    $scope.inscricao.integrantes[index].id_Trekker = data.integrantes[index].id_Trekker;//TODO talvez sai da ordem                                    
                                 }
                                 $scope.inscricaoServer = $scope.inscricao;
                                 $rootScope.$broadcast('dialogs.wait.complete');
@@ -719,7 +793,42 @@ var angularModule =
                                 $scope.alterarInscritos = true;
                                 $rootScope.$broadcast('dialogs.wait.complete');
                                 if (response.data.errorCode) {
-                                    AlertService.showError("Houve um erro ao salvar: " + response.data.error);
+                                    switch (response.data.errorCode) {
+                                        case 199:
+                                            AlertService.showError("Houve um erro ao efetuar inscrição. Confirme que nenhum dos integrantes tenham inscrições em outras equipe")
+                                            break;
+                                        case 662:
+                                            AlertService.showError("Houve um erro ao efetuar inscrição. Você já possui uma inscrição com status pago para esta etapa e não pode mudar de equipe.")
+                                            break;
+                                        case 661:
+                                            AlertService.showError("Houve um erro ao efetuar inscrição. Você está tentando remover um integrante que já possui inscrição com status paga.")
+                                            break;
+                                        case 663:
+                                            AlertService.showError("Houve um erro ao efetuar inscrição. Você está tentando adicionar um integrante que já possui inscrição em outra equipe nesta etapa.")
+                                            break;
+                                        case 990:
+                                        case 801:
+                                            AlertService.showError("Houve um erro ao efetuar inscrição. Não foi possível salvar seus dados do cadastro. (" + response.data.errorCode + ")")
+                                            break;
+                                        case 701:
+                                            AlertService.showError("Houve um erro ao efetuar inscrição. O nome da equipe é obrigatório.")
+                                            break;
+                                        case 702:
+                                            AlertService.showError("Houve um erro ao efetuar inscrição. A categoria da equipe é obrigatório.")
+                                            break;
+                                        case 704:
+                                            AlertService.showError("Houve um erro ao efetuar inscrição. Falhou ao salvar a nova equipe, confirme que não existe outra equipe com mesmo nome.")
+                                            break;
+
+
+
+
+
+                                        default:
+                                            AlertService.showError("Houve um erro ao efetuar inscrição. Tente novamente. (" + response.data.errorCode + " " + response.data.errorMsg + ").");
+                                            break;
+                                    }
+
                                 } else {
                                     AlertService.showError("Houve um erro ao salvar");
                                 }
