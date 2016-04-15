@@ -211,7 +211,7 @@
     </div>
 
     <div class="modal-body">
-        <form name="liderForm" class="css-form" novalidate autocomplete="off" ng-submit="ok()" >
+        <form name="liderForm" class="css-form" novalidate autocomplete="off" ng-submit="ok()">
             <div class="box-body">
 
                 <div>
@@ -220,7 +220,8 @@
                     </div>
                     <div class="form-group">
                         <label for="inputEmail" class="col-sm-2 control-label">E-mail</label>
-                        <input type="email" required ng-model="lider.email" name="liderEmail" id="inputEmail" placeholder="xxx@xxx.xxx" class="form-control" ng-blur="validateLider()">
+                        <input type="email" required ng-model="lider.email" name="liderEmail" id="inputEmail" placeholder="xxx@xxx.xxx" class="form-control"
+                        ng-blur="validateLider()">
                         </input>
                         <span class="text-red" ng-show="liderForm.liderEmail.$error.email">Formato inválido de email</span>
                         <span class="text-red" ng-show="liderForm.liderEmail.$error.required">E-mail é obrigatório</span>
@@ -232,9 +233,7 @@
                                 <label for="liderSenha" class="col-sm-2 control-label">Senha</label>
                                 <input type="password" required ng-model="lider.password" name="liderSenha" class="form-control">
                                 </input>
-                            </div>
-                            <div class="pull-right box-tools">
-                                <button class="btn btn-info btn-xs no-print" ng-cloak ng-click="resetPwd()">Esqueci minha senha</button>
+                                <span class="text-red" ng-show="liderForm.liderSenha.$error.required">Senha é obrigatória</span>
                             </div>
 
                         </div>
@@ -250,6 +249,8 @@
                                     <label for="liderSenha" class="col-sm-2 control-label">Senha</label>
                                     <input type="password" required ng-model="lider.password" name="liderSenha" class="form-control">
                                     </input>
+
+                                    <span class="text-red" ng-show="liderForm.liderSenha.$error.required">Senha é obrigatória</span>
                                 </div>
 
                             </div>
@@ -288,6 +289,7 @@
                                     <label for="liderSenha" class="col-sm-2 control-label">Senha</label>
                                     <input type="password" required ng-model="lider.password" name="liderSenha" class="form-control">
                                     </input>
+                                    <span class="text-red" ng-show="liderForm.liderSenha.$error.required">Senha é obrigatória</span>
                                 </div>
                             </div>
                             <div class="col col-xs-5" style="text-align:center">
@@ -307,6 +309,7 @@
         </form>
     </div>
     <div class="modal-footer">
+        <button class="btn btn-info  no-print" ng-cloak ng-click="resetPwd()" ng-if="wasChecked==true && (hasPwd)">Esqueci minha senha</button>
         <button class="btn btn-primary" type="button" ng-click="ok()" ng-disabled="wasChecked==false">Login</button>
         <button class="btn btn-warning" type="button" ng-click="cancel()">Cancelar</button>
     </div>
@@ -338,7 +341,7 @@
                         <input type="email" ng-model-options="{ updateOn: 'blur' }" required ng-model="novoCompetidor.email" name="competidorEmail"
                         ng-keyup="clearErrors()" id="inputEmail" placeholder="xxx@xxx.xxx" class="form-control">
                         </input>
-                        
+
                     </div>
                     <div ng-if="competidorDuplicado!=null" class="btn btn-primary" type="button" ng-click="selectDupe()">Selecionar '{{competidorDuplicado.nome}}'</div>
                     </span>

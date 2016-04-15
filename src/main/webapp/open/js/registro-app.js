@@ -124,7 +124,7 @@ var angularModule =
 
                 });
             }])
-
+ 
         .controller('MenuCtrl', [
             '$scope', '$timeout', '$window', 'facebookService', '$location', '$routeParams', 'EtapasService', 'CompetidorService', 'EquipesService', 'CategoriaService', 'InscricaoService', 'AlertService', '$rootScope',
             function ($scope, $timeout, $window, facebookService, $location, $routeParams, EtapasService, CompetidorService, EquipesService, CategoriaService, InscricaoService, AlertService, $rootScope) {
@@ -297,6 +297,11 @@ var angularModule =
                     });
             }
             $scope.ok = function () {
+                
+                if ($scope.liderForm.$valid == false) {
+                    AlertService.showError("Por favor corrija os erros do formulário.");
+                    return;
+                }
                 var success = function (data) {
                     CompetidorService.query({ filter0: "email,eq," + data.email }, function (competidor) {
 
@@ -311,12 +316,15 @@ var angularModule =
                             case 804:
                                 AlertService.showError("Senha inválida. Por favor tente novamente.");
                                 break;
+                            case 801:
+                                AlertService.showError("Senha vazia. Por favor insira sua senha e tente novamente.");
+                                break;
 
                             default:
                                 AlertService.showError("Por favor corrija os erros do formulário.");
                         }
                     } else {
-                        AlertService.showError("Por favor corrija os erros do formulário.");
+                        AlertService.showError("Houve um erro processando sua autenticação. Por favor revise seu formulário e tente novamente.");
                     }
                 };
 
@@ -581,7 +589,21 @@ var angularModule =
                 var checkIfInscritos = function (idEquipe) {
                     var carregaIntegrantes = function (idEquipe) {
                         $scope.inscricao.integrantes = [];
-                        $scope.inscricao.integrantes = CompetidorService.query({ filter0: "id_Equipe,eq," + idEquipe }, function () {
+                        CompetidorService.query({ filter0: "id_Equipe,eq," + idEquipe }, function (data) {
+                            $scope.inscricao.integrantes = [];
+                            for (var index = 0; index < data.length; index++) {
+                                var element = data[index];
+                                if ($scope.inscricao.lider.id == element.id_Trekker) {
+
+                                } else {
+                                    $scope.inscricao.integrantes.push({
+                                        id: element.id_Trekker,
+                                        id_Trekker: element.id_Trekker,
+                                        id_Equipe: element.id_Equipe,
+                                        nome: element.nome
+                                    });
+                                }
+                            }
                             $rootScope.$broadcast('dialogs.wait.complete');
                         });
                     }
@@ -591,7 +613,7 @@ var angularModule =
                         var principalJaInscrito = null;
 
                         if (data.length > 0) {
-                            console.log(data);
+
                             for (var index = 0; index < data.length; index++) {
                                 var element = data[index];
                                 if ($scope.inscricao.lider.id == element.id_Trekker) {

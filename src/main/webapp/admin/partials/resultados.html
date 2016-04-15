@@ -19,19 +19,24 @@
                     </div>
                     <div class="pull-right box-tools">
                         <div class="btn-group">
-
+                            <div class="btn-group " ng-show="etapa.id!=null && etapa.id!=-1" ng-cloak>
+                                <button type="button" class="btn btn-warning btn-sm dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                                    <i class="fa fa-bars"></i></button>
+                                <ul class="dropdown-menu pull-right" role="menu">
+                                    <li><a href="#/etapa/{{etapa.id}}" ng-cloak="" class="text-red">Ver Etapa</a></li>
+                                    <li><a href="#/etapa/{{etapa.id}}/inscricoes" ng-cloak="" class="text-red">Inscrições</a></li>
+                                    <li><a href="#/etapa/{{etapa.id}}/grid" ng-cloak="" class="text-red">Grid</a></li>
+                                    <li><a href="#/etapa/{{etapa.id}}/resultados" ng-cloak="" class="text-red">Resultados</a></li>
+                                    <li class="divider"></li>
+                                    <li><a href="#/etapa/{{etapa.id}}/relatorio" ng-cloak="" class="text-red">Relatório</a></li>
+                                </ul>
+                            </div>
                             <button type="button" class="btn btn-sm  " data-toggle="tooltip" title="Importar performance dados" ng-click="importPerformanceCSV()">
                                 <i class="fa fa-upload"></i></button>
 
                             <button type="button" class="btn btn-sm  " data-toggle="tooltip" title="Adiciona Resultado" ng-click="addResultado()">
                                 <i class="fa fa-plus"></i></button>
-                            <ul class="dropdown-menu pull-right" role="menu">
 
-                                <li><a href="#/etapa/{{etapa.id}}/inscricoes" ng-cloak="" class="text-red">Inscrições</a></li>
-                                <li><a href="#/etapa/{{etapa.id}}/grid" ng-cloak="" class="text-red">Grid</a></li>
-                                <li class="divider"></li>
-
-                            </ul>
 
                         </div>
 
