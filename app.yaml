@@ -1,7 +1,7 @@
 runtime: php55
 api_version: 1
 application: cumeqetrekking
-version: 2
+version: 1 
 
 
 handlers:
@@ -13,6 +13,13 @@ handlers:
 - url: /rest/.*/.*
   script: src/main/php/api.php
   login: admin
+
+- url: /notification
+  script: src/main/php/notificator.php
+  login: admin
+
+- url: /test
+  script: src/main/php/nottest.php
 
 - url: /SetPago.do
   script:  src/main/php/marcarPaga.php

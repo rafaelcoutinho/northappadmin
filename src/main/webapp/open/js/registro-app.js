@@ -298,8 +298,8 @@ var angularModule =
             }
             $scope.ok = function () {
                 
-                if ($scope.liderForm.$valid == false) {
-                    AlertService.showError("Por favor corrija os erros do formulário.");
+                if (!$scope.lider.password || $scope.lider.password.length==0) {
+                    AlertService.showError("Por favor insira sua senha.");
                     return;
                 }
                 var success = function (data) {
@@ -321,7 +321,11 @@ var angularModule =
                                 break;
 
                             default:
+                            if(err.status==404){
+                                AlertService.showError("O e-mail e senha inseridos não coicidem.");
+                            }else{
                                 AlertService.showError("Por favor corrija os erros do formulário.");
+                            }
                         }
                     } else {
                         AlertService.showError("Houve um erro processando sua autenticação. Por favor revise seu formulário e tente novamente.");

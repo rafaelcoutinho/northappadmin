@@ -68,6 +68,7 @@ var angularModule =
                 }).when('/etapa/:idEtapa/inscricoes/:idTrekker', {
                     templateUrl: 'partials/inscricao.html',
                     controller: 'InscricaoDetailsCtrl'
+                    
                 }).when('/etapa/:idEtapa/resultadoEdit', {
                     templateUrl: 'partials/resultadoEtapaForm.html',
                     controller: 'ResultadoFormCtrl',
@@ -98,10 +99,13 @@ var angularModule =
 
                         }
                     }
+                }).when('/notificacoes', {
+                    templateUrl: 'partials/notificacao.html',
+                    controller: 'NotificacaoCtrl'
                 }).otherwise({
                     redirectTo: '/'
                 });
-                 $httpProvider.interceptors.push('REST_Interceptor');
+            $httpProvider.interceptors.push('REST_Interceptor');
 
         }]).filter("sanitize", ['$sce', function ($sce) {
             return function (htmlCode) {
@@ -173,8 +177,63 @@ var angularModule =
                 }
             });
         }])
-        
-        
+         .service('NotificacaoService', ['$http', '$q', '$resource', 'appConfigs', function ($http, $q, $resource, appConfigs) {
+            return $resource(appConfigs.contextRoot + '/notification', {}, {
+                publish: {
+                    isArray: true,
+                    method:"POST"
+                   
+                },
+            });
+        }])
+        .controller('NotificacaoCtrl', function ($scope, AlertService, NotificacaoService, UtilsService,$uibModal) {
+            $scope.mensagem={
+                type:"all",
+                to:null,
+                
+                notification:{
+                    title:"",
+                    body:""
+                }
+            };
+            $scope.enviarNotificacao=function(){
+                   
+                
+                var modalInstance = $uibModal.open({
+                        animation: $scope.animationsEnabled,
+                        templateUrl: 'partials/modal.html',
+                        controller: 'ConfirmModalCrtl',
+                        size: 'sm',
+                        resolve: {
+                            title: function () {
+                                return "Notificação";
+                            },
+                            message: function () {
+                                switch ($scope.mensagem.type) {
+                                    case "all":
+                                        return "Você tem certeza que deseja enivar uma notificação para TODOS os usuários do aplicativo?";
+                                    case "pro":
+                                        return "Você tem certeza que deseja enivar uma notificação para os competidores da categoria Pró?";
+                                    case "graduado":
+                                        return "Você tem certeza que deseja enivar uma notificação para os competidores da categoria Graduado?";
+                                    case "trekker":
+                                        return "Você tem certeza que deseja enivar uma notificação para os competidores da categoria Trekker?";
+                                    case "turismo":
+                                        return "Você tem certeza que deseja enivar uma notificação para os competidores da categoria Turismo?";
+                                }
+                                
+                            }
+                        }
+                    });
+                    modalInstance.result.then(function () {
+                       NotificacaoService.publish($scope.mensagem);
+                    }, function () {
+                        // $log.info('Modal dismissed at: ' + new Date());
+                    });
+                
+            }
+            
+        })
         .controller('ModalEditResultadoCtrl', function ($scope, $uibModalInstance, etapa, entry, results, AlertService, GridService, EquipesService, UtilsService) {
             $scope.etapa = etapa;
             $scope.equipes = [];

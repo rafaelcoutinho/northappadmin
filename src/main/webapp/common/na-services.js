@@ -280,13 +280,15 @@ angular.module('north.services', ['ngResource'])
 
         function (appConfigs) {
             var DEBUG = false;
-            var V2 = true;
+            var V2 = false;
             var request = function (config) {
                 if (DEBUG) {
 
                     var url = config.url;
 
-                    if (config.url.indexOf("AlteraGrid") > 0) {
+                     if (config.url.indexOf("notification") > 0) {
+                        config.url = "http://localhost/northServer/notificator.php";
+                    } else if (config.url.indexOf("AlteraGrid") > 0) {
                         config.url = "http://localhost/northServer/alteraGrid.php";
                     } else if (config.url.indexOf("Inscrever.do") > -1) {
                         config.url = "http://localhost/northServer/inscrever.php";
