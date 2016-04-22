@@ -293,6 +293,70 @@ var angularModule =
             };
 
         })
+        .controller('ModalEditResultadoSimplesCtrl', function ($scope, $uibModalInstance, etapa, entry, results, AlertService, GridService, EquipesService, UtilsService) {
+            $scope.etapa = etapa;
+            $scope.equipes = [];
+            $scope.equipe = { nome: '' };
+
+            $scope.entry = entry;
+            
+            if ($scope.entry==null) {
+                
+                $scope.entry={isNew: true};
+            }else{
+                $scope.entry.isNew = false;
+            }
+            
+            
+
+            $scope.results = results;
+
+            $scope.getLabelCategoria = UtilsService.getLabelCategoria;
+
+            EquipesService.query({}, function (data) {
+                //filtra so os que já nao estão nos resultados
+                for (var index = 0; index < data.length; index++) {
+                    var element = data[index];
+                    var found = false;
+                    for (var j = 0; j < $scope.results.length; j++) {
+                        
+                        if($scope.results[j].id_Equipe){
+                            if(element.id==$scope.entry.id){
+                                $scope.equipe=element;
+                            }
+                            if ($scope.results[j].id_Equipe != null && element.id == $scope.results[j].id_Equipe) {
+                                found = true;
+
+                                break;
+                            }
+                        }
+                    }
+                    if (found == false) {
+                        $scope.equipes.push(element);
+                    }
+                }
+            });
+
+
+
+            $scope.ok = function () {
+               
+               
+                console.log("#", $scope.equipe);
+                if ($scope.equipe == null) {
+                     AlertService.showError("Por favor selecione uma equipe existente.");
+                    return;
+                }
+                $scope.entry.id_Equipe=$scope.equipe.id;
+                $uibModalInstance.close($scope.entry);
+
+            };
+
+            $scope.cancel = function () {
+                $uibModalInstance.dismiss('cancel');
+            };
+
+        })
         .controller('ModalDetalhesPCSCtrl', function ($scope, $uibModalInstance,  entry, AlertService, GridService, EquipesService, UtilsService) {
             $scope.entry=entry;
             $scope.getTipoLabel = function (tipo) {
@@ -361,13 +425,13 @@ var angularModule =
 
             }
             $scope.addResultado = function () {
-                $scope.editItem({ equipe: null })
+                $scope.editItem(null)
             }
             $scope.editItem = function (item) {
                 var modalInstance = $uibModal.open({
                     animation: $scope.animationsEnabled,
                     templateUrl: 'modalResultadoContent.html',
-                    controller: 'ModalEditResultadoCtrl',
+                    controller: 'ModalEditResultadoSimplesCtrl',
                     size: 'sm',
                     resolve: {
                         entry: function () {
@@ -384,10 +448,9 @@ var angularModule =
                 });
 
                 modalInstance.result.then(function (selecionado) {
-
-                    if (selecionado.id_Equipe == null) {
-                        selecionado.id_Equipe = selecionado.grid.id;
-                        selecionado.id_Etapa = $scope.etapa.id;
+                    selecionado.id_Etapa = idEtapa;
+                    if (selecionado.isNew==true) {                        
+                        
                         ResultadoAdminService.save(selecionado, function (data) {
                             $scope.resultados = EtapasService.getResultados({ id: idEtapa });
                         });
