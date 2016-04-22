@@ -1,29 +1,33 @@
 <section class="content-header" ng-include="'partials/breadcrumb.html'" ng-init="title = 'Inscrições';
    bcs=[{title:'Home',url:'#/'},{title:'Etapas',url:'#/etapas'},{title:'Etapa',url:'#/etapa/{{etapa.id}}'},{title:'Inscrições',url:'#/etapa//inscricoes',active:true}]"></section>
 <section class="content">
-<style>
-    .info{
-           font-size: x-small;
-    font-style: italic;
-    }
+    <style>
+        .info {
+            font-size: x-small;
+            font-style: italic;
+        }
     </style>
     <div class="row">
         <div class="col-xs-12">
             <div class="box box-primary">
-                <div class="box-header ">
+                <div class="box-header">
 
 
                     <h3 class="box-title">Inscrições </h3>
                     <div class="pull-right box-tools">
                         <div class="btn-group">
-                            <div class="btn-group " ng-show="etapa.id!=null && etapa.id!=-1" ng-cloak>
+                            <div class="btn-group" ng-show="etapa.id!=null && etapa.id!=-1" ng-cloak>
                                 <button type="button" class="btn btn-warning btn-sm dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
                                     <i class="fa fa-bars"></i></button>
+                                <button type="button" class="btn btn-sm  " data-toggle="tooltip" title="Adiciona PréGrid" ng-click="addPreGrid()">
+                                    <i class="fa fa-plus"></i></button>
                                 <ul class="dropdown-menu pull-right" role="menu">
-
+                                    <li><a href="#/etapa/{{etapa.id}}" ng-cloak="" class="text-red">Ver Etapa</a></li>
+                                    <li><a href="#/etapa/{{etapa.id}}/inscricoes" ng-cloak="" class="text-red">Inscrições</a></li>
                                     <li><a href="#/etapa/{{etapa.id}}/grid" ng-cloak="" class="text-red">Grid</a></li>
+                                    <li><a href="#/etapa/{{etapa.id}}/resultados" ng-cloak="" class="text-red">Resultados</a></li>
                                     <li class="divider"></li>
-
+                                    <li><a href="#/etapa/{{etapa.id}}/relatorio" ng-cloak="" class="text-red">Relatório</a></li>
                                 </ul>
                             </div>
                             <button type="" class="btn btn-sm"><i class="fa fa-refresh" ng-click="refresh()"></i></button>
@@ -65,7 +69,7 @@
                                     <col-sorter field="'paga'" var="sortItem"></col-sorter>
                                 </th>
                             </tr>
-                            <tr ng-repeat="item in items| filter:searchText| orderBy : sortItem.field:sortItem.reverse ">
+                            <tr ng-repeat="item in items| filter:searchText| orderBy : sortItem.field:sortItem.reverse">
                                 <td>{{item.data|date:'dd-MM-yyyy'}}</td>
                                 <td><a href="#/competidor/{{item.id_Trekker}}" title="Editar Competidor">{{item.nome}}</a></td>
                                 <td><a href="#/competidor/{{item.id_Trekker}}" title="Editar Competidor">{{item.email}}</a></td>
@@ -98,9 +102,43 @@
                     </table>
                 </div>
                 <div class="box-footer clearfix">
-                 
+
                 </div>
 
             </div>
         </div>
 </section>
+
+<script type="text/ng-template" id="competidorModalContent.html" title="Template para formulário de competidor">
+    <div class=" modal-header">
+        <h3 class="modal-title">Inscrever Competidor no Pré grid</h3>
+    </div>
+
+    <div class="modal-body">
+        <form name="competidorForm" class="css-form" novalidate autocomplete="off">
+            <div class="box-body">
+                <div class="row">
+                    <label for="inputTrekker" class="col-sm-2 control-label">*Nome</label>
+                    <div class="col-sm-10">
+                        <input type="text" autocomplete="off" ng-model="novoCompetidor" id="inputTrekker" placeholder="Nome" name="nome" typeahead-show-hint="true"
+                        uib-typeahead="g as g.nome for g in competidores | filter:{nome:$viewValue} | limitTo:8 | orderBy:[ 'equipe', 'nome']"
+                        typeahead-editable="true" class="form-control" typeahead-select-on-exact="true" typeahead-template-url="customTemplate.html"
+                        typeahead-min-length="0" typeahead-no-results="noResult">
+                    </div>
+                </div>
+                <div class="row" ng-show="novoCompetidor.equipe">
+                     <h3><small>Equipe Atual:</small> {{novoCompetidor.equipe}}</h3>
+                    <small>Caso queira trocar a equipe utilize o menu Competidores.</small>
+                </div>
+
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-primary" type="button" ng-click="ok()">Inscrever Pré-Grid</button>
+        <button class="btn btn-warning" type="button" ng-click="cancel()">Cancelar</button>
+    </div>
+</script>
+<script type="text/ng-template" id="customTemplate.html" title="Template para autocomplete de competidor">
+    <a><span ng-class="{ 'indisponivel':(match.model.paga==1)}" ng-bind-html="match.model.nome + ' - '+ (match.model.equipe!=null?match.model.equipe:'Sem Equipe') | uibTypeaheadHighlight:query"></span> <span ng-if="match.model.paga==1">Já inscrito nesta etapa</span></a>
+</script>

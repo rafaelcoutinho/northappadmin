@@ -8,7 +8,7 @@ var angularModule =
             // "context": "//localhost/northServer/api.php",
             "contextRoot": SERVER_ROOT
 
-        }).config(['$routeProvider', function ($routeProvider, $rootScope) {
+        }).config(['$routeProvider','$httpProvider', function ($routeProvider, $httpProvider) {
             $routeProvider.when('/', {
                 templateUrl: 'partials/main.html'
 
@@ -68,9 +68,44 @@ var angularModule =
                 }).when('/etapa/:idEtapa/inscricoes/:idTrekker', {
                     templateUrl: 'partials/inscricao.html',
                     controller: 'InscricaoDetailsCtrl'
+                    
+                }).when('/etapa/:idEtapa/resultadoEdit', {
+                    templateUrl: 'partials/resultadoEtapaForm.html',
+                    controller: 'ResultadoFormCtrl',
+                    resolve: {
+                        idEtapa: function ($route) {
+
+                            return $route.current.params.idEtapa;
+
+                        }
+                    }
+                }).when('/etapa/:idEtapa/performanceEdit', {
+                    templateUrl: 'partials/performanceEtapaForm.html',
+                    controller: 'PerformanceFormCtrl',
+                    resolve: {
+                        idEtapa: function ($route) {
+
+                            return $route.current.params.idEtapa;
+
+                        }
+                    }
+                }).when('/etapa/:idEtapa/resultados', {
+                    templateUrl: 'partials/resultados.html',
+                    controller: 'ResultadosCtrl',
+                    resolve: {
+                        idEtapa: function ($route) {
+
+                            return $route.current.params.idEtapa;
+
+                        }
+                    }
+                }).when('/notificacoes', {
+                    templateUrl: 'partials/notificacao.html',
+                    controller: 'NotificacaoCtrl'
                 }).otherwise({
                     redirectTo: '/'
                 });
+            $httpProvider.interceptors.push('REST_Interceptor');
 
         }]).filter("sanitize", ['$sce', function ($sce) {
             return function (htmlCode) {
@@ -113,6 +148,485 @@ var angularModule =
                 }
             });
         }])
+        .service('ResultadoAdminService', ['$http', '$q', '$resource', 'appConfigs', function ($http, $q, $resource, appConfigs) {
+            return $resource(appConfigs.context + '/Resultado/:id', {}, {
+                query: {
+                    isArray: true,
+                    transformResponse: jsonTransformQuery
+                },
+                save:{
+                    method: "POST",
+                    isArray: false
+                },
+                update:{
+                    method: "PUT",
+                    isArray: false
+                },
+                saveResultados: {
+                    method: "PUT",
+                    isArray: false,                    
+                    url:appConfigs.contextRoot + '/GerenciaResultado.do'
+                    // url: "http://localhost/northServer/performance.php"
+                },
+                 processPerformanceCSV: {
+                    method: "POST",
+                    isArray: true,                    
+                    url:appConfigs.contextRoot + '/GerenciaResultado.do'
+                    // url: "http://localhost/northServer/performance.php"
+
+                }
+            });
+        }])
+         .service('NotificacaoService', ['$http', '$q', '$resource', 'appConfigs', function ($http, $q, $resource, appConfigs) {
+            return $resource(appConfigs.contextRoot + '/notification', {}, {
+                publish: {
+                    isArray: true,
+                    method:"POST"
+                   
+                },
+            });
+        }])
+        .controller('NotificacaoCtrl', function ($scope, AlertService, NotificacaoService, UtilsService,$uibModal) {
+            $scope.mensagem={
+                type:"all",
+                to:null,
+                
+                notification:{
+                    title:"",
+                    body:""
+                }
+            };
+            $scope.enviarNotificacao=function(){
+                   
+                
+                var modalInstance = $uibModal.open({
+                        animation: $scope.animationsEnabled,
+                        templateUrl: 'partials/modal.html',
+                        controller: 'ConfirmModalCrtl',
+                        size: 'sm',
+                        resolve: {
+                            title: function () {
+                                return "Notificação";
+                            },
+                            message: function () {
+                                switch ($scope.mensagem.type) {
+                                    case "all":
+                                        return "Você tem certeza que deseja enivar uma notificação para TODOS os usuários do aplicativo?";
+                                    case "pro":
+                                        return "Você tem certeza que deseja enivar uma notificação para os competidores da categoria Pró?";
+                                    case "graduado":
+                                        return "Você tem certeza que deseja enivar uma notificação para os competidores da categoria Graduado?";
+                                    case "trekker":
+                                        return "Você tem certeza que deseja enivar uma notificação para os competidores da categoria Trekker?";
+                                    case "turismo":
+                                        return "Você tem certeza que deseja enivar uma notificação para os competidores da categoria Turismo?";
+                                }
+                                
+                            }
+                        }
+                    });
+                    modalInstance.result.then(function () {
+                       NotificacaoService.publish($scope.mensagem);
+                    }, function () {
+                        // $log.info('Modal dismissed at: ' + new Date());
+                    });
+                
+            }
+            
+        })
+        .controller('ModalEditResultadoCtrl', function ($scope, $uibModalInstance, etapa, entry, results, AlertService, GridService, EquipesService, UtilsService) {
+            $scope.etapa = etapa;
+            $scope.equipes = [];
+            $scope.equipe = entry.equipe;
+            if ($scope.equipe == null) {
+                $scope.equipe = { nome: '' };
+            }
+            $scope.isNew = true;
+            $scope.entry = entry;
+
+            $scope.results = results;
+
+            $scope.getLabelCategoria = UtilsService.getLabelCategoria;
+
+            EquipesService.query({}, function (data) {
+                for (var index = 0; index < data.length; index++) {
+                    var element = data[index];
+                    var found = false;
+                    for (var j = 0; j < $scope.results.length; j++) {
+                        if($scope.results[j].grid.equipe){
+                            if ($scope.results[j].grid.equipe != null && element.id == $scope.results[j].grid.equipe.id_Equipe) {
+                                found = true;
+
+                                break;
+                            }
+                        }
+                    }
+                    if (found == false) {
+                        $scope.equipes.push(element);
+                    }
+                }
+            });
+
+
+
+            $scope.ok = function () {
+                $scope.entry.grid.equipe={
+                    id_Equipe:$scope.equipe.id,
+                    nome:$scope.equipe.nome,
+                    id_Categoria:$scope.equipe.id_Categoria,
+                    descricao:$scope.equipe.descricao,
+                    hora:$scope.entry.grid.hora,
+                    minuto:$scope.entry.grid.minuto
+                }
+               
+                console.log("#", $scope.equipe);
+                if ($scope.equipe == null) {
+                    return;
+                }
+
+                $uibModalInstance.close($scope.entry);
+
+            };
+
+            $scope.cancel = function () {
+                $uibModalInstance.dismiss('cancel');
+            };
+
+        })
+        .controller('ModalDetalhesPCSCtrl', function ($scope, $uibModalInstance,  entry, AlertService, GridService, EquipesService, UtilsService) {
+            $scope.entry=entry;
+            $scope.getTipoLabel = function (tipo) {
+                switch (tipo) {
+                    case 1:
+                        return "Tempo";
+                        break;
+                    case 2:
+                        return "Virtual";
+                        break;
+                    case 3:
+                        return "Cancelado";
+                        break;
+                    default:
+                        break;
+                }
+
+            }
+            $scope.cancel = function () {
+                $uibModalInstance.dismiss('cancel');
+            };
+        })
+        .controller('ResultadosCtrl', function ($scope, idEtapa, EtapasService, UtilsService, $uibModal,CategoriaService,$location,$log,ResultadoAdminService,AlertService) {
+            $scope.etapa = EtapasService.get({ id: idEtapa });
+            $scope.categorias = CategoriaService.query({}, function (data) {
+                $scope.categoria = { id_Categoria: data[0].id };
+
+            });
+            $scope.resultados = EtapasService.getResultados({ id: idEtapa });
+            $scope.getLabelCategoria = UtilsService.getLabelCategoria;
+
+            $scope.importCSV = function () {
+                $location.path("/etapa/" + idEtapa + "/resultadoEdit");
+            };
+            $scope.importPerformanceCSV = function () {
+                $location.path("/etapa/" + idEtapa + "/performanceEdit");
+            };
+            
+            $scope.remover = function (item) {
+                var modalInstance = $uibModal.open({
+                    animation: $scope.animationsEnabled,
+                    templateUrl: 'partials/modal.html',
+                    controller: 'ConfirmModalCrtl',
+                    size: 'sm',
+                    resolve: {
+                        title: function () {
+                            return "Apagar";
+                        },
+                        message: function () {
+                            return "Você tem certeza que deseja remover o resultado para esta equipe?";
+                        }
+                    }
+                });
+                modalInstance.result.then(function () {
+                    ResultadoAdminService.remove(item,
+                        function (data) {
+                            AlertService.showSuccess("Resultado removido");
+                          $scope.resultados = EtapasService.getResultados({ id: idEtapa });
+
+                        }, function (data) {
+                            AlertService.showError("Houve um erro ao remover");
+                        });
+                }, function () {
+                    // $log.info('Modal dismissed at: ' + new Date());
+                });
+
+            }
+            $scope.addResultado = function () {
+                $scope.editItem({ equipe: null })
+            }
+            $scope.editItem = function (item) {
+                var modalInstance = $uibModal.open({
+                    animation: $scope.animationsEnabled,
+                    templateUrl: 'modalResultadoContent.html',
+                    controller: 'ModalEditResultadoCtrl',
+                    size: 'sm',
+                    resolve: {
+                        entry: function () {
+                            return item;
+                        },
+                        etapa: function () {
+                            return $scope.etapa;
+                        },
+
+                        results: function () {
+                            return $scope.resultados;
+                        }
+                    }
+                });
+
+                modalInstance.result.then(function (selecionado) {
+
+                    if (selecionado.id_Equipe == null) {
+                        selecionado.id_Equipe = selecionado.grid.id;
+                        selecionado.id_Etapa = $scope.etapa.id;
+                        ResultadoAdminService.save(selecionado, function (data) {
+                            $scope.resultados = EtapasService.getResultados({ id: idEtapa });
+                        });
+
+                    } else {
+                        ResultadoAdminService.update(selecionado, function (data) {
+                            $scope.resultados = EtapasService.getResultados({ id: idEtapa });
+                        });
+                    }
+
+                }, function () {
+                    $log.info('Modal dismissed at: ' + new Date());
+                });
+            }
+            $scope.showDetalhes = function (item) {
+                 if(!item.pcs){
+                    item.pcs = EtapasService.getPerformance({ id: idEtapa, id_Equipe:item.id_Equipe });
+                } 
+                var modalInstance = $uibModal.open({
+                    animation: $scope.animationsEnabled,
+                    templateUrl: 'modalPCS.html',
+                    controller: 'ModalDetalhesPCSCtrl',
+                    size: 'sm',
+                    resolve: {
+                        entry: function () {
+                            return item;
+                        }
+                    }
+                });
+
+                modalInstance.result.then(function () {
+
+                    
+                }, function () {
+                    
+                });
+            }
+        })
+        
+        .controller('PerformanceFormCtrl', function ($scope, idEtapa, EtapasService, UtilsService, ResultadoAdminService, $uibModal, $log) {
+            $scope.processCsv = function () {
+                ResultadoAdminService.processPerformanceCSV({ etapa: idEtapa }, $scope.csvData, function (data) {
+                    $scope.preResultados = data;
+
+                }, function (error) {
+                    console.log("erro", error);
+                });
+            }
+            $scope.getPoints = function (item) {
+                var pcs = item.pcs;
+                
+                var totalPerdido = 0;
+                var totalZerados = 0;
+                var pcsNaoPassados = 0;
+                for (var index = 0; index < pcs.length; index++) {
+                    var element = pcs[index];
+                    if (element.Tmp) {
+                        if (isNaN(element.Tmp)) {
+                            if (element.Tmp == "*900") {
+                                pcsNaoPassados++;
+                                totalPerdido += 900;
+                            } else {
+                                console.log("err", element,item);
+                            }
+                        } else {
+                            if(element.Tmp==0){
+                                totalZerados++;
+                            }
+                            totalPerdido += Math.abs(element.Tmp);
+                        }
+                    } else if (element.Virt) {
+                        if (isNaN(element.Virt)) {
+                            if (element.Virt == "*900") {
+                                pcsNaoPassados++;
+                                totalPerdido += 900;
+                            } else {
+                                console.log("err", element,item);
+                            }
+                        } else {
+                            if(element.Virt==0){
+                                totalZerados++;
+                            }
+                            totalPerdido += Math.abs(element.Virt);
+                        }
+                    }
+
+                }
+                item.PtsPerdidos=totalPerdido;
+                item.PCZerado=totalZerados;
+                item.PtsPerdidos=totalPerdido;
+                item.PCPassou=(pcs.length-pcsNaoPassados);
+                if(item.grid){//todo mover pra outro lugar
+                    item=item.grid.id_Equipe;
+                }
+                return totalPerdido;
+            }
+            $scope.accentsTidy = function (s) {
+                var r = s.toLowerCase();
+                r = r.replace(new RegExp(/\s/g), "");
+                r = r.replace(new RegExp(/[àáâãäå]/g), "a");
+                r = r.replace(new RegExp(/æ/g), "ae");
+                r = r.replace(new RegExp(/ç/g), "c");
+                r = r.replace(new RegExp(/[èéêë]/g), "e");
+                r = r.replace(new RegExp(/[ìíîï]/g), "i");
+                r = r.replace(new RegExp(/ñ/g), "n");
+                r = r.replace(new RegExp(/[òóôõö]/g), "o");
+                r = r.replace(new RegExp(/œ/g), "oe");
+                r = r.replace(new RegExp(/[ùúûü]/g), "u");
+                r = r.replace(new RegExp(/[ýÿ]/g), "y");
+                r = r.replace(new RegExp(/\W/g), "");
+                return r;
+            };
+            $scope.diffNames = function (item) {
+                if(!item.grid.equipe){
+                    return true;
+                }
+                return item.grid.equipe != null && $scope.accentsTidy(item.grid.equipe.nome) != $scope.accentsTidy(item.Piloto);
+            }
+            $scope.getLabelCategoria = UtilsService.getLabelCategoria;
+            $scope.salvarResultados = function () {
+                ResultadoAdminService.saveResultados({ etapa: idEtapa }, $scope.preResultados);
+            }
+            $scope.selecao = {};
+            $scope.editEquipe = function (item) {
+                var modalInstance = $uibModal.open({
+                    animation: $scope.animationsEnabled,
+                    templateUrl: 'equipeModal.html',
+                    controller: 'ModalEditResultadoCtrl',
+                    size: 'sm',
+                    resolve: {
+                        entry: function () {
+                            return item;
+                        },
+                        results: function () {
+                            return $scope.preResultados;
+                        },
+                        etapa: function () {
+                            return $scope.etapa;
+                        }
+                    }
+                });
+
+                modalInstance.result.then(function (selecionado) {
+                    for (var index = 0; index < $scope.preResultados.length; index++) {
+                        var element = $scope.preResultados[index];
+                        console.log(element, selecionado);
+                        if (element.Num == selecionado.Num) {
+                            $scope.preResultados[index] = selecionado;
+                            return;
+                        }
+                    }
+                }, function () {
+                    $log.info('Modal dismissed at: ' + new Date());
+                });
+
+            }
+            $scope.getLabelCategoria = UtilsService.getLabelCategoria;
+            $scope.updateBreadcrumb = function () {
+                $scope.title = 'Gerenciar Resultados ' ;
+                
+                $scope.bcs = [{ title: 'Home', url: '#/' }, { title: 'Etapas', url: '#/etapas' }, { title: 'Etapa', url: '#/etapa/' + idEtapa }, { title: 'Importar CSV', url: '',active:true }]
+            }
+        })
+       
+        .controller('ResultadoFormCtrl', function ($scope, idEtapa, EtapasService, UtilsService, ResultadoAdminService, $uibModal, $log) {
+            $scope.etapa = EtapasService.get({ id: idEtapa });
+            $scope.processCsv = function () {
+                ResultadoAdminService.processCSV({ etapa: idEtapa }, $scope.csvData, function (data) {
+                    $scope.preResultados = data;
+                    
+                }, function (error) {
+                    console.log("erro", error);
+                });
+            }
+            $scope.salvarResultados = function () {
+                ResultadoAdminService.saveResultados({ etapa: idEtapa }, $scope.preResultados);
+            }
+ 
+            $scope.accentsTidy = function (s) {
+                var r = s.toLowerCase();
+                r = r.replace(new RegExp(/\s/g), "");
+                r = r.replace(new RegExp(/[àáâãäå]/g), "a");
+                r = r.replace(new RegExp(/æ/g), "ae");
+                r = r.replace(new RegExp(/ç/g), "c");
+                r = r.replace(new RegExp(/[èéêë]/g), "e");
+                r = r.replace(new RegExp(/[ìíîï]/g), "i");
+                r = r.replace(new RegExp(/ñ/g), "n");
+                r = r.replace(new RegExp(/[òóôõö]/g), "o");
+                r = r.replace(new RegExp(/œ/g), "oe");
+                r = r.replace(new RegExp(/[ùúûü]/g), "u");
+                r = r.replace(new RegExp(/[ýÿ]/g), "y");
+                r = r.replace(new RegExp(/\W/g), "");
+                return r;
+            };
+            $scope.diffNames = function (item) {
+                return item.grid != null && $scope.accentsTidy(item.grid.nome) != $scope.accentsTidy(item.Piloto);
+            }
+            $scope.selecao = {};
+            $scope.editEquipe = function (item) {
+                var modalInstance = $uibModal.open({
+                    animation: $scope.animationsEnabled,
+                    templateUrl: 'equipeModal.html',
+                    controller: 'ModalEditResultadoCtrl',
+                    size: 'sm',
+                    resolve: {
+                        entry: function () {
+                            return item;
+                        },
+                        results: function () {
+                            return $scope.preResultados;
+                        },
+                        etapa: function () {
+                            return $scope.etapa;
+                        }
+                    }
+                });
+
+                modalInstance.result.then(function (selecionado) {
+                    for (var index = 0; index < $scope.preResultados.length; index++) {
+                        var element = $scope.preResultados[index];
+                        console.log(element, selecionado);
+                        if (element.Num == selecionado.Num) {
+                            $scope.preResultados[index] = selecionado;
+                            return;
+                        }
+                    }
+                }, function () {
+                    $log.info('Modal dismissed at: ' + new Date());
+                });
+
+            }
+            $scope.getLabelCategoria = UtilsService.getLabelCategoria;
+            $scope.updateBreadcrumb = function () {
+                $scope.title = 'Gerenciar Resultados ' ;
+                
+                $scope.bcs = [{ title: 'Home', url: '#/' }, { title: 'Etapas', url: '#/etapas' }, { title: 'Etapa', url: '#/etapa/' + idEtapa }, { title: 'Importar CSV', url: '',active:true }]
+            }
+
+        })
         .controller('PrintCtrl', function ($scope, RelatorioService, idEtapa, EtapasService,UtilsService) {
             $scope.etapa = EtapasService.get({ id: idEtapa });
             $scope.data = new Date();
@@ -402,10 +916,23 @@ var angularModule =
                     $location.path("/gridconfs");
                 }
             }])
+        .controller('ModalCompetidor', function ($scope, $uibModalInstance, competidores, AlertService) {
+            $scope.competidores = competidores;
+            $scope.novoCompetidor = { nome: "" };
+
+            $scope.ok = function () {
+                $uibModalInstance.close($scope.novoCompetidor);
+            };
+
+            $scope.cancel = function () {
+                $uibModalInstance.dismiss('cancel');
+            };
+
+        })
         .controller('InscricoesListCtrl', [
 
-            '$scope', '$timeout', '$window', '$routeParams', 'InscricaoService', 'EtapasService', '$location','$uibModal','AlertService',
-            function ($scope, $timeout, $window, $routeParams, InscricaoService, EtapasService, $location,$uibModal,AlertService) {
+            '$scope', '$timeout', '$window', '$routeParams', 'InscricaoService', 'EtapasService', '$location','$uibModal','AlertService','CompetidorService','$log',
+            function ($scope, $timeout, $window, $routeParams, InscricaoService, EtapasService, $location,$uibModal,AlertService,CompetidorService,$log) {
                 $scope.inscOrder = "data";
                 $scope.idEtapa = $routeParams.idEtapa;
                 $scope.etapa = EtapasService.get({ id: $routeParams.idEtapa });
@@ -420,6 +947,41 @@ var angularModule =
                     field: "data",
                     reverse: false
                 }
+                
+                $scope.addPreGrid = function () {
+                    if ($scope.competidores == null) {
+                        $scope.competidores = CompetidorService.query();
+                    }
+                    var modalInstance = $uibModal.open({
+                        animation: $scope.animationsEnabled,
+                        templateUrl: 'competidorModalContent.html',
+                        controller: 'ModalCompetidor',
+                        size: 'lg',
+                        resolve: {
+                            competidores: function () {
+                                return $scope.competidores;
+                            }
+                        }
+                    });
+
+                    modalInstance.result.then(function (selecionado) {
+                        if (selecionado) {
+                            InscricaoService.save({ id_Etapa: $routeParams.idEtapa, data: new Date().getTime(), id_Trekker: selecionado.id_Trekker, id_Equipe: selecionado.id_Equipe }, function () {
+                                AlertService.showInfo("Inserido no pré-grid com sucesso.");
+                                $scope.refresh();
+                            }, function (err) {
+                                if (err.data.errorMsg.indexOf("Duplicate") > 0) {
+                                    AlertService.showError("Competidor já está no PréGrid/Grid");
+                                } else {
+                                    AlertService.showError("Houve um erro ao inserí-lo.");
+                                }
+                            })
+                        }
+                    }, function () {
+                        $log.info('Modal dismissed at: ' + new Date());
+                    });
+                }
+                
                 $scope.apagar =function(item){
                     var modalInstance = $uibModal.open({
                         animation: $scope.animationsEnabled,

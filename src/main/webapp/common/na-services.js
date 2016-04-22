@@ -49,6 +49,7 @@ angular.module('north.services', ['ngResource'])
             }
         }
     }])
+
     .service('CompetidorService', ['$http', '$q', '$resource', 'appConfigs', function ($http, $q, $resource, appConfigs) {
 
         return $resource(appConfigs.context + '/Competidor/:id', {}, {
@@ -117,11 +118,34 @@ angular.module('north.services', ['ngResource'])
                 url: appConfigs.context + '/InscricaoFull?filter0=id_Trekker,eq,:idTrekker&filter1=id_Etapa,eq,:idEtapa',
                 transformResponse: jsonTransformQueryGetSingle
             },
+            checkCompetidor: {
+                method: "GET",
+                isArray: false,
+                url: appConfigs.contextRoot + '/endpoints/RegisterInscription'
+            },
+            registerUser: {
+                method: "POST",
+                isArray: false,
+                url: appConfigs.contextRoot + '/endpoints/RegisterInscription'
+            },
+            startPwdRecovery: {
+                method: "POST",
+                isArray: false,
+                url: "https:" +appConfigs.contextRoot + "/endpoints/senha/LembrarSenha"
+            },
+            loginUser: {
+                method: "POST",
+                isArray: false,
+                url: "https:"+appConfigs.contextRoot + '/endpoints/Login'
+            },
 
             queryCompetidores: {
                 isArray: true,
-                url: appConfigs.contextRoot + '/app/enhanced/CompetidorInscricao/:idEtapa'
-
+                url: appConfigs.contextRoot + '/app/enhanced/InscricaoCompetidores/:idEtapa/:idEquipe'
+            },
+            getInscricaoCompetidor: {
+                isArray: false,
+                url: appConfigs.contextRoot + '/app/enhanced/InscricaoCompetidor/:idEtapa/:email'
             },
             query4Equipe: {
                 isArray: true,
@@ -174,7 +198,23 @@ angular.module('north.services', ['ngResource'])
             query: {
                 isArray: true,
                 transformResponse: jsonTransformQuery
+            },
+            getEtapaAtual: {
+                isArray: false,
+                url: appConfigs.contextRoot + '/app/enhanced/EtapaAtual'
+                // url: "http://localhost/northServer/app.php/EtapaAtual"
+            },
+            getPerformance: {
+                isArray: true,
+                url: appConfigs.contextRoot + '/app/enhanced/Etapa/:id/Resultado'
+                // url: "http://localhost/northServer/app.php/Etapa/:id/Performance/:id_Equipe"
+            },
+            getResultados: {
+                isArray: true,
+                url: appConfigs.contextRoot + '/app/enhanced/Etapa/:id/Resultado'
+                // url: "http://localhost/northServer/app.php/Etapa/:id/Resultado"
             }
+
         })
     }])
     .service('LocationService', ['$http', '$q', '$resource', 'appConfigs', function ($http, $q, $resource, appConfigs) {
@@ -196,7 +236,7 @@ angular.module('north.services', ['ngResource'])
         });
 
     }])
-    .service('UtilsService', ['$http', '$q', '$resource', 'appConfigs', 'CategoriaService','GridConfService', function ($http, $q, $resource, appConfigs, CategoriaService, GridConfService) {
+    .service('UtilsService', ['$http', '$q', '$resource', 'appConfigs', 'CategoriaService', 'GridConfService', function ($http, $q, $resource, appConfigs, CategoriaService, GridConfService) {
         var cats = CategoriaService.query();
         var grids = GridConfService.query();
         return {
@@ -236,4 +276,60 @@ angular.module('north.services', ['ngResource'])
             }
         });
 
-    }])
+    }]).factory('REST_Interceptor', ['appConfigs',
+
+        function (appConfigs) {
+            var DEBUG = false;
+            var V2 = false;
+            var request = function (config) {
+                if (DEBUG) {
+
+                    var url = config.url;
+
+                     if (config.url.indexOf("notification") > 0) {
+                        config.url = "http://localhost/northServer/notificator.php";
+                    } else if (config.url.indexOf("AlteraGrid") > 0) {
+                        config.url = "http://localhost/northServer/alteraGrid.php";
+                    } else if (config.url.indexOf("Inscrever.do") > -1) {
+                        config.url = "http://localhost/northServer/inscrever.php";
+                    } else if (config.url.indexOf(appConfigs.contextRoot + '/app/enhanced') > -1) {
+                        config.url = config.url.replace(appConfigs.contextRoot + '/app/enhanced', "http://localhost/northServer/app.php");
+
+                    } else if (config.url.indexOf(appConfigs.contextRoot + '/endpoints/RegisterInscription') > -1) {
+                        config.url = "http://localhost/northServer/userRegisterInscription.php";
+
+                    } else if (config.url.indexOf(appConfigs.contextRoot + '/endpoints/Login') > -1) {
+                        config.url = "//localhost/northServer/login.php";
+                    } else if (config.url.indexOf(appConfigs.contextRoot + '/app/rest') > -1) {
+                        config.url = config.url.replace(appConfigs.contextRoot + "/app/rest", "http://localhost/northServer/apiPub.php");
+
+                    } else if (config.url.indexOf(appConfigs.contextRoot + '/rest') > -1) {
+                        config.url = config.url.replace(appConfigs.contextRoot + "/rest", "http://localhost/northServer/api.php");
+                    } else if (config.url.indexOf(appConfigs.contextRoot + '/SetPago.do') > -1) {
+                        config.url = config.url.replace(appConfigs.contextRoot + "/SetPago.do", "http://localhost/northServer/marcarPaga.php");
+                    }else if(config.url.indexOf(appConfigs.contextRoot + '/endpoints/senha/') > -1) {
+                        config.url = config.url.replace(appConfigs.contextRoot + '/endpoints/senha/', "http://localhost/northServer/senha.php/");                    }
+
+                    if (url != config.url) {
+                        console.debug("Url alterada ", config.url, url)
+                    } else {
+                        console.warn("Url NAO alterada ", config.url, url)
+                    }
+                } else if (V2) {
+                    var url = config.url;
+                    config.url = config.url.replace("//cumeqetrekking.appspot.com", "//2-dot-cumeqetrekking.appspot.com");
+                    if (url != config.url) {
+                        console.warn("Url alterada ", config.url, url)
+                    }
+                } else {
+                    console.log("no url update");
+                }
+
+
+                return config;
+            }
+
+            return {
+                request: request
+            }
+        }])

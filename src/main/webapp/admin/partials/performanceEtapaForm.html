@@ -1,0 +1,146 @@
+<style>
+    .manualUpdate {
+        background-color: #D2D6DE;
+    }
+    
+    .missing {
+        background-color: #ff3131;
+    }
+    
+    .investigate {
+        background-color: yellow;
+    }
+    
+    .diff {
+        font-size: x-small;
+        font-weight: bold;
+        font-style: italic;
+    }
+</style>
+
+<section class="content-header" ng-include="'partials/breadcrumb.html'" ng-init="updateBreadcrumb()"></section>
+<section class="content">
+
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="box box-primary">
+                <div class="box-header ">
+
+
+                    <h3 class="box-title">Gerenciar Resultados da Etapa <b>{{etapa.titulo}}</b></h3>
+                    <div><small class="text-red">*Esta ação irá substituir qualquer resultado existente para a etapa</small></div>
+                    <div class="input-group input-group-sm">
+                        <textarea ng-model="csvData" cols="120" rows="4" style="width:100%">
+                        </textarea>
+                    </div>
+                    <button type="button" class="btn btn-sm " ng-click="processCsv()">Processar CSV</button>
+                </div>
+                <div class="box-body">
+                    <button type="submit " class="btn btn-primary btn-block pull-right " ng-if="preResultados!=null" ng-cloak ng-click="salvarResultados()">Salvar Resultados</button>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+
+                                <th>#</th>
+                                <th>Largada</th>
+                                <th>Categoria</th>
+                                <th>Equipe</th>
+                                <th>Colocação</th>
+<th>Penalidade</th>
+
+                            </tr>
+                        </thead>
+                        <tbody ng-repeat="item in preResultados| filter:searchText| orderBy : ['grid.hora','grid.minuto'] " ng-class="{missing:(item.grid.equipe.id_Equipe==null), investigate:diffNames(item)}">
+                            <tr>
+                                <td>{{item.No}}</td>
+                                <td>{{item.grid.equipe.hora}}:{{item.grid.equipe.minuto|zeroLeadNumber}} 
+                                    <div ng-if="item.grid.equipe==null" >Não foi encontrada equipe largando às {{item.grid.hora}}:{{item.grid.minuto|zeroLeadNumber}}</div>
+                                    
+                                </td>
+                                <td>{{getLabelCategoria(item.grid.equipe.id_Categoria)}}</td>
+                                <td>{{item.grid.equipe.nome}} {{item.grid.equipe.descricao}} <i class="fa fa-edit pull-right" ng-click="editEquipe(item)"></i>
+                                    <div ng-if="item.grid.equipe==null||diffNames(item)" class="diff">Dados originais: '{{item.Piloto}}'</div>
+                                </td>
+                                <td>{{item.Col}}</td>
+                                <td>{{item.Penal}}</td>
+                            </tr>
+                            <tr>
+                                <td colspan="6" class="box box-default  collapsed-box">
+
+
+                                    <div class="box-header ">
+                                        <h4 class="box-title">Detalhes PCS {{getPoints(item)}}</h4>
+
+                                        <div class="box-tools pull-right">
+                                            <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    
+                                    <div class="box-body">
+                                        <div class="table-responsive">
+                                            <div ng-repeat="pc in item.pcs" style="float:left;border:1px solid #f4f4f4;min-width:40px;">
+                                                <div class="bg-light-blue" style="text-align:center">{{pc.pc}}</div>
+                                                <div ng-if="pc.Tmp!=null && pc.Tmp!='*900'">T:{{pc.Tmp}}</div>
+                                                <div class="bg-yellow"  ng-if="pc.Tmp!=null && pc.Tmp=='*900'">-</div>
+                                                <div class="bg-red"  ng-if="pc.Canc!=null">Canc</div>                                                                                                
+                                                <div class="bg-olive" ng-if="pc.Virt!=null">V:{{pc.Virt}} </div>
+
+                                                <div>P:{{pc.ate}}</div>
+                                            </div>
+                                        </div>                                    
+                                    </div>
+
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    </td>
+                    </tr>
+
+
+
+
+                    </tbody>
+                    </table>
+                </div>
+                <div class="box-footer " ng-show="preResultados!=null" ng-cloak>
+
+                    <button type="submit " class="btn btn-primary btn-block pull-right " ng-cloak ng-click="salvarResultados()">Salvar Resultados</button>
+
+
+
+                </div>
+                <!-- /.box -->
+            </div>
+        </div>
+</section>
+
+<script type="text/ng-template" id="equipeModal.html ">
+    <div class="modal-header ">
+        <h3 class="modal-title ">Configurar Equipe</h3>
+    </div>
+    <div class="modal-body ">
+        <form name="largadaForm" role="form " class="css-form " novalidate autocomplete="none">
+            <div class="box-body ">
+
+                <div class="row ">
+                    Equipe: {{equipe.nome}}
+                    <input type="text" autocomplete="off " ng-model="equipe" typeahead-show-hint="true " uib-typeahead="g as g.nome for g in equipes | filter:{nome:$viewValue} | limitTo:8"
+                    typeahead-editable="true " class="form-control " typeahead-select-on-exact="true " typeahead-min-length="0 "
+                    typeahead-no-results="noResult">
+                </div>
+                <div class="row ">
+                    Informação do CSV: {{entry.HoraLargada}}:{{entry.Piloto}} {{entry.Cidade}}
+                </div>
+
+
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer ">
+        <button class="btn btn-primary " type="button " ng-click="ok() ">Setar</button>
+        <button class="btn btn-warning " type="button " ng-click="cancel() ">Cancelar</button>
+    </div>
+</script>

@@ -14,6 +14,13 @@ handlers:
   script: src/main/php/api.php
   login: admin
 
+- url: /notification
+  script: src/main/php/notificator.php
+  login: admin
+
+- url: /test
+  script: src/main/php/nottest.php
+
 - url: /SetPago.do
   script:  src/main/php/marcarPaga.php
   login: admin
@@ -22,6 +29,9 @@ handlers:
   script:  src/main/php/alteraGrid.php
   login: admin
 
+- url: /GerenciaResultado.do
+  script:  src/main/php/performance.php
+  login: admin
 
 - url: /Inscrever.do
   script:  src/main/php/inscrever.php
@@ -38,6 +48,10 @@ handlers:
 
 - url: /web/grid.*
   script: src/main/php/old_grid.php
+
+- url: /web/pgrid.*
+  script: src/main/php/old_pregrid.php
+
 
 
 - url: /admin/*
@@ -83,6 +97,8 @@ handlers:
   script: src/main/php/senha.php
   secure: always
 
+- url: /endpoints/RegisterInscription
+  script: src/main/php/userRegisterInscription.php
 
 - url: /endpoints/User
   script: src/main/php/userManagement.php

@@ -1,0 +1,177 @@
+<section class="content-header" ng-include="'partials/breadcrumb.html'" ng-init="title = 'Resultados Etapa';
+   bcs=[{title:'Home',url:'#/'},{title:'Etapas',url:'#/etapas'},{title:'Etapa',url:'#/etapa/{{etapa.id}}'},{title:'Resultados',url:'',active:true}]">
+</section>
+<section class="content">
+
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="box box-primary">
+                <div class="box-header ">
+
+
+                    <h3 class="box-title">Resultados </h3>
+                    <div class="input-group input-group-sm" style="width: 150px;">
+
+                        <select class="form-control input-group input-group-sm" ng-model="categoria.id_Categoria" ng-options="cat.id as cat.nome for cat in categorias">
+
+                        </select>
+
+                    </div>
+                    <div class="pull-right box-tools">
+                        <div class="btn-group">
+                            <div class="btn-group " ng-show="etapa.id!=null && etapa.id!=-1" ng-cloak>
+                                <button type="button" class="btn btn-warning btn-sm dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                                    <i class="fa fa-bars"></i></button>
+                                <ul class="dropdown-menu pull-right" role="menu">
+                                    <li><a href="#/etapa/{{etapa.id}}" ng-cloak="" class="text-red">Ver Etapa</a></li>
+                                    <li><a href="#/etapa/{{etapa.id}}/inscricoes" ng-cloak="" class="text-red">Inscrições</a></li>
+                                    <li><a href="#/etapa/{{etapa.id}}/grid" ng-cloak="" class="text-red">Grid</a></li>
+                                    <li><a href="#/etapa/{{etapa.id}}/resultados" ng-cloak="" class="text-red">Resultados</a></li>
+                                    <li class="divider"></li>
+                                    <li><a href="#/etapa/{{etapa.id}}/relatorio" ng-cloak="" class="text-red">Relatório</a></li>
+                                </ul>
+                            </div>
+                            <button type="button" class="btn btn-sm  " data-toggle="tooltip" title="Importar performance dados" ng-click="importPerformanceCSV()">
+                                <i class="fa fa-upload"></i></button>
+
+                            <button type="button" class="btn btn-sm  " data-toggle="tooltip" title="Adiciona Resultado" ng-click="addResultado()">
+                                <i class="fa fa-plus"></i></button>
+
+
+                        </div>
+
+
+                    </div>
+
+
+
+
+                </div>
+                <div class="box-body">
+                    <table class="table table-bordered">
+                        <tbody>
+                            <tr>
+                                <th>Posição</th>
+                                <th>Número</th>
+                                <th>Penalidade</th>
+                                <th>Pontos perdidos</th>
+                                <th>Equipe</th>
+                                <th>PCs Zerados</th>
+                                <th>PCs Pegos</th>
+
+                                <th></th>
+                                <th></th>
+                            </tr>
+                            <tr ng-repeat="item in resultados|filter:categoria | orderBy : ['id_Categoria','colocacao'] " ng-class="{'manualUpdate':item.t==1}">
+                                <td ng-click="editItem(item)">{{item.colocacao}}</td>
+                                <td ng-click="editItem(item)">{{item.numero}}</td>
+                                <td ng-click="editItem(item)">{{item.penalidade}}</td>
+                                <td ng-click="editItem(item)">{{item.pontos_perdidos}}</td>
+                                <td ng-click="editItem(item)">{{item.nome}} {{item.descricao}}</td>
+                                <td ng-click="editItem(item)">{{item.pcs_zerados}}</td>
+                                <td ng-click="editItem(item)">{{item.pcs_pegos}}</td>
+                                <td><a href="" ng-click="remover(item)"><i class="fa fa-remove"></i> Remover</a></td>
+                                <td><a href="" ng-click="showDetalhes(item)"><i class="fa "></i> Detalhes</a></td>
+
+                            </tr>
+
+                        </tbody>
+                    </table>
+                </div>
+                <!-- /.box -->
+            </div>
+        </div>
+</section>
+<script type="text/ng-template" id="modalPCS.html ">
+    <div class="modal-header ">
+        <h3 class="modal-title ">Detalhes PCs</h3>
+    </div>
+    <div class="modal-body ">
+        <form name="largadaForm" role="form " class="css-form " novalidate autocomplete="none">
+            <div class="box-body ">
+
+                <div class="row ">
+                    Equipe: {{entry.nome}}
+
+                </div>
+                <Tab <div class="box box-default">
+
+
+
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+
+                                <th>#</th>
+                                <th>Tipo</th>
+                                <th>Erro</th>
+                                <th>Até PC</th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="item in entry.pcs| orderBy : ['pc']">
+                                <td>{{item.numero}}</td>
+                                <td>{{getTipoLabel(item.tipo)}}</td>
+                                <td ng-class="{'bg-red':item.variacao==900}">{{item.variacao}}</td>
+                                <td>{{item.ate}}º</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+            </div>
+    </div>
+    </form>
+    </div>
+    <div class="modal-footer ">
+
+        <button class="btn btn-warning " type="button " ng-click="cancel() ">Fechar</button>
+    </div>
+</script>
+<script type="text/ng-template" id="modalResultadoContent.html ">
+    <div class="modal-header ">
+        <h3 class="modal-title ">Alterar Resultado</h3>
+    </div>
+    <div class="modal-body ">
+        <form name="largadaForm" role="form " class="css-form " novalidate autocomplete="none">
+            <div class="box-body ">
+
+                <div class="row ">
+                    Equipe: {{entry.nome}}
+                    <input ng-show="entry.id_Equipe==null" type="text" autocomplete="off " ng-model="equipe" typeahead-show-hint="true " uib-typeahead="g as g.nome for g in equipes | filter:{nome:$viewValue} | limitTo:8"
+                    typeahead-editable="true " class="form-control " typeahead-select-on-exact="true " typeahead-min-length="0 "
+                    typeahead-no-results="noResult">
+                </div>
+
+                <label for="colocacao" class="control-label">Colocação</label>
+                <div class="form-group">
+                    <div>
+                        <input type="number" name="colocacao" ng-required placeholder="posicao" ng-model="entry.colocacao" min="01">
+                    </div>
+                </div>
+                <label for="pontos_perdidos" class="control-label">Pontos perdidos</label>
+                <div class="form-group">
+                    <div>
+                        <input type="number" name="pontos_perdidos" ng-required placeholder="posicao" ng-model="entry.pontos_perdidos" min="0">
+                    </div>
+                </div>
+                <label for="pcs_zerados" class="control-label">PCs Zerados</label>
+                <div class="form-group">
+                    <div>
+                        <input type="number" name="pcs_zerados" ng-required placeholder="posicao" ng-model="entry.pcs_zerados" min="0">
+                    </div>
+                </div>
+                <label for="pcs_pegos" class="control-label">PCs Pegos</label>
+                <div class="form-group">
+                    <div>
+                        <input type="number" name="pcs_pegos" ng-required placeholder="posicao" ng-model="entry.pcs_pegos" min="0">
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer ">
+        <button class="btn btn-primary " type="button " ng-click="ok() ">Alterar</button>
+        <button class="btn btn-warning " type="button " ng-click="cancel() ">Cancelar</button>
+    </div>
+</script>
