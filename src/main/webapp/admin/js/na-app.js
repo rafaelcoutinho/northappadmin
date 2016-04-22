@@ -1385,6 +1385,15 @@ var angularModule =
             '$scope', '$filter', '$timeout', '$location', '$routeParams', 'EtapasService', 'LocationService', '$uibModal', 'AlertService', function (
                 $scope, $filter, $timeout, $location, $routeParams, EtapasService, LocationService, $uibModal, AlertService) {
                 $("[data-mask]").inputmask();
+                
+                $scope.makeActive=function(){
+                    EtapasService.makeActive({ id: $routeParams.id },{ id: $routeParams.id },function(data){
+                        $scope.etapa.active=1;
+                         AlertService.showSuccess("Etapa está ativa");
+                    },function(error){
+                         AlertService.showError("Erro ao ativar etapa");
+                    });
+                }
                 if ($routeParams.id == -1) {
                     $scope.etapa = {}
                 } else {

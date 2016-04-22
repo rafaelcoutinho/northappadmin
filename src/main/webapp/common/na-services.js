@@ -199,6 +199,11 @@ angular.module('north.services', ['ngResource'])
                 isArray: true,
                 transformResponse: jsonTransformQuery
             },
+            makeActive:{
+                method:"POST",
+                isArray: false,
+                url: appConfigs.contextRoot + '/app/enhanced/EtapaAtual/:id'
+            },
             getEtapaAtual: {
                 isArray: false,
                 url: appConfigs.contextRoot + '/app/enhanced/EtapaAtual'
