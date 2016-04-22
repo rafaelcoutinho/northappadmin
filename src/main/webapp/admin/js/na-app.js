@@ -16,7 +16,12 @@ var angularModule =
                 .when('/etapas/', {
                     templateUrl: 'partials/etapas.html',
                     controller: 'EtapasCtrl'
-                }).when('/etapa/:id', {
+                })               
+                .when('/etapaAtual', {
+                    templateUrl: 'partials/etapa.html',
+                    controller: 'CarregaEtapaAtual'
+                })
+                .when('/etapa/:id', {
                     templateUrl: 'partials/etapa.html',
                     controller: 'EtapaDetailsCtrl'
                 }).when('/etapa/:id/relatorio', {
@@ -190,6 +195,15 @@ var angularModule =
                 },
             });
         }])
+        
+        .controller('CarregaEtapaAtual', function ($scope, AlertService, EtapasService, UtilsService,$location) {
+           EtapasService.getEtapaAtual({},function(data){
+               console.log('#/etapa/'+data.id)
+               
+               $location.path("/etapa/" + data.id);	
+           });
+            
+        })
         .controller('NotificacaoCtrl', function ($scope, AlertService, NotificacaoService, UtilsService,$uibModal) {
             $scope.mensagem={
                 type:"all",
@@ -832,8 +846,12 @@ var angularModule =
                     $scope.lastChangeCat=item.categoria_Equipe;
                 }
                 var gridCat = item.categoria_Equipe<3?1:item.categoria_Equipe;
-                
+                try{
                 return index+UtilsService.getGridInfo(gridCat).numeracao - $scope.lastChangeIndex;
+                }catch(e){
+                    console.log("Erro ",item,e);
+                    return -1;
+                }
             }
             $scope.reportOutOfGrid = RelatorioService.queryOutOfGrid({ id:idEtapa });
             $scope.printIt = function () {
