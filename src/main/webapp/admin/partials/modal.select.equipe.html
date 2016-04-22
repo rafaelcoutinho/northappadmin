@@ -1,0 +1,23 @@
+<div class="modal-header ">
+    <h3 class="modal-title ">Selecionar Equipe</h3>
+</div>
+<div class="modal-body ">
+    <form role="form " class="css-form " novalidate autocomplete="none">
+        <div class="box-body ">
+
+            <div class="row ">
+                Equipe:
+                <input type="text" autocomplete="off " ng-model="equipe" typeahead-show-hint="true " uib-typeahead="g as g.nome for g in equipes | filter:{nome:$viewValue} | limitTo:8"
+                typeahead-editable="true " class="form-control " typeahead-select-on-exact="true " typeahead-min-length="0 "
+                typeahead-no-results="noResult">
+            </div>
+
+            <div>{{equipe.nome}} - <i>{{equipe.descricao}}</i> </div>
+            <div>Categoria: {{getLabelCategoria(equipe.id_Categoria)}}</div>
+        </div>
+    </form>
+</div>
+<div class="modal-footer ">
+    <button class="btn btn-primary " type="button " ng-click="ok() ">Selecionar</button>
+    <button class="btn btn-warning " type="button " ng-click="cancel() ">Cancelar</button>
+</div>

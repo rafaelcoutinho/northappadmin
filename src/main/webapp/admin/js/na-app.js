@@ -198,7 +198,14 @@ var angularModule =
             };
             $scope.enviarNotificacao=function(){
                    
-                
+                if($scope.mensagem.type=="competidor" &&  $scope.mensagem.id_Trekker==null){
+                     AlertService.showError("Por favor selecione competidor");
+                     return;
+                }
+                if($scope.mensagem.type=="equipe" &&  $scope.mensagem.id_Equipe==null){
+                     AlertService.showError("Por favor selecione equipe");
+                     return;
+                }
                 var modalInstance = $uibModal.open({
                         animation: $scope.animationsEnabled,
                         templateUrl: 'partials/modal.html',
@@ -220,13 +227,62 @@ var angularModule =
                                         return "Você tem certeza que deseja enivar uma notificação para os competidores da categoria Trekker?";
                                     case "turismo":
                                         return "Você tem certeza que deseja enivar uma notificação para os competidores da categoria Turismo?";
+                                    default :
+                                        return "Você tem certeza que deseja enivar uma notificação para os competidores?";
                                 }
                                 
                             }
                         }
                     });
                     modalInstance.result.then(function () {
-                       NotificacaoService.publish($scope.mensagem);
+                       NotificacaoService.publish($scope.mensagem,function(data){
+                           if(data.length==0){
+                            AlertService.showInfo("Nenhum destinatário com token para notificação foi encontrado.");   
+                           }else{
+                            AlertService.showSuccess("Foram enviadas notificações para "+data.length+" dispositivos.");
+                           }
+                       },function(error){
+                           AlertService.showError("Falhou ao enviar notificação");
+                       }
+                       );
+                    }, function () {
+                        // $log.info('Modal dismissed at: ' + new Date());
+                    });
+                
+            }
+            $scope.selectCompetidor = function(){
+                var modalInstance = $uibModal.open({
+                         animation: $scope.animationsEnabled,
+                        templateUrl: 'partials/modal.select.competidor.html',
+                        controller: 'ModalSelectCompetidorCtrl',
+                        size: 'sm'
+                        
+                    });
+                    modalInstance.result.then(function (selecionado) {
+                       
+                       $scope.targetedCompetidor = selecionado;
+                       $scope.mensagem.id_Trekker=selecionado.id;
+                    }, function () {
+                        // $log.info('Modal dismissed at: ' + new Date());
+                    });
+                
+            }
+            $scope.selectEquipe = function(){
+                var modalInstance = $uibModal.open({
+                         animation: $scope.animationsEnabled,
+                        templateUrl: 'partials/modal.select.equipe.html',
+                        controller: 'ModalSelectEquipeCtrl',
+                        size: 'sm',
+                        resolve: {
+                            equipesToFilter: function () {
+                                return [];
+                            }
+                        }
+                    });
+                    modalInstance.result.then(function (selecionado) {
+                       
+                       $scope.targetedEquipe = selecionado;
+                       $scope.mensagem.id_Equipe=selecionado.id;
                     }, function () {
                         // $log.info('Modal dismissed at: ' + new Date());
                     });
@@ -292,6 +348,74 @@ var angularModule =
                 $uibModalInstance.dismiss('cancel');
             };
 
+        })
+        
+        .controller('ModalSelectCompetidorCtrl', function ($scope, $uibModalInstance, AlertService, CompetidorService, UtilsService) {
+            $scope.competidores = CompetidorService.query({}, function (data) {
+
+            }, function () {
+                AlertService.showError("Falhou ao carregar competidores");
+            });
+            $scope.getLabelCategoria = UtilsService.getLabelCategoria;
+            $scope.competidor = { nome: "" };
+            $scope.ok = function () {
+
+
+                console.log("#", $scope.competidor);
+                if ($scope.competidor == null) {
+                    AlertService.showError("Por favor selecione um competidor.");
+                    return;
+                }
+
+                $uibModalInstance.close($scope.competidor);
+
+            };
+
+            $scope.cancel = function () {
+                $uibModalInstance.dismiss('cancel');
+            };
+        })
+        .controller('ModalSelectEquipeCtrl', function ($scope, $uibModalInstance, equipesToFilter,  AlertService, GridService, EquipesService, UtilsService) {
+            $scope.equipes = [];
+            EquipesService.query({}, function (data) {
+                if (equipesToFilter.length > 0) {
+
+                    for (var index = 0; index < data.length; index++) {
+                        var element = data[index];
+                        var found = false;
+                        for (var j = 0; j < $scope.equipesToFilter.length; j++) {
+                            if (equipesToFilter.id == element.id) {
+
+                            }
+                        }
+                        if (found == false) {
+                            $scope.equipes.push(element);
+                        }
+                    }
+                } else {
+                    $scope.equipes = data;
+                }
+            },function(){
+                AlertService.showError("Falhou ao carregar equipes");
+            });
+            $scope.getLabelCategoria = UtilsService.getLabelCategoria;
+            $scope.equipe = {nome:""};
+             $scope.ok = function () {
+               
+               
+                console.log("#", $scope.equipe);
+                if ($scope.equipe == null) {
+                     AlertService.showError("Por favor selecione uma equipe existente.");
+                    return;
+                }
+                
+                $uibModalInstance.close($scope.equipe);
+
+            };
+
+            $scope.cancel = function () {
+                $uibModalInstance.dismiss('cancel');
+            };
         })
         .controller('ModalEditResultadoSimplesCtrl', function ($scope, $uibModalInstance, etapa, entry, results, AlertService, GridService, EquipesService, UtilsService) {
             $scope.etapa = etapa;
