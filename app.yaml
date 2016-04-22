@@ -1,24 +1,93 @@
 runtime: php55
 api_version: 1
 application: cumeqetrekking
-version: 1
+version: 1 
 
 
 handlers:
-- url: /api.php
+
+- url: /rest/.*
   script: src/main/php/api.php
-- url: /rest/.*/?.*
+  login: admin
+
+- url: /rest/.*/.*
   script: src/main/php/api.php
+  login: admin
+
+- url: /SetPago.do
+  script:  src/main/php/marcarPaga.php
+  login: admin
+
+- url: /AlteraGrid.do
+  script:  src/main/php/alteraGrid.php
+  login: admin
+
+
+- url: /Inscrever.do
+  script:  src/main/php/inscrever.php
+
+
+- url: /app/rest/.*
+  script: src/main/php/apiPub.php
+
+- url: /app/rest/.*/.*
+  script: src/main/php/apiPub.php
+
+- url: /app/enhanced/.*
+  script: src/main/php/app.php
+
+- url: /web/grid.*
+  script: src/main/php/old_grid.php
+
+
 - url: /admin/*
-  static_dir: src/main/webapp/
+  static_dir: src/main/webapp/admin/
   login: admin
 - url: /admin/(.*)/(.*)
-  static_dir: src/main/webapp/\1/\2/
+  static_dir: src/main/webapp/admin/\1/\2/
   login: admin
 - url: /admin/(.*)/(.*)/(.*)
-  static_dir: src/main/webapp/\1/\2/\3/
+  static_dir: src/main/webapp/admin/\1/\2/\3/
 - url: /admin/(.*)/(.*)/(.*)/(.*)
-  static_dir: src/main/webapp/\1/\2/\3/\4/
+  static_dir: src/main/webapp/admin/\1/\2/\3/\4/
+
+- url: /open/*
+  static_dir: src/main/webapp/open/
+- url: /open/(.*)/(.*)
+  static_dir: src/main/webapp/open/\1/\2/
+- url: /open/(.*)/(.*)/(.*)
+  static_dir: src/main/webapp/open/\1/\2/\3/
+- url: /open/(.*)/(.*)/(.*)/(.*)
+  static_dir: src/main/webapp/open/\1/\2/\3/\4/
+
+- url: /common/*
+  static_dir: src/main/webapp/common/
+
+- url: /bower_components/*
+  static_dir: src/main/webapp/bower_components/
+- url: /bower_components/(.*)/(.*)
+  static_dir: src/main/webapp/bower_components/\1/\2/
+- url: /bower_components/(.*)/(.*)/(.*)
+  static_dir: src/main/webapp/bower_components/\1/\2/\3/
+- url: /bower_components/(.*)/(.*)/(.*)/(.*)
+  static_dir: src/main/webapp/bower_components/\1/\2/\3/\4/
+- url: /bower_components/(.*)/(.*)/(.*)/(.*)/(.*)
+  static_dir: src/main/webapp/bower_components/\1/\2/\3/\4/\5
+
+
 - url: /endpoints/Login
   script: src/main/php/login.php
   secure: always
+
+- url: /endpoints/senha/.*
+  script: src/main/php/senha.php
+  secure: always
+
+
+- url: /endpoints/User
+  script: src/main/php/userManagement.php
+
+- url: /endpoints/Register
+  script: src/main/php/userRegister.php
+
+

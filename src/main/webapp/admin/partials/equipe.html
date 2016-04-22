@@ -1,5 +1,5 @@
 <section class="content-header" ng-include="'partials/breadcrumb.html'" ng-init="title = 'Equipe';
-   bcs=[{title:'Home',url:'#/'},{title:'Equipes',url:'#/Equipe'},{title:'Equipe',url:'#/Equipe/',active:true}]"></section>
+   bcs=[{title:'Home',url:'#/'},{title:'Equipes',url:'#/equipes'},{title:'Equipe',url:'',active:true}]"></section>
 <section class="content">
 
 
@@ -33,8 +33,10 @@
                     <label for="inputDesc" class="col-sm-2 control-label">Categoria atual</label>
 
                     <div class="col-sm-10">
-                        <select class="form-control" ng-model="equipe.id_Categoria" placeholder="Selecione a categoria">
-                            <option ng-repeat="categoria in categorias" value="{{categoria.id}}">{{categoria.nome}}</option>
+                        <select class="form-control" ng-model="equipe.id_Categoria" placeholder="Selecione a categoria"
+                            ng-options="item.id as item.nome for item in categorias"
+                        >
+                            
                         </select>
 
                     </div>
@@ -60,7 +62,7 @@
             </div>
         </div>
         <!-- /.box-header -->
-        <div class="box-body" >
+        <div class="box-body">
             <div class="table-responsive">
                 <table class="table no-margin">
                     <thead>

@@ -1,0 +1,299 @@
+<style>
+    .stepClass {
+        padding-left: 15px;
+        font-size: 24px;
+    }
+</style>
+<div class="content-wrapper">
+    <div class="container">
+
+        <section class="content-header">
+            <h1>
+         {{inscricao.etapa.titulo}}
+          <small> {{inscricao.etapa.data|date:'dd-MM-yyyy'}}</small>
+        </h1>
+
+        </section>
+
+
+        <section class="content" ng-hide="etapaFinalizada">
+
+            <div class="box box-default">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Inscrição</h3>
+                </div>
+                <div class="box-body">
+                    Inscreva sua equipe para a próxima etapa da CopaNorth. Para isso, se identifique, selecione sua equipe e seus integrantes.
+                </div>
+                <div class="box-footer ">
+                    <div class="row" ng-hide="inscricao.lider!=null">
+
+                        <div class="col col-sm-6">
+                            <span class="text-yellow stepClass">1. Seus dados <i class="fa fa-warning"></i></span>
+                        </div>
+                        <div class="col col-sm-6" style="text-align:center">
+                            <a class="btn btn-xs btn-social btn-facebook ng-binding" ng-click="connectFB()">
+                                <i class="fa fa-facebook"></i> Conectar com Facebook
+                            </a>
+                            <p class="text-muted" style="text-align:center;" ng-click="selectCompetidor()">Ou use formulário</p>
+                        </div>
+                    </div>
+                    <div class="row" ng-show="inscricao.lider!=null">
+                        <div class="col col-sm-12">
+                            <div class="pull-right box-tools">
+                                <button class="btn btn-warning btn-xs" " ng-cloak ng-click="selectCompetidor(); "  ng-disabled="inscricaoServer!=null ">Alterar</button>
+                            </div>
+                            <span class=" text-green stepClass ">1. {{inscricao.lider.nome}} <i class="fa fa-check "  ></i></span>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="box-footer " ng-show="inscricao.lider!=null ">
+                    <div class="row " ng-hide="inscricao.equipe!=null ">
+                        <div class="col col-sm-12 ">
+                            <div class="pull-right box-tools ">
+                            <button class="btn btn-success btn-xs " ng-hide="inscricao.equipe!=null
+                                " ng-cloak ng-click="selectEquipe(); ">Selecionar</button>
+                                </div>
+                            <span class=" text-yellow stepClass ">2. Sua equipe <i class="fa fa-warning "></i></span>
+                        </div>
+                        
+                    </div>
+                    <div class="row " ng-show="inscricao.equipe!=null "> 
+                        <div class="col col-sm-12 ">
+                            <div class="pull-right box-tools ">
+                                <button class="btn btn-warning btn-xs " ng-cloak ng-click="selectEquipe();
+                                "  ng-disabled="disableAlterarEquipe() ">Alterar</button>
+                            </div>
+                            <span class=" text-green stepClass ">2. {{inscricao.equipe.nome}} <i class="fa fa-check "  ></i></span>
+                        </div>
+
+
+                    </div>
+                </div>
+
+                <div class="box-footer " ng-show="inscricao.lider!=null && inscricao.equipe!=null ">
+                    <div class="row ">
+                        <div class="col col-sm-12 ">
+                            <div class="pull-right box-tools ">
+                                <button class="btn btn-info btn-xs " ng-cloak ng-click="selectIntegrante();
+                                " ng-disabled="inscricaoServer!=null && alterarInscritos!=true ">Adicionar</button>
+                            </div>
+                            <span class=" text-muted stepClass ">3. Integrantes </span>
+                           
+                        </div>
+                        
+                    </div>
+                    <div class="row "  >
+                        <ul style="margin:20px ">
+                            <li ng-repeat="integrante in inscricao.integrantes|filter:notLider()|orderBy:[ 'paga',
+                                'nome'] ">
+                                {{integrante.nome}} <button class="btn btn-danger btn-xs " ng-if="inscricaoServer==null||integrante.paga!=1 "
+                                 ng-cloak ng-show="(inscricaoServer==null || (alterarInscritos==true && integrante.paga!=1))
+                                " ng-click="removeIntegrante(integrante); " title="Remover competidor ">X</button>
+                                 <i ng-if="integrante.paga==1 " class="fa fa-check " style="font-size:x-small ">Pagamento confirmado</i> 
+                            </li>
+                        </ul>
+                        
+                    </div>
+                </div>
+                 <div class="box-footer " ng-show="inscricao.lider!=null && inscricao.equipe!=null " ng-cloak>
+
+                    <button type="submit " class="btn btn-primary btn-block pull-right " ng-cloak ng-click="inscrever()
+                                " ng-show="inscricaoServer==null || alterarInscritos==true ">Inscrever</button>
+                                
+                                
+
+                </div>
+            </div>
+                <div class="box box-default animate-show " ng-show="inscricaoServer!=null ">
+                    <div class="box-header with-border ">
+                        <h3 class="box-title ">Inscrição efetuada</h3>
+                         <div class="pull-right box-tools ">
+<button type="submit " class="btn btn-info " ng-cloak ng-click="alterarInscritos=true; " ng-show="inscricaoServer!=null
+                                && alterarInscritos!=true ">Alterar integrantes</button>                              
+                        <button type="submit " class="btn btn-warning " ng-cloak ng-click="limpaCampos() " ng-show="inscricaoServer!=null ">Fazer outra inscrição</button>
+                         </div>
+                    </div>
+                    <div class="box-body ">
+
+                        <dl>
+
+                            <dd>Vocês já constarão automaticamente no PRÉ-GRID do evento. Para confirmar a inscrição e ter o nome da equipe listado
+                                no GRID definitivo, com horário de largada oficial, favor seguir procedimentos abaixo:
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt>1) PAGAMENTO</dt>
+                            <dd>Escolher uma das contas correntes abaixo para pagamento/transferência bancária:
+                            </dd>
+                            <ul>
+                                <li> Bradesco - ag:2297-7 / cc:109.704-0 / Favorecido: Sílvia H. Andreo</li>
+                                <li>Itaú - ag:4271 / cc:01565-5 / Favorecido: Sílvia H. Andreo</li>
+                                <li>Banco do Brasil - ag: 1515-6 / cc:6108-5 / Favorecido: Sílvia H. Andreo</li>
+                            </ul>
+                            <dd>Em caso de DOC informar o CPF do favorecido.</dd>
+                            <dd> Para solicitar o No. do CPF do favorecido, favor entrar em contato pelo tel (19) 3289-5281, (19) 8142-6043 ou
+                                recibo@northbrasil.com.br.</dd>
+                        </dl>
+                        <dl>
+                            <dt>2) ENCAMINHAR CÓPIA DE COMPROVANTE DE PAGAMENTO</dt>
+                            <dd>Para o FAX (19) 3288-0658 ou E-MAIL recibo@northbrasil.com.br.</dd>
+                            <dd>Lembrando que o comprovante original deve ser apresentado no Check-in. Informar junto ao Comprovante:</dd>
+                            <ul>
+                                <li>Nome da equipe</li>
+                                <li>Categoria (Trekkers TURISMO, Trekkers, Graduados PRO, Graduados)</li>
+                            </ul>
+                        </dl>
+                        <dl>
+                            <dt>3) VALOR DE INSCRIÇÃO POR PARTICIPANTE</dt>
+                            <dd>Valor normal R$ {{inscricao.etapa.precoLote3}} + Prova Social</dd>
+                            <dd>Até {{inscricao.etapa.dataLimiteLote1|date:'dd-MM-yyyy'}} R$ {{inscricao.etapa.precoLote1}} + Prova Social</dd>
+                            <dd>Até {{inscricao.etapa.dataLimiteLote2|date:'dd-MM-yyyy'}} R$ {{inscricao.etapa.precoLote2}} + Prova Social</dd>
+                            
+                        </dl>
+                        <dl>
+                            <dt>Prova Social</dt>
+                            <dd>Item para doação desta etapa:</dd>
+                            <ul>
+                                <li>{{inscricao.etapa.provaSocial}}</li>
+                            </ul>
+                            <dd> A doação deve ser entregue no Check-in. O não cumprimento da prova social pode implicar em penalização da equipe
+                                (em pontos), conforme Regulamento. Todo material arrecadado será revertido para entidades sociais e famílias
+                                carentes da cidade que recebe o evento.</dd>
+
+                        </dl>
+
+                    </div>
+                </div>
+
+        </section>
+
+    </div>
+
+</div>
+
+
+<style>
+    .indisponivel{
+     text-decoration: line-through;    
+    }
+</style>
+<script type="text/ng-template" id="customTemplate.html " title="Template para autocomplete de competidor ">
+    <a><span ng-class="{'indisponivel':(match.model.paga==1)}" ng-bind-html="match.model.nome + ' - '+ (match.model.equipe!=null?match.model.equipe:'Sem Equipe') | uibTypeaheadHighlight:query "></span> <span ng-if="match.model.paga==1">Já inscrito nesta etapa</span></a>
+</script>
+
+<script type="text/ng-template" id="customTemplateEquipe.html " title="Template para autocomplete de equipe ">
+                                <a>
+
+                                    <span ng-bind-html="match.model.nome + ' - '+ (match.model.descricao) + ' ('+getNomeCategoria(match.model)+
+                                ')'| uibTypeaheadHighlight:query "></span>
+                                </a>
+</script>
+
+                            <script type="text/ng-template" id="competidorModalContent.html " title="Template para formulário
+                                de competidor>
+                                    <div class="modal-header ">
+                                        <h3 class="modal-title ">Adicionar Competidor</h3>
+                                    </div>
+
+                                    <div class="modal-body ">
+                                        <form name="competidorForm " class="css-form " novalidate autocomplete="off ">
+                                            <div class="box-body ">
+                                                <div class="row ">
+                                                    <label for="inputTrekker " class="col-sm-2 control-label ">*Nome</label>
+                                                    <div class="col-sm-10 ">
+                                                        <input type="text " autocomplete="off " ng-blur="exitFilterCompetidor()" ng-model="novoCompetidor " id="inputTrekker " placeholder="Nome "
+                                                        name="nome
+                                " typeahead-show-hint="true " uib-typeahead="g as g.nome for g in competidores | filter:{nome:$viewValue} | limitTo:8 | orderBy:['paga','equipe','nome']                          " typeahead-editable="true " class="form-control " typeahead-select-on-exact="true " typeahead-template-url="customTemplate.html
+                                " typeahead-min-length="0 " typeahead-no-results="noResult ">
+                                                    </div>
+                                                </div>
+                                                <div class="animate-show " ng-show="noResult ">
+
+                                                    <div class="form-group ">
+                                                        <h3>Criar novo cadastro</h3>
+                                                    </div>
+                                                    <div class="form-group " ng-show="noResult ">
+                                                        <label for="inputEmail " class="col-sm-2 control-label ">*E-mail</label>
+                                                        <input type="email " ng-model-options="{ updateOn: 'blur' }" required ng-model="novoCompetidor.email " name="competidorEmail "
+                                                        id="inputEmail " " placeholder="xxx@xxx.xxx " class="form-control " >
+                                    </input>
+                                    <span class="text-red " ng-show="competidorForm.competidorEmail.$error.dupeEmail
+                                                        ">Já existe um competidor com este email:<div> {{competidorDuplicado.nome}}<span ng-if="competidorDuplicado.equipe!=null
+                                                        "> atualmente na equipe {{competidorDuplicado.equipe}} na categoria  {{competidorDuplicado.categoria}} </span></div><button class="btn btn-primary " type="button " ng-click="selectDupe() ">Selecionar '{{competidorDuplicado.nome}}'</button></span>
+                                    <span class="text-red " ng-show="competidorForm.competidorEmail.$error.email ">Formato inválido de email</span>
+                                    <span class="text-red " ng-show="competidorForm.competidorEmail.$error.required ">E-mail é obrigatório</span>
+                            </div>
+
+                            <div class="form-group " ng-show="noResult ">
+                                <label for="inputtelefone " class="col-sm-2 control-label ">Telefone</label>
+                                <input type="tel " ng-model="novoCompetidor.telefone " id="inputtelefone
+                                                        " placeholder="(XX) XXXXX-XXXX " class="form-control ">
+                            </div>
+                        </div>
+                    </div>
+                    </form>
+                </div>
+                <div class="modal-footer ">
+                    <button class="btn btn-primary " type="button " ng-click="ok() ">Selecionar</button>
+                    <button class="btn btn-warning " type="button " ng-click="cancel() ">Cancelar</button>
+                </div>
+                </script>
+
+
+                <script type="text/ng-template" id="equipeModalContent.html ">
+                    <div class="modal-header ">
+                        <h3 class="modal-title ">Definir equipe</h3>
+                    </div>
+                    <div class="modal-body ">
+                        <form name="equipeForm " role="form " class="css-form " novalidate autocomplete="none ">
+                            <div class="box-body ">
+
+                                <div class="row ">
+                                    <label for="inputEquipe " class="col-sm-2 control-label ">*Nome da equipe</label>
+                                    <div class="col-sm-10 ">
+
+                                        <input type="text " name="equipe " ng-blur="exitFilterEquipe() " ng-model="novaEquipe
+                                                        " id="inputEquipe " placeholder="Nome Equipe "
+                                        typeahead-show-hint="true " autocomplete="none " ng-required="true
+                                                        " uib-typeahead="g as g.nome for g in equipes | filter:{nome:$viewValue} | limitTo:8
+                                                        " typeahead-editable="true " class="form-control " typeahead-select-on-exact="true
+                                                        " typeahead-template-url="customTemplateEquipe.html " typeahead-min-length="0
+                                                        " typeahead-no-results="noResultEquipe ">
+                                                <span class="text-red " ng-show="equipeForm.equipe.$error.required ">Um nome é obrigatório</span>                                    
+                                    </div>
+                                </div>
+
+
+
+                                <div class="form-group " ng-show="noResultEquipe ">
+                                    <h3>Criar nova equipe</h3>
+                                </div>
+                                <div class="form-group " ng-show="noResultEquipe ">
+
+                                    <label for="inputCidade ">Cidade</label>
+
+                                    <input type="tel " ng-model="novaEquipe.descricao " id="inputCidade " class="form-control ">
+
+                                </div>
+
+                                <div class="form-group " ng-show="noResultEquipe ">
+                                    <label for="inputCategoria ">Categoria</label>
+                                    <select class="form-control " ng-model="novaEquipe.id_Categoria " id="inputCategoria
+                                                        " ng-disabled="novaEquipe.id!=null " placeholder="Selecione a categoria
+                                                        " ng-required="true " name="categoria ">
+                                        <option ng-repeat="categoria in categorias " value="{{categoria.id}} ">{{categoria.nome}}</option>
+                                    </select>
+                                     <span class="text-red " ng-show="equipeForm.categoria.$error.required ">Categoria é obrigatório</span>
+                                    <p class="help-block ">(*Para alterar uma equipe existente utilize o aplicativo da North)</p>
+                                </div>
+
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer ">
+                        <button class="btn btn-primary " type="button " ng-click="ok() ">Selecionar</button>
+                        <button class="btn btn-warning " type="button " ng-click="cancel() ">Cancelar</button>
+                    </div>
+                </script>

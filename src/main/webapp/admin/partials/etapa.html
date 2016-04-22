@@ -9,12 +9,22 @@
         <div class="box-header with-border">
             <h3 class="box-title">Etapa</h3>
             <div class="pull-right box-tools">
+                <div class="btn-group open" ng-show="etapa.id!=null && etapa.id!=-1" ng-cloak>
+                    <button type="button" class="btn btn-warning btn-sm dropdown-toggle" data-toggle="dropdown" aria-expanded="true">
+                        <i class="fa fa-bars"></i></button>
+                    <ul class="dropdown-menu pull-right" role="menu">
+                        <li><a href="#/etapa/{{etapa.id}}/inscricoes" ng-cloak="" class="text-red">Inscrições</a></li>
+                        <li><a href="#/etapa/{{etapa.id}}/grid" ng-cloak="" class="text-red">Grid</a></li>
+                        <li class="divider"></li>
+                        <li><a href="#/etapa/{{etapa.id}}/relatorio" ng-cloak="" class="text-red">Relatório</a></li>
+                    </ul>
+                </div>
+
                 <button type="button" class="btn btn-sm  pull-right" data-toggle="tooltip" title="Apagar" ng-click="remove()" ng-show="etapa.id!=null && etapa.id!=-1">
                     <i class="fa  fa-trash-o"></i></button>
             </div>
         </div>
-        <!-- /.box-header -->
-        <!-- form start -->
+
         <form class="form-horizontal">
             <div class="box-body">
                 <div class="form-group">
@@ -45,7 +55,7 @@
                         <input type="url" class="form-control" id="inputImgSmall" placeholder="http://" ng-model="etapa.imgSmall">
                     </div>
                     <div class="col-sm-2">
-                        <img class="col-sm-2" ng-src="{{etapa.imgSmall}}" />
+                        <img style="width:100%" ng-src="{{etapa.imgSmall}}" />
                     </div>
                 </div>
                 <div class="form-group">
@@ -55,7 +65,7 @@
                         <input type="url" class="form-control" id="inputImgBig" placeholder="http://" ng-model="etapa.imgBig">
                     </div>
                     <div class="col-sm-2">
-                        <img ng-src="{{etapa.imgBig}}" />
+                        <img style="width:100%" ng-src="{{etapa.imgBig}}" />
                     </div>
                 </div>
                 <div class="form-group">
@@ -71,53 +81,50 @@
                 </div>
 
                 <div class="form-group">
-                    <label class="col-sm-2 control-label">Inscrição</label>
+                    <label class="col-sm-2 control-label">Dados Inscrição</label>
                 </div>
                 <div class="form-group">
                     <label for="inputPS" class="col-sm-2 control-label">Prova Social</label>
 
                     <div class="col-sm-10">
-                        <input type="text" class="form-control" id="inputPS" placeholder="items da prova social" ng-model="etapa.provasocial">
+                        <input type="text" class="form-control" id="inputPS" placeholder="items da prova social" ng-model="etapa.provaSocial">
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="inputDataI" class="col-sm-2 control-label">Lote I</label>
                     <div class="col-sm-4">
-                        <input type="text" class="form-control" id="inputDataI" placeholder="Data limite lote I" data-inputmask="'alias': 'dd/mm/yyyy'"
-                        data-mask ng-model="etapa.lote1.data">
+                        <input type="date" class="form-control" id="inputDataI" placeholder="Data limite lote I" ng-model="dataLimiteLote1">
                     </div>
                     <div class="col-sm-4">
-                        <input type="number" class="form-control" id="inputDataI" placeholder="R$" ng-model="etapa.lote1.preco">
+                        <input type="text" class="form-control" id="inputDataI" placeholder="R$" ng-model="etapa.precoLote1">
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="inputDataII" class="col-sm-2 control-label">Lote II</label>
                     <div class="col-sm-4">
-                        <input type="text" class="form-control" id="inputDataII" placeholder="Data limite lote II" data-inputmask="'alias': 'dd/mm/yyyy'"
-                        data-mask ng-model="etapa.lote1.data">
+                        <input type="date" class="form-control" id="inputDataII" placeholder="Data limite lote II" ng-model="dataLimiteLote2">
                     </div>
                     <div class="col-sm-4">
-                        <input type="number" class="form-control" id="inputDataII" placeholder="R$" ng-model="etapa.lote1.preco">
+                        <input type="text" class="form-control" id="inputDataII" placeholder="R$" ng-model="etapa.precoLote2">
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="inputDataIII" class="col-sm-2 control-label">Lote III</label>
                     <div class="col-sm-4">
-                        <input type="text" class="form-control" id="inputDataIII" placeholder="Data limite lote III" data-inputmask="'alias': 'dd/mm/yyyy'"
-                        data-mask ng-model="etapa.lote1.data">
+                        <input type="date" class="form-control" id="inputDataIII" placeholder="Data limite lote III"  ng-model="dataLimiteLote3">
                     </div>
                     <div class="col-sm-4">
-                        <input type="number" class="form-control" id="inputDataIII" placeholder="R$" ng-model="etapa.lote1.preco">
+                        <input type="text" class="form-control" id="inputDataIII" placeholder="R$" ng-model="etapa.precoLote3" >
                     </div>
                 </div>
 
             </div>
-            
+
             <div class="box-footer">
                 <button type="submit" class="btn btn-default" ng-click="cancel()">Voltar</button>
                 <button type="submit" class="btn btn-info pull-right" ng-click="saveData()">Salvar</button>
             </div>
-            
+
         </form>
     </div>
 

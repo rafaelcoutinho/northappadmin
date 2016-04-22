@@ -1,0 +1,135 @@
+<style>
+    .manualUpdate {
+        background-color: #D2D6DE;
+    }
+</style>
+
+<section class="content-header" ng-include="'partials/breadcrumb.html'" ng-init="title = 'Etapa';
+   bcs=[{title:'Home',url:'#/'},{title:'Etapas',url:'#/etapas'},{title:'Etapa',url:'#/etapa/{{etapa.id}}'},{title:'Grid',url:''}]"></section>
+<section class="content">
+
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="box box-primary">
+                <div class="box-header ">
+
+
+                    <h3 class="box-title">Grid </h3>
+                    <div class="input-group input-group-sm" style="width: 150px;">
+
+                        <select class="form-control input-group input-group-sm" ng-model="gridConfig " ng-change="updateGrid()" ng-options="grid.id as grid.nome for grid in grids">
+
+                        </select>
+
+                    </div>
+                    <div class="pull-right box-tools">
+                        <div class="btn-group">
+                            <div class="btn-group " ng-show="etapa.id!=null && etapa.id!=-1" ng-cloak>
+                                <button type="button" class="btn btn-warning btn-sm dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                                    <i class="fa fa-bars"></i></button>
+                                <ul class="dropdown-menu pull-right" role="menu">
+
+                                    <li><a href="#/etapa/{{etapa.id}}/inscricoes" ng-cloak="" class="text-red">Inscrições</a></li>
+                                    <li class="divider"></li>
+
+                                </ul>
+                            </div>
+                            <button type="" class="btn btn-sm"><i class="fa fa-refresh" ng-click="refresh()"></i></button>
+                            <button type="button" class="btn btn-sm  " data-toggle="tooltip" title="Adiciona Equipe" ng-click="addEquipe()">
+                                <i class="fa fa-plus"></i></button>
+                            <div class="input-group input-group-sm" style="width: 150px;">
+                                <input type="text" name="table_search" class="form-control pull-right ng-pristine ng-untouched ng-valid ng-empty" placeholder="buscar"
+                                ng-model="searchText">
+
+                                <div class="input-group-btn">
+
+                                    <button type="submit" class="btn btn-sm"><i class="fa fa-search"></i></button>
+                                </div>
+                            </div>
+
+
+                        </div>
+
+
+                    </div>
+
+
+
+
+                </div>
+                <div class="box-body">
+                    <table class="table table-bordered">
+                        <tbody>
+                            <tr>
+                                <th></th>
+                                <th>Categoria
+                                    <col-sorter field="'categoria'" var="sortItem"></col-sorter>
+                                </th>
+                                <th>Equipe
+                                    <col-sorter field="'equipe'" var="sortItem"></col-sorter>
+                                </th>
+                                <th>Cidade</th>
+
+                                <th>Largada
+                                    <col-sorter field="['hora','minuto']" var="sortItem"></col-sorter>
+                                </th>
+                                <th></th>
+
+                            </tr>
+                            <tr ng-repeat="item in items| filter:searchText| orderBy : sortItem.field:sortItem.reverse " ng-class="{'manualUpdate':item.t==1}">
+                                <td>{{$index+getGridConf(gridConfig).numeracao}}</td>
+                                <td>{{getLabelCategoria(item.categoria_Equipe)}}</td>
+                                <td>{{item.nome_Equipe}}</td>
+                                <td>{{item.desc_Equipe}}</td>
+                                <td ng-click="updateLargada(item)"><i class="fa fa-clock-o"></i> {{item.hora}}:{{item.minuto|zeroLeadNumber}}</td>
+                                <td><a href="" ng-click="removerDoGrid(item)"><i class="fa fa-remove"></i> Remover</a></td>
+
+                            </tr>
+
+                        </tbody>
+                    </table>
+                </div>
+                <!-- /.box -->
+            </div>
+        </div>
+</section>
+
+<script type="text/ng-template" id="largadaModalContent.html ">
+    <div class="modal-header ">
+        <h3 class="modal-title ">Alterar horário de largada</h3>
+    </div>
+    <div class="modal-body ">
+        <form name="largadaForm" role="form " class="css-form " novalidate autocomplete="none">
+            <div class="box-body ">
+                
+                <div class="row " >
+                    Equipe: {{gridInfo.nome_Equipe}}
+                    <input type="text" autocomplete="off " ng-if="isNew==true" ng-model="gridInfo.equipe" typeahead-show-hint="true " uib-typeahead="g as g.nome for g in equipes | filter:{nome:$viewValue} | limitTo:8" typeahead-editable="true " class="form-control " typeahead-select-on-exact="true " typeahead-min-length="0 " typeahead-no-results="noResult">
+                </div>
+                <div class="row ">
+                    Categoria: {{getLabelCategoria(gridInfo.categoria_Equipe)}}
+                </div>
+                <label for="inputDesc" class="control-label">Novo horário</label>
+                <div class="form-group">
+
+
+                    <div>
+                        <input type="number" name="hora" ng-required id="inputDesc" placeholder="hh" ng-model="gridInfo.hora" max="23" min="00">:
+                        <input type="number" name="minuto" ng-required id="inputDesc" placeholder="mm" ng-model="gridInfo.minuto" value="{{gridInfo.minuto|zeroLeadNumber}}"
+                        max="59" min="00">
+                    </div>
+                    <span class="text-red " ng-show="largadaForm.hora.$error.required">Hora é obrigatório</span>
+                    <span class="text-red " ng-show="largadaForm.hora.$error.max || largadaForm.hora.$error.min">Hora deve ser entre 0 e 23 horas</span>
+                    <span class="text-red " ng-show="largadaForm.minuto.$error.max || largadaForm.minuto.$error.min">Minuto deve ser entre 0 e 59 minutos</span>
+                    <span class="text-red " ng-show="largadaForm.minuto.$error.required">Minuto é obrigatório</span>
+                </div>
+
+
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer ">
+        <button class="btn btn-primary " type="button " ng-click="ok() ">Alterar</button>
+        <button class="btn btn-warning " type="button " ng-click="cancel() ">Cancelar</button>
+    </div>
+</script>

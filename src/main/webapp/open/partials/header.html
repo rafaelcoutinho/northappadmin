@@ -1,0 +1,89 @@
+<header class="main-header" ng-controller="MenuCtrl">
+        <nav class="navbar navbar-static-top">
+            <div class="container">
+                <div class="navbar-header">
+                    <a href="http://www.northbrasil.com.br/northbrasil/index.aspx" class="navbar-brand"><b>CopaNorth</b> Inscrição</a> 
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse">
+                        <i class="fa fa-bars"></i>
+                    </button>
+                </div>
+
+
+                <div class="collapse navbar-collapse pull-left" id="navbar-collapse">
+
+                </div>
+                <div class="navbar-custom-menu">
+                    <ul class="nav navbar-nav">
+
+                        <!-- Notifications Menu -->
+                        <li class="dropdown notifications-menu">
+                            <!-- Menu toggle button -->
+                            <a class="dropdown-toggle" data-toggle="dropdown">
+                                <i class="fa fa-bell-o"></i>
+                                <span class="label label-warning">{{notifications.total}}</span>
+
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li class="header"></li>
+                                <li>
+                                    <!-- Inner Menu: contains the notifications -->
+                                    <ul class="menu">
+                                        <li>
+                                            <!-- start notification -->
+                                            <a ng-repeat="notification in notifications.msgs">
+                                                <i class="fa fa-users text-aqua"></i> {{notification.text}}
+                                            </a>
+                                        </li>
+                                        <!-- end notification -->
+                                    </ul>
+                                </li>
+                                <li class="footer">
+                                    <a></a>
+                                </li>
+                            </ul>
+                        </li>
+
+                       
+                        <li class="dropdown user user-menu">
+                            <!-- Menu Toggle Button -->
+                            <a class="dropdown-toggle" data-toggle="dropdown">
+                                
+                                <img src="http://graph.facebook.com/v2.5/{{competidor.fbId}}/picture" class="user-image" alt="User Image {{competidor.fbId}}">
+
+                                <span class="hidden-xs">{{competidor.nome}}</span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <!-- The user image in the menu -->
+                                <li class="user-header">
+                                    <img src="http://graph.facebook.com/v2.5/{{competidor.fbId}}/picture" class="img-circle" alt="User Image">
+
+                                    <p>
+                                        {{competidor.nome}} - {{competidor.equipe}}
+                                        <small></small>
+                                    </p>
+                                </li>
+                                <!-- Menu Body -->
+                                <li class="user-body">
+                                    <div class="row">
+
+                                    </div>
+                                    <!-- /.row -->
+                                </li>
+                                <!-- Menu Footer-->
+                                <li class="user-footer">
+                                    <!--<div class="pull-left">
+                                            <a href="#" class="btn btn-default btn-flat">Profile</a>
+                                        </div>-->
+                                    <div class="pull-right">
+                                        <a  class="btn btn-default btn-flat" ng-click="desconectar()">Desconectar</a>
+                                    </div>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+                <!-- /.navbar-custom-menu -->
+            </div>
+            <!-- /.container-fluid -->
+        </nav>
+    </header>

@@ -1,0 +1,74 @@
+<section class="content-header" ng-include="'partials/breadcrumb.html'" ng-init="title = 'Destaques';
+   bcs=[{title:'Home',url:'#/'},{title:'Destaques',url:'#/destaques'},{title:'Destaque',url:'#/destaque/',active:true}]"></section>
+<section class="content">
+
+
+
+
+    <div class="box box-info">
+        <div class="box-header with-border">
+            <h3 class="box-title">Grid Config</h3>
+
+        </div>
+        <!-- /.box-header -->
+        <!-- form start -->
+        <form class="form-horizontal">
+            <div class="box-body">
+                <div class="form-group">
+                    <label for="inputName" class="col-sm-2 control-label">Nome</label>
+
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="inputName" placeholder="Nome" ng-model="item.nome">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="inputDesc" class="col-sm-2 control-label">Numeração inicial</label>
+
+                    <div class="col-sm-10">
+                        <input type="number" class="form-control" id="inputDesc" placeholder="numeracao no grid" ng-model="item.numeracao">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="inputDesc" class="col-sm-2 control-label">Horário de Início</label>
+
+                    <div class="col-sm-10">
+                        <input type="number" id="inputDesc" placeholder="hora" ng-model="item.inicio_hora" max="23" min="00">:
+                        <input type="number" id="inputDesc" placeholder="minuto" ng-model="item.inicio_minuto" max="59" min="00">
+                    </div>
+                  
+                </div>
+                <div class="form-group">
+                    <label for="inputDesc" class="col-sm-2 control-label">Intervalo 1</label>
+
+                    <div class="col-sm-10">
+                        <input type="number" class="form-control" id="inputDesc" placeholder="em minutos" ng-model="item.intervalo1">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="inputquota_intervalo1" class="col-sm-2 control-label">Total utilizando intervalo 1</label>
+
+                    <div class="col-sm-10">
+                        <input type="number" class="form-control" id="inputquota_intervalo1" placeholder="número de equipes até mudar para intervalo 2"
+                        ng-model="item.quota_intervalo1">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="inputintervalo2" class="col-sm-2 control-label">Intervalo 2</label>
+
+                    <div class="col-sm-10">
+                        <input type="number" class="form-control" id="inputintervalo2" placeholder="minutos" ng-model="item.intervalo2">
+                    </div>
+                </div>
+
+            </div>
+            <!-- /.box-body -->
+            <div class="box-footer">
+                <button type="submit" class="btn btn-default" ng-click="cancel()">Voltar</button>
+                <button type="submit" class="btn btn-info pull-right" ng-click="saveData()">Salvar</button>
+            </div>
+            <!-- /.box-footer -->
+        </form>
+    </div>
+
+
+</section>
