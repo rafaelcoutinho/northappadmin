@@ -1294,7 +1294,7 @@ var angularModule =
                 } else {
                     $scope.entity = CompetidorService.get({ id: $routeParams.id });
                 }
-                $scope.equipes = EquipesService.query();
+                
                 $scope.saveData = function () {
                     CompetidorService.save({ id: $routeParams.id != -1 ? $routeParams.id : null }, $scope.entity,
 
@@ -1313,6 +1313,28 @@ var angularModule =
                                 AlertService.showError("Houve um erro ao salvar");
                             }
                         });
+                }
+                $scope.selectEquipe = function(){
+                     var modalInstance = $uibModal.open({
+                         animation: $scope.animationsEnabled,
+                        templateUrl: 'partials/modal.select.equipe.html',
+                        controller: 'ModalSelectEquipeCtrl',
+                        size: 'sm',
+                        resolve: {
+                            equipesToFilter: function () {
+                                return [];
+                            }
+                        }
+                    });
+                    modalInstance.result.then(function (selecionado) {
+                       if(selecionado){
+                            $scope.associate(selecionado);
+                       }
+                       
+                    }, function () {
+                        // $log.info('Modal dismissed at: ' + new Date());
+                    });
+                
                 }
                 $scope.associate = function (equipe) {
                     CompetidorService.associateEquipe({
