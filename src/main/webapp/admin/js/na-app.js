@@ -140,6 +140,10 @@ var angularModule =
                     isArray: true,
                     transformResponse: jsonTransformQuery
                 },
+                queryGridInfo: {
+                    isArray: false,
+                    url:appConfigs.contextRoot + '/app/enhanced/Etapa/:id/GridInfo'
+                },
                 queryOutOfGrid:{
                     isArray: true,                    
                     url:appConfigs.contextRoot + '/app/enhanced/Etapa/:id/OutOfGrid'
@@ -818,6 +822,8 @@ var angularModule =
             $scope.etapa = EtapasService.get({ id: idEtapa });
             $scope.data = new Date();
            $scope.report=  RelatorioService.query({ filter0: 'id_Etapa,eq,'+idEtapa });
+           $scope.gridInfo=  RelatorioService.queryGridInfo({ id:idEtapa });
+           
             $scope.lastChangeIndex=-1;
             $scope.lastChangeCat=-1;
             $scope.getNumeracao=function(item,index){

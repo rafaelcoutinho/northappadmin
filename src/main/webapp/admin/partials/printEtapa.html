@@ -59,4 +59,26 @@
             </tbody>
         </table>
     </div>
+    <div class="col-xs-12 table-responsive">
+        <h2>Pré grid</h2>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    
+
+                    <th>Equipe</th>
+                    <th>Categoria</th>
+
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="entry in gridInfo.preGrid|orderBy:['id_Categoria','nome']">
+                    
+                    <td>{{entry.nome}}</td>
+                    <td>{{entry.nome_Categoria}}</td>
+
+                </tr>
+            </tbody>
+        </table>
+    </div>
 </div>
