@@ -43,7 +43,8 @@
                             <div class="pull-right box-tools">
                                 <button class="btn btn-warning btn-xs no-print" ng-cloak ng-click="selectCompetidor();" ng-disabled="inscricaoServer!=null">Alterar</button>
                             </div>
-                            <span class=" text-green stepClass">1. {{inscricao.lider.nome}} <i class="fa fa-check"  ></i></span>
+                            <div class=" text-green stepClass" style="font-size:10pt">1. Seus dados <i class="fa fa-check"  ></i></div>
+                            <span class=" text-green stepClass">{{inscricao.lider.nome}} </span>
                         </div>
 
                     </div>
@@ -61,10 +62,10 @@
                     <div class="row" ng-show="inscricao.equipe!=null">
                         <div class="col col-sm-12">
                             <div class="pull-right box-tools">
-                                <button class="btn btn-warning btn-xs no-print" ng-cloak ng-click="selectEquipe();
-" ng-disabled="disableAlterarEquipe()">Alterar</button>
+                                <button class="btn btn-warning btn-xs no-print" ng-cloak ng-click="selectEquipe();" ng-disabled="disableAlterarEquipe()">Alterar</button>
                             </div>
-                            <span class=" text-green stepClass">2. {{inscricao.equipe.nome}} <i class="fa fa-check"  ></i></span>
+                            <div class=" text-green stepClass" style="font-size:10pt">2. Sua equipe <i class="fa fa-check"  ></i></div>
+                            <span class=" text-green stepClass">{{inscricao.equipe.nome}}</span>
                         </div>
 
 

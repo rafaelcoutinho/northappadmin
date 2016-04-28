@@ -17,7 +17,8 @@
                         <li><a href="#/etapa/{{etapa.id}}/grid" ng-cloak="" class="text-red">Grid</a></li>
                         <li><a href="#/etapa/{{etapa.id}}/resultados" ng-cloak="" class="text-red">Resultados</a></li>
                         <li class="divider"></li>
-                        <li><a href="#/etapa/{{etapa.id}}/relatorio" ng-cloak="" class="text-red">Relatório</a></li>                        
+                        <li><a href="#/etapa/{{etapa.id}}/relatorio" ng-cloak="" class="text-red">Relatório</a></li>    
+                                           
                     </ul>
                 </div>
 
@@ -25,7 +26,7 @@
                     <i class="fa  fa-trash-o"></i></button>
             </div>
         </div>
-
+        <span class="text-red" ng-if="etapa.active==1">Etapa ATIVA</span>
         <form class="form-horizontal">
             <div class="box-body">
                 <div class="form-group">
@@ -123,6 +124,8 @@
 
             <div class="box-footer">
                 <button type="submit" class="btn btn-default" ng-click="cancel()">Voltar</button>
+                <button type="submit" class="btn btn-default pull-right" ng-click="makeActive()" ng-if="etapa.active==0">Ativar etapa</button> 
+                
                 <button type="submit" class="btn btn-info pull-right" ng-click="saveData()">Salvar</button>
             </div>
 

@@ -14,9 +14,9 @@
                 </div>
                 <div class="box-body">
                     <form name="notForm">
-                        <div class="input-group input-group-sm" style="width: 150px;">
-
-                            <select class="form-control input-group input-group-sm" ng-model="mensagem.type" name="tipo" ng-required="true">
+                        <div class="form-group">
+                            <label>Selecionar destinatários:</label>
+                            <select class="form-control " ng-model="mensagem.type" name="tipo" ng-required="true">
                                 <option value="all">Todos</option>
 
                                 <option value="pro">Categoria Pró</option>
@@ -30,6 +30,7 @@
 
                             <span class="text-red" ng-show="notForm.tipo.$error.required">Um tipo de destinatários é obrigatório</span>
                         </div>
+
                         <div class="form-group" ng-if="mensagem.type=='equipe'">
                             <label for="inputName" class=" control-label">Equipe: </label>
                             <div>{{targetedEquipe.nome}}</div>
@@ -41,8 +42,10 @@
                             <button type="button" class="btn  btn-info btn-xs" ng-click="selectCompetidor()">Selecionar Competidor</button>
                         </div>
 
+
                         <div class="form-group">
-                            <label for="inputName" class=" control-label">Título</label>
+                            <label for="inputName">Título</label>
+
 
 
                             <input type="text" class="form-control" name="titulo" ng-model-options="{ updateOn: 'blur' }" placeholder="título" ng-model="mensagem.notification.title"
@@ -50,15 +53,37 @@
                             <span class="text-red" ng-show="notForm.titulo.$error.required">Título é obrigatório</span>
 
                         </div>
+
+
                         <div class="form-group">
-                            <label for="inputName" class=" control-label">Mensagem</label>
-
-
-                            <input type="text" class="form-control" ng-model-options="{ updateOn: 'blur' }" placeholder="Mensagem" name="msg" ng-model="mensagem.notification.body"
-                            ng-required="true">
+                            <label>Mensagem</label>
                             <span class="text-red" ng-show="notForm.msg.$error.required">A mensagem tem que ter pelo menos 3 caracteres</span>
+                            <textarea class="form-control" name="msg" ng-model="mensagem.notification.body" rows="5" style="width:100%" ng-required="true">
+                            </textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="inputName">Ação ao clicar</label>
+
+
+                            <select class="form-control " ng-model="mensagem.notification.action" name="action" ng-required="true">
+                                <option value="none" selected="selected">Abrir aplicativo</option>
+
+                                <option value="etapa">Abrir próxima etapa</option>
+                                <option value="results">Abrir resultados etapa</option>
+
+
+                            </select>
 
                         </div>
+                        <div class="form-group">
+                            <label for="inputName">Imagem Grande <span class="text-yellow">(Android)</span></label>
+
+
+                            <input type="text" class="form-control" name="image" placeholder="http://..." ng-model="mensagem.notification.image" ng-required="true">
+
+
+                        </div>
+
 
                     </form>
                 </div>
