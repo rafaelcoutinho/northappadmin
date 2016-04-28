@@ -124,7 +124,7 @@ var angularModule =
 
                 });
             }])
- 
+
         .controller('MenuCtrl', [
             '$scope', '$timeout', '$window', 'facebookService', '$location', '$routeParams', 'EtapasService', 'CompetidorService', 'EquipesService', 'CategoriaService', 'InscricaoService', 'AlertService', '$rootScope',
             function ($scope, $timeout, $window, facebookService, $location, $routeParams, EtapasService, CompetidorService, EquipesService, CategoriaService, InscricaoService, AlertService, $rootScope) {
@@ -141,6 +141,10 @@ var angularModule =
             $scope.novoCompetidor = { nome: "" };
 
             $scope.ok = function () {
+                if(!$scope.wasChecked){
+                    $scope.exitFilterCompetidor();
+                    return;
+                }
                 if ($scope.novoCompetidor.id_Trekker == null) {
 
                     if ($scope.competidorForm.$valid == false) {
@@ -183,7 +187,7 @@ var angularModule =
             }
 
             $scope.exitFilterCompetidor = function () {
-
+                $scope.wasChecked=true;
                 if ($scope.noResult == true) {
                     var nome = $scope.novoCompetidor;
                     $scope.novoCompetidor = {
@@ -291,15 +295,20 @@ var angularModule =
                             AlertService.showError("Houve um erro inesperado processando seu e-mail. Por favor tente novamente.");
                         }
 
-
-
-
                     });
             }
             $scope.ok = function () {
-                
-                if (!$scope.lider.password || $scope.lider.password.length==0) {
-                    AlertService.showError("Por favor insira sua senha.");
+                if ($scope.liderForm.liderEmail.$error.email) {
+                    AlertService.showError("Por favor insira seu email corretamente.");
+                    return;
+                }
+                if (!$scope.lider.password || $scope.lider.password.length == 0) {
+
+                    if (!$scope.wasChecked) {
+                        $scope.validateLider();
+                    } else {
+                        AlertService.showError("Por favor insira sua senha.");
+                    }
                     return;
                 }
                 var success = function (data) {
@@ -321,11 +330,11 @@ var angularModule =
                                 break;
 
                             default:
-                            if(err.status==404){
-                                AlertService.showError("O e-mail e senha inseridos não coicidem.");
-                            }else{
-                                AlertService.showError("Por favor corrija os erros do formulário.");
-                            }
+                                if (err.status == 404) {
+                                    AlertService.showError("O e-mail e senha inseridos não coicidem.");
+                                } else {
+                                    AlertService.showError("Por favor corrija os erros do formulário.");
+                                }
                         }
                     } else {
                         AlertService.showError("Houve um erro processando sua autenticação. Por favor revise seu formulário e tente novamente.");

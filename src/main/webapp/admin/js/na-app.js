@@ -835,24 +835,16 @@ var angularModule =
         .controller('PrintCtrl', function ($scope, RelatorioService, idEtapa, EtapasService,UtilsService) {
             $scope.etapa = EtapasService.get({ id: idEtapa });
             $scope.data = new Date();
-           $scope.report=  RelatorioService.query({ filter0: 'id_Etapa,eq,'+idEtapa });
+            $scope.report=[];
+            RelatorioService.query({ filter0: 'id_Etapa,eq,' + idEtapa }, function (data) {
+                
+                    
+                          $scope.report= UtilsService.addNumeracaoToGridList(data);
+                
+           })
            $scope.gridInfo=  RelatorioService.queryGridInfo({ id:idEtapa });
            
-            $scope.lastChangeIndex=-1;
-            $scope.lastChangeCat=-1;
-            $scope.getNumeracao=function(item,index){
-                if($scope.lastChangeCat!=item.categoria_Equipe){
-                    $scope.lastChangeIndex=index;
-                    $scope.lastChangeCat=item.categoria_Equipe;
-                }
-                var gridCat = item.categoria_Equipe<3?1:item.categoria_Equipe;
-                try{
-                return index+UtilsService.getGridInfo(gridCat).numeracao - $scope.lastChangeIndex;
-                }catch(e){
-                    console.log("Erro ",item,e);
-                    return -1;
-                }
-            }
+           
             $scope.reportOutOfGrid = RelatorioService.queryOutOfGrid({ id:idEtapa });
             $scope.printIt = function () {
                 window.print();
@@ -957,17 +949,19 @@ var angularModule =
                 };
                 $scope.gridConfig = 1;
                 $scope.getGridConf = UtilsService.getGridInfo;
-                
-                $scope.grids = GridConfService.query({}, function (data) {
-                    $scope.items = GridService.query({ idEtapa: $routeParams.idEtapa, idConfig: $scope.gridConfig });
-                });
+                 $scope.items = [];
                 $scope.refresh = function () {
-                    $scope.items = GridService.query({ idEtapa: $routeParams.idEtapa, idConfig: $scope.gridConfig });
+                    GridService.query({ idEtapa: $routeParams.idEtapa, idConfig: $scope.gridConfig },function(data){
+                         $scope.items = UtilsService.addNumeracaoToGridList(data);
+                    });                    
                 }
+                $scope.grids = GridConfService.query({}, function (data) {
+                   $scope.refresh ();
+                });
                 $scope.categorias = CategoriaService.query({});
 
                 $scope.updateGrid = function () {
-                    $scope.items = GridService.query({ idEtapa: $routeParams.idEtapa, idConfig: $scope.gridConfig });
+                   $scope.refresh();
                 }
                 $scope.addEquipe = function(){
                     var modalInstance = $uibModal.open({
@@ -1150,7 +1144,7 @@ var angularModule =
                 $scope.refresh = function () {
                     $scope.items = InscricaoService.query({ filter0: "id_Etapa,eq," + $routeParams.idEtapa });
                 }
-                $scope.items = InscricaoService.query({ filter0: "id_Etapa,eq," + $routeParams.idEtapa });
+                $scope.refresh();
                 $scope.go = function (n) {
                     $scope.currentPage += n;
                 }

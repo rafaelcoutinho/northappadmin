@@ -79,7 +79,7 @@
 
                             </tr>
                             <tr ng-repeat="item in items| filter:searchText| orderBy : sortItem.field:sortItem.reverse " ng-class="{'manualUpdate':item.t==1}">
-                                <td>{{$index+getGridConf(gridConfig).numeracao}}</td>
+                                <td>{{item.numeracao}}</td>
                                 <td>{{getLabelCategoria(item.categoria_Equipe)}}</td>
                                 <td>{{item.nome_Equipe}}</td>
                                 <td>{{item.desc_Equipe}}</td>

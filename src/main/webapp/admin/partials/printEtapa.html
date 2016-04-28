@@ -26,7 +26,7 @@
             </thead>
             <tbody>
                 <tr ng-repeat="entry in report|orderBy:['hora','minuto','nome_Equipe']">
-                    <td>{{getNumeracao(entry,$index)}}</td>
+                    <td>{{entry.numeracao}}</td>
                     <td>{{entry.hora}}:{{entry.minuto|zeroLeadNumber}}</td>
                     <td>{{entry.nome_Equipe}}</td>
                     <td>{{getLabelCategoria(entry.categoria_Equipe)}}</td>
