@@ -1,5 +1,5 @@
 // var SERVER_ROOT ="//2-dot-cumeqetrekking.appspot.com";
-var SERVER_ROOT = "//cumeqetrekking.appspot.com";
+var SERVER_ROOT = "//app.northbrasil.com.br";
 
 var angularModule =
     angular.module('registroApp', ['ngRoute', 'ngAnimate', 'dialogs.main', 'north.services', 'ui.bootstrap', 'ngResource', 'ngSanitize']).constant("appConfigs", {
@@ -52,7 +52,7 @@ var angularModule =
                 meApi: function (fields) {
                     var deferred = $q.defer();
 
-                    FB.api('/me', { fields: fields }, function (response) {
+                    FB.api('/me/?fields=id,name,email', { fields: fields }, function (response) {
 
                         if (!response || response.error) {
                             console.log("error", response)
@@ -79,14 +79,18 @@ var angularModule =
                 },
                 login: function () {
                     var deferred = $q.defer();
-                    FB.login(function (response) {
-                        if (response.authResponse) {
-                            deferred.resolve(response);
-                        } else {
-                            //User cancelled login or did not fully authorize.
-                            deferred.reject('Error occured');
-                        }
-                    });
+                    FB.login(
+                        function (response) {
+                            if (response.authResponse) {
+                                deferred.resolve(response);
+                            } else {
+                                //User cancelled login or did not fully authorize.
+                                deferred.reject('Error occured');
+                            }
+                        }, {
+                            scope: 'email,public_profile',
+                            return_scopes: true
+                        });
                     return deferred.promise;
                 },
                 loginStatus: function () {
@@ -141,7 +145,7 @@ var angularModule =
             $scope.novoCompetidor = { nome: "" };
 
             $scope.ok = function () {
-                if(!$scope.wasChecked){
+                if (!$scope.wasChecked) {
                     $scope.exitFilterCompetidor();
                     return;
                 }
@@ -153,7 +157,7 @@ var angularModule =
                     }
 
                 }
-                InscricaoService.getInscricaoCompetidor({ idEtapa: etapa.id, email: $scope.novoCompetidor.email }, function (results) {
+                InscricaoService.getInscricaoCompetidor({ idEtapa: etapa.id, email: $scope.novoCompetidor.email, id_Trekker: $scope.novoCompetidor.id_Trekker }, function (results) {
 
                     if (results == null || results.ins_EquipeId == null || results.ins_EquipeId == $scope.inscricao.equipe.id) {
                         if (results.id_Trekker != null) {
@@ -187,7 +191,7 @@ var angularModule =
             }
 
             $scope.exitFilterCompetidor = function () {
-                $scope.wasChecked=true;
+                $scope.wasChecked = true;
                 if ($scope.noResult == true) {
                     var nome = $scope.novoCompetidor;
                     $scope.novoCompetidor = {
@@ -313,7 +317,7 @@ var angularModule =
                 }
                 var success = function (data) {
                     CompetidorService.query({ filter0: "email,eq," + data.email }, function (competidor) {
-
+                        
                         competidor[0].email = data.email;
                         $uibModalInstance.close(competidor[0]);
                     });
@@ -321,7 +325,7 @@ var angularModule =
                 var error = function (err) {
                     console.log(err);
                     if (err.data.errorCode) {
-                        switch (err.data.errorCode) {
+                        switch (parseInt(err.data.errorCode)) {
                             case 804:
                                 AlertService.showError("Senha inválida. Por favor tente novamente.");
                                 break;
@@ -765,6 +769,9 @@ var angularModule =
                             });
                         } else {
                             $rootScope.$broadcast('dialogs.wait.complete');
+                            AlertService.showError("Não foi possível obter seu e-mail do Facebook. Por favor tente novamente.");
+                            
+                            // facebookService.logout();
                         }
                     } else {
                         $rootScope.$broadcast('dialogs.wait.complete');

@@ -1,14 +1,14 @@
 // var SERVER_ROOT ="//2-dot-cumeqetrekking.appspot.com"; 
- var SERVER_ROOT ="//cumeqetrekking.appspot.com";
-    
+var SERVER_ROOT = "//app.northbrasil.com.br";
+
 var angularModule =
     angular.module('adminApp', ['north.services', 'ngRoute', 'ui.bootstrap', 'ngResource'])
         .constant("appConfigs", {
-            "context": SERVER_ROOT+"/rest",
+            "context": SERVER_ROOT + "/rest",
             // "context": "//localhost/northServer/api.php",
             "contextRoot": SERVER_ROOT
 
-        }).config(['$routeProvider','$httpProvider', function ($routeProvider, $httpProvider) {
+        }).config(['$routeProvider', '$httpProvider', function ($routeProvider, $httpProvider) {
             $routeProvider.when('/', {
                 templateUrl: 'partials/main.html'
 
@@ -16,7 +16,7 @@ var angularModule =
                 .when('/etapas/', {
                     templateUrl: 'partials/etapas.html',
                     controller: 'EtapasCtrl'
-                })               
+                })
                 .when('/etapaAtual', {
                     templateUrl: 'partials/etapa.html',
                     controller: 'CarregaEtapaAtual'
@@ -73,7 +73,7 @@ var angularModule =
                 }).when('/etapa/:idEtapa/inscricoes/:idTrekker', {
                     templateUrl: 'partials/inscricao.html',
                     controller: 'InscricaoDetailsCtrl'
-                    
+
                 }).when('/etapa/:idEtapa/resultadoEdit', {
                     templateUrl: 'partials/resultadoEtapaForm.html',
                     controller: 'ResultadoFormCtrl',
@@ -147,12 +147,12 @@ var angularModule =
                 },
                 queryGridInfo: {
                     isArray: false,
-                    url:appConfigs.contextRoot + '/app/enhanced/Etapa/:id/GridInfo'
+                    url: appConfigs.contextRoot + '/app/enhanced/Etapa/:id/GridInfo'
                 },
-                queryOutOfGrid:{
-                    isArray: true,                    
-                    url:appConfigs.contextRoot + '/app/enhanced/Etapa/:id/OutOfGrid'
-                //    url: "http://localhost/northServer/app.php/Etapa/:id/OutOfGrid"
+                queryOutOfGrid: {
+                    isArray: true,
+                    url: appConfigs.contextRoot + '/app/enhanced/Etapa/:id/OutOfGrid'
+                    //    url: "http://localhost/northServer/app.php/Etapa/:id/OutOfGrid"
                     
                 }
             });
@@ -163,150 +163,150 @@ var angularModule =
                     isArray: true,
                     transformResponse: jsonTransformQuery
                 },
-                save:{
+                save: {
                     method: "POST",
                     isArray: false
                 },
-                update:{
+                update: {
                     method: "PUT",
                     isArray: false
                 },
                 saveResultados: {
                     method: "PUT",
-                    isArray: false,                    
-                    url:appConfigs.contextRoot + '/GerenciaResultado.do'
+                    isArray: false,
+                    url: appConfigs.contextRoot + '/GerenciaResultado.do'
                     // url: "http://localhost/northServer/performance.php"
                 },
-                 processPerformanceCSV: {
+                processPerformanceCSV: {
                     method: "POST",
-                    isArray: true,                    
-                    url:appConfigs.contextRoot + '/GerenciaResultado.do'
+                    isArray: true,
+                    url: appConfigs.contextRoot + '/GerenciaResultado.do'
                     // url: "http://localhost/northServer/performance.php"
 
                 }
             });
         }])
-         .service('NotificacaoService', ['$http', '$q', '$resource', 'appConfigs', function ($http, $q, $resource, appConfigs) {
+        .service('NotificacaoService', ['$http', '$q', '$resource', 'appConfigs', function ($http, $q, $resource, appConfigs) {
             return $resource(appConfigs.contextRoot + '/notification', {}, {
                 publish: {
                     isArray: true,
-                    method:"POST"
-                   
+                    method: "POST"
+
                 },
             });
         }])
-        
-        .controller('CarregaEtapaAtual', function ($scope, AlertService, EtapasService, UtilsService,$location) {
-           EtapasService.getEtapaAtual({},function(data){
-               console.log('#/etapa/'+data.id)
-               
-               $location.path("/etapa/" + data.id);	
-           });
-            
+
+        .controller('CarregaEtapaAtual', function ($scope, AlertService, EtapasService, UtilsService, $location) {
+            EtapasService.getEtapaAtual({}, function (data) {
+                console.log('#/etapa/' + data.id)
+
+                $location.path("/etapa/" + data.id);
+            });
+
         })
-        .controller('NotificacaoCtrl', function ($scope, AlertService, NotificacaoService, UtilsService,$uibModal) {
-            $scope.mensagem={
-                type:"all",
-                to:null,
-                
-                notification:{
-                    title:"",
-                    body:""
+        .controller('NotificacaoCtrl', function ($scope, AlertService, NotificacaoService, UtilsService, $uibModal) {
+            $scope.mensagem = {
+                type: "all",
+                to: null,
+
+                notification: {
+                    title: "",
+                    body: ""
                 }
             };
-            $scope.enviarNotificacao=function(){
-                   
-                if($scope.mensagem.type=="competidor" &&  $scope.mensagem.id_Trekker==null){
-                     AlertService.showError("Por favor selecione competidor");
-                     return;
+            $scope.enviarNotificacao = function () {
+
+                if ($scope.mensagem.type == "competidor" && $scope.mensagem.id_Trekker == null) {
+                    AlertService.showError("Por favor selecione competidor");
+                    return;
                 }
-                if($scope.mensagem.type=="equipe" &&  $scope.mensagem.id_Equipe==null){
-                     AlertService.showError("Por favor selecione equipe");
-                     return;
+                if ($scope.mensagem.type == "equipe" && $scope.mensagem.id_Equipe == null) {
+                    AlertService.showError("Por favor selecione equipe");
+                    return;
                 }
                 var modalInstance = $uibModal.open({
-                        animation: $scope.animationsEnabled,
-                        templateUrl: 'partials/modal.html',
-                        controller: 'ConfirmModalCrtl',
-                        size: 'sm',
-                        resolve: {
-                            title: function () {
-                                return "Notificação";
-                            },
-                            message: function () {
-                                switch ($scope.mensagem.type) {
-                                    case "all":
-                                        return "Você tem certeza que deseja enivar uma notificação para TODOS os usuários do aplicativo?";
-                                    case "pro":
-                                        return "Você tem certeza que deseja enivar uma notificação para os competidores da categoria Pró?";
-                                    case "graduado":
-                                        return "Você tem certeza que deseja enivar uma notificação para os competidores da categoria Graduado?";
-                                    case "trekker":
-                                        return "Você tem certeza que deseja enivar uma notificação para os competidores da categoria Trekker?";
-                                    case "turismo":
-                                        return "Você tem certeza que deseja enivar uma notificação para os competidores da categoria Turismo?";
-                                    default :
-                                        return "Você tem certeza que deseja enivar uma notificação para os competidores?";
-                                }
-                                
+                    animation: $scope.animationsEnabled,
+                    templateUrl: 'partials/modal.html',
+                    controller: 'ConfirmModalCrtl',
+                    size: 'sm',
+                    resolve: {
+                        title: function () {
+                            return "Notificação";
+                        },
+                        message: function () {
+                            switch ($scope.mensagem.type) {
+                                case "all":
+                                    return "Você tem certeza que deseja enivar uma notificação para TODOS os usuários do aplicativo?";
+                                case "pro":
+                                    return "Você tem certeza que deseja enivar uma notificação para os competidores da categoria Pró?";
+                                case "graduado":
+                                    return "Você tem certeza que deseja enivar uma notificação para os competidores da categoria Graduado?";
+                                case "trekker":
+                                    return "Você tem certeza que deseja enivar uma notificação para os competidores da categoria Trekker?";
+                                case "turismo":
+                                    return "Você tem certeza que deseja enivar uma notificação para os competidores da categoria Turismo?";
+                                default:
+                                    return "Você tem certeza que deseja enivar uma notificação para os competidores?";
                             }
+
                         }
-                    });
-                    modalInstance.result.then(function () {
-                       NotificacaoService.publish($scope.mensagem,function(data){
-                           if(data.length==0){
-                            AlertService.showInfo("Nenhum destinatário com token para notificação foi encontrado.");   
-                           }else{
-                            AlertService.showSuccess("Foram enviadas notificações para "+data.length+" dispositivos.");
-                           }
-                       },function(error){
-                           AlertService.showError("Falhou ao enviar notificação");
-                       }
-                       );
-                    }, function () {
-                        // $log.info('Modal dismissed at: ' + new Date());
-                    });
-                
-            }
-            $scope.selectCompetidor = function(){
-                var modalInstance = $uibModal.open({
-                         animation: $scope.animationsEnabled,
-                        templateUrl: 'partials/modal.select.competidor.html',
-                        controller: 'ModalSelectCompetidorCtrl',
-                        size: 'sm'
-                        
-                    });
-                    modalInstance.result.then(function (selecionado) {
-                       
-                       $scope.targetedCompetidor = selecionado;
-                       $scope.mensagem.id_Trekker=selecionado.id;
-                    }, function () {
-                        // $log.info('Modal dismissed at: ' + new Date());
-                    });
-                
-            }
-            $scope.selectEquipe = function(){
-                var modalInstance = $uibModal.open({
-                         animation: $scope.animationsEnabled,
-                        templateUrl: 'partials/modal.select.equipe.html',
-                        controller: 'ModalSelectEquipeCtrl',
-                        size: 'sm',
-                        resolve: {
-                            equipesToFilter: function () {
-                                return [];
-                            }
+                    }
+                });
+                modalInstance.result.then(function () {
+                    NotificacaoService.publish($scope.mensagem, function (data) {
+                        if (data.length == 0) {
+                            AlertService.showInfo("Nenhum destinatário com token para notificação foi encontrado.");
+                        } else {
+                            AlertService.showSuccess("Foram enviadas notificações para " + data.length + " dispositivos.");
                         }
-                    });
-                    modalInstance.result.then(function (selecionado) {
-                       
-                       $scope.targetedEquipe = selecionado;
-                       $scope.mensagem.id_Equipe=selecionado.id;
-                    }, function () {
-                        // $log.info('Modal dismissed at: ' + new Date());
-                    });
-                
+                    }, function (error) {
+                        AlertService.showError("Falhou ao enviar notificação");
+                    }
+                        );
+                }, function () {
+                    // $log.info('Modal dismissed at: ' + new Date());
+                });
+
             }
-            
+            $scope.selectCompetidor = function () {
+                var modalInstance = $uibModal.open({
+                    animation: $scope.animationsEnabled,
+                    templateUrl: 'partials/modal.select.competidor.html',
+                    controller: 'ModalSelectCompetidorCtrl',
+                    size: 'sm'
+
+                });
+                modalInstance.result.then(function (selecionado) {
+
+                    $scope.targetedCompetidor = selecionado;
+                    $scope.mensagem.id_Trekker = selecionado.id;
+                }, function () {
+                    // $log.info('Modal dismissed at: ' + new Date());
+                });
+
+            }
+            $scope.selectEquipe = function () {
+                var modalInstance = $uibModal.open({
+                    animation: $scope.animationsEnabled,
+                    templateUrl: 'partials/modal.select.equipe.html',
+                    controller: 'ModalSelectEquipeCtrl',
+                    size: 'sm',
+                    resolve: {
+                        equipesToFilter: function () {
+                            return [];
+                        }
+                    }
+                });
+                modalInstance.result.then(function (selecionado) {
+
+                    $scope.targetedEquipe = selecionado;
+                    $scope.mensagem.id_Equipe = selecionado.id;
+                }, function () {
+                    // $log.info('Modal dismissed at: ' + new Date());
+                });
+
+            }
+
         })
         .controller('ModalEditResultadoCtrl', function ($scope, $uibModalInstance, etapa, entry, results, AlertService, GridService, EquipesService, UtilsService) {
             $scope.etapa = etapa;
@@ -327,7 +327,7 @@ var angularModule =
                     var element = data[index];
                     var found = false;
                     for (var j = 0; j < $scope.results.length; j++) {
-                        if($scope.results[j].grid.equipe){
+                        if ($scope.results[j].grid.equipe) {
                             if ($scope.results[j].grid.equipe != null && element.id == $scope.results[j].grid.equipe.id_Equipe) {
                                 found = true;
 
@@ -344,15 +344,15 @@ var angularModule =
 
 
             $scope.ok = function () {
-                $scope.entry.grid.equipe={
-                    id_Equipe:$scope.equipe.id,
-                    nome:$scope.equipe.nome,
-                    id_Categoria:$scope.equipe.id_Categoria,
-                    descricao:$scope.equipe.descricao,
-                    hora:$scope.entry.grid.hora,
-                    minuto:$scope.entry.grid.minuto
+                $scope.entry.grid.equipe = {
+                    id_Equipe: $scope.equipe.id,
+                    nome: $scope.equipe.nome,
+                    id_Categoria: $scope.equipe.id_Categoria,
+                    descricao: $scope.equipe.descricao,
+                    hora: $scope.entry.grid.hora,
+                    minuto: $scope.entry.grid.minuto
                 }
-               
+
                 console.log("#", $scope.equipe);
                 if ($scope.equipe == null) {
                     return;
@@ -367,7 +367,7 @@ var angularModule =
             };
 
         })
-        
+
         .controller('ModalSelectCompetidorCtrl', function ($scope, $uibModalInstance, AlertService, CompetidorService, UtilsService) {
             $scope.competidores = CompetidorService.query({}, function (data) {
 
@@ -393,7 +393,7 @@ var angularModule =
                 $uibModalInstance.dismiss('cancel');
             };
         })
-        .controller('ModalSelectEquipeCtrl', function ($scope, $uibModalInstance, equipesToFilter,  AlertService, GridService, EquipesService, UtilsService) {
+        .controller('ModalSelectEquipeCtrl', function ($scope, $uibModalInstance, equipesToFilter, AlertService, GridService, EquipesService, UtilsService) {
             $scope.equipes = [];
             EquipesService.query({}, function (data) {
                 if (equipesToFilter.length > 0) {
@@ -413,20 +413,20 @@ var angularModule =
                 } else {
                     $scope.equipes = data;
                 }
-            },function(){
+            }, function () {
                 AlertService.showError("Falhou ao carregar equipes");
             });
             $scope.getLabelCategoria = UtilsService.getLabelCategoria;
-            $scope.equipe = {nome:""};
-             $scope.ok = function () {
-               
-               
+            $scope.equipe = { nome: "" };
+            $scope.ok = function () {
+
+
                 console.log("#", $scope.equipe);
                 if ($scope.equipe == null) {
-                     AlertService.showError("Por favor selecione uma equipe existente.");
+                    AlertService.showError("Por favor selecione uma equipe existente.");
                     return;
                 }
-                
+
                 $uibModalInstance.close($scope.equipe);
 
             };
@@ -441,15 +441,15 @@ var angularModule =
             $scope.equipe = { nome: '' };
 
             $scope.entry = entry;
-            
-            if ($scope.entry==null) {
-                
-                $scope.entry={isNew: true};
-            }else{
+
+            if ($scope.entry == null) {
+
+                $scope.entry = { isNew: true };
+            } else {
                 $scope.entry.isNew = false;
             }
-            
-            
+
+
 
             $scope.results = results;
 
@@ -461,10 +461,10 @@ var angularModule =
                     var element = data[index];
                     var found = false;
                     for (var j = 0; j < $scope.results.length; j++) {
-                        
-                        if($scope.results[j].id_Equipe){
-                            if(element.id==$scope.entry.id){
-                                $scope.equipe=element;
+
+                        if ($scope.results[j].id_Equipe) {
+                            if (element.id == $scope.entry.id) {
+                                $scope.equipe = element;
                             }
                             if ($scope.results[j].id_Equipe != null && element.id == $scope.results[j].id_Equipe) {
                                 found = true;
@@ -482,14 +482,14 @@ var angularModule =
 
 
             $scope.ok = function () {
-               
-               
+
+
                 console.log("#", $scope.equipe);
                 if ($scope.equipe == null) {
-                     AlertService.showError("Por favor selecione uma equipe existente.");
+                    AlertService.showError("Por favor selecione uma equipe existente.");
                     return;
                 }
-                $scope.entry.id_Equipe=$scope.equipe.id;
+                $scope.entry.id_Equipe = $scope.equipe.id;
                 $uibModalInstance.close($scope.entry);
 
             };
@@ -499,8 +499,8 @@ var angularModule =
             };
 
         })
-        .controller('ModalDetalhesPCSCtrl', function ($scope, $uibModalInstance,  entry, AlertService, GridService, EquipesService, UtilsService) {
-            $scope.entry=entry;
+        .controller('ModalDetalhesPCSCtrl', function ($scope, $uibModalInstance, entry, AlertService, GridService, EquipesService, UtilsService) {
+            $scope.entry = entry;
             $scope.getTipoLabel = function (tipo) {
                 switch (tipo) {
                     case 1:
@@ -521,7 +521,7 @@ var angularModule =
                 $uibModalInstance.dismiss('cancel');
             };
         })
-        .controller('ResultadosCtrl', function ($scope, idEtapa, EtapasService, UtilsService, $uibModal,CategoriaService,$location,$log,ResultadoAdminService,AlertService) {
+        .controller('ResultadosCtrl', function ($scope, idEtapa, EtapasService, UtilsService, $uibModal, CategoriaService, $location, $log, ResultadoAdminService, AlertService) {
             $scope.etapa = EtapasService.get({ id: idEtapa });
             $scope.categorias = CategoriaService.query({}, function (data) {
                 $scope.categoria = { id_Categoria: data[0].id };
@@ -536,7 +536,7 @@ var angularModule =
             $scope.importPerformanceCSV = function () {
                 $location.path("/etapa/" + idEtapa + "/performanceEdit");
             };
-            
+
             $scope.remover = function (item) {
                 var modalInstance = $uibModal.open({
                     animation: $scope.animationsEnabled,
@@ -556,7 +556,7 @@ var angularModule =
                     ResultadoAdminService.remove(item,
                         function (data) {
                             AlertService.showSuccess("Resultado removido");
-                          $scope.resultados = EtapasService.getResultados({ id: idEtapa });
+                            $scope.resultados = EtapasService.getResultados({ id: idEtapa });
 
                         }, function (data) {
                             AlertService.showError("Houve um erro ao remover");
@@ -591,8 +591,8 @@ var angularModule =
 
                 modalInstance.result.then(function (selecionado) {
                     selecionado.id_Etapa = idEtapa;
-                    if (selecionado.isNew==true) {                        
-                        
+                    if (selecionado.isNew == true) {
+
                         ResultadoAdminService.save(selecionado, function (data) {
                             $scope.resultados = EtapasService.getResultados({ id: idEtapa });
                         });
@@ -608,9 +608,9 @@ var angularModule =
                 });
             }
             $scope.showDetalhes = function (item) {
-                 if(!item.pcs){
-                    item.pcs = EtapasService.getPerformance({ id: idEtapa, id_Equipe:item.id_Equipe });
-                } 
+                if (!item.pcs) {
+                    item.pcs = EtapasService.getPerformance({ id: idEtapa, id_Equipe: item.id_Equipe });
+                }
                 var modalInstance = $uibModal.open({
                     animation: $scope.animationsEnabled,
                     templateUrl: 'modalPCS.html',
@@ -625,13 +625,13 @@ var angularModule =
 
                 modalInstance.result.then(function () {
 
-                    
+
                 }, function () {
-                    
+
                 });
             }
         })
-        
+
         .controller('PerformanceFormCtrl', function ($scope, idEtapa, EtapasService, UtilsService, ResultadoAdminService, $uibModal, $log) {
             $scope.processCsv = function () {
                 ResultadoAdminService.processPerformanceCSV({ etapa: idEtapa }, $scope.csvData, function (data) {
@@ -643,7 +643,7 @@ var angularModule =
             }
             $scope.getPoints = function (item) {
                 var pcs = item.pcs;
-                
+
                 var totalPerdido = 0;
                 var totalZerados = 0;
                 var pcsNaoPassados = 0;
@@ -655,10 +655,10 @@ var angularModule =
                                 pcsNaoPassados++;
                                 totalPerdido += 900;
                             } else {
-                                console.log("err", element,item);
+                                console.log("err", element, item);
                             }
                         } else {
-                            if(element.Tmp==0){
+                            if (element.Tmp == 0) {
                                 totalZerados++;
                             }
                             totalPerdido += Math.abs(element.Tmp);
@@ -669,10 +669,10 @@ var angularModule =
                                 pcsNaoPassados++;
                                 totalPerdido += 900;
                             } else {
-                                console.log("err", element,item);
+                                console.log("err", element, item);
                             }
                         } else {
-                            if(element.Virt==0){
+                            if (element.Virt == 0) {
                                 totalZerados++;
                             }
                             totalPerdido += Math.abs(element.Virt);
@@ -680,12 +680,12 @@ var angularModule =
                     }
 
                 }
-                item.PtsPerdidos=totalPerdido;
-                item.PCZerado=totalZerados;
-                item.PtsPerdidos=totalPerdido;
-                item.PCPassou=(pcs.length-pcsNaoPassados);
-                if(item.grid){//todo mover pra outro lugar
-                    item=item.grid.id_Equipe;
+                item.PtsPerdidos = totalPerdido;
+                item.PCZerado = totalZerados;
+                item.PtsPerdidos = totalPerdido;
+                item.PCPassou = (pcs.length - pcsNaoPassados);
+                if (item.grid) {//todo mover pra outro lugar
+                    item = item.grid.id_Equipe;
                 }
                 return totalPerdido;
             }
@@ -706,7 +706,7 @@ var angularModule =
                 return r;
             };
             $scope.diffNames = function (item) {
-                if(!item.grid.equipe){
+                if (!item.grid.equipe) {
                     return true;
                 }
                 return item.grid.equipe != null && $scope.accentsTidy(item.grid.equipe.nome) != $scope.accentsTidy(item.Piloto);
@@ -751,18 +751,18 @@ var angularModule =
             }
             $scope.getLabelCategoria = UtilsService.getLabelCategoria;
             $scope.updateBreadcrumb = function () {
-                $scope.title = 'Gerenciar Resultados ' ;
-                
-                $scope.bcs = [{ title: 'Home', url: '#/' }, { title: 'Etapas', url: '#/etapas' }, { title: 'Etapa', url: '#/etapa/' + idEtapa }, { title: 'Importar CSV', url: '',active:true }]
+                $scope.title = 'Gerenciar Resultados ';
+
+                $scope.bcs = [{ title: 'Home', url: '#/' }, { title: 'Etapas', url: '#/etapas' }, { title: 'Etapa', url: '#/etapa/' + idEtapa }, { title: 'Importar CSV', url: '', active: true }]
             }
         })
-       
+
         .controller('ResultadoFormCtrl', function ($scope, idEtapa, EtapasService, UtilsService, ResultadoAdminService, $uibModal, $log) {
             $scope.etapa = EtapasService.get({ id: idEtapa });
             $scope.processCsv = function () {
                 ResultadoAdminService.processCSV({ etapa: idEtapa }, $scope.csvData, function (data) {
                     $scope.preResultados = data;
-                    
+
                 }, function (error) {
                     console.log("erro", error);
                 });
@@ -770,7 +770,7 @@ var angularModule =
             $scope.salvarResultados = function () {
                 ResultadoAdminService.saveResultados({ etapa: idEtapa }, $scope.preResultados);
             }
- 
+
             $scope.accentsTidy = function (s) {
                 var r = s.toLowerCase();
                 r = r.replace(new RegExp(/\s/g), "");
@@ -826,30 +826,30 @@ var angularModule =
             }
             $scope.getLabelCategoria = UtilsService.getLabelCategoria;
             $scope.updateBreadcrumb = function () {
-                $scope.title = 'Gerenciar Resultados ' ;
-                
-                $scope.bcs = [{ title: 'Home', url: '#/' }, { title: 'Etapas', url: '#/etapas' }, { title: 'Etapa', url: '#/etapa/' + idEtapa }, { title: 'Importar CSV', url: '',active:true }]
+                $scope.title = 'Gerenciar Resultados ';
+
+                $scope.bcs = [{ title: 'Home', url: '#/' }, { title: 'Etapas', url: '#/etapas' }, { title: 'Etapa', url: '#/etapa/' + idEtapa }, { title: 'Importar CSV', url: '', active: true }]
             }
 
         })
-        .controller('PrintCtrl', function ($scope, RelatorioService, idEtapa, EtapasService,UtilsService) {
+        .controller('PrintCtrl', function ($scope, RelatorioService, idEtapa, EtapasService, UtilsService) {
             $scope.etapa = EtapasService.get({ id: idEtapa });
             $scope.data = new Date();
-            $scope.report=[];
+            $scope.report = [];
             RelatorioService.query({ filter0: 'id_Etapa,eq,' + idEtapa }, function (data) {
-                
-                    
-                          $scope.report= UtilsService.addNumeracaoToGridList(data);
-                
-           })
-           $scope.gridInfo=  RelatorioService.queryGridInfo({ id:idEtapa });
-           
-           
-            $scope.reportOutOfGrid = RelatorioService.queryOutOfGrid({ id:idEtapa });
+
+
+                $scope.report = UtilsService.addNumeracaoToGridList(data);
+
+            })
+            $scope.gridInfo = RelatorioService.queryGridInfo({ id: idEtapa });
+
+
+            $scope.reportOutOfGrid = RelatorioService.queryOutOfGrid({ id: idEtapa });
             $scope.printIt = function () {
                 window.print();
             }
-            $scope.getLabelCategoria= UtilsService.getLabelCategoria;
+            $scope.getLabelCategoria = UtilsService.getLabelCategoria;
 
         })
         .controller('ConfirmModalCrtl', function ($scope, $uibModalInstance, title, message) {
@@ -864,32 +864,32 @@ var angularModule =
                 $uibModalInstance.dismiss('cancel');
             };
         })
-        .controller('ModalLargadaCtrl', function ($scope, $uibModalInstance, gridConfig, gridInfo, etapa, equipes, AlertService, GridService,EquipesService,UtilsService) {
+        .controller('ModalLargadaCtrl', function ($scope, $uibModalInstance, gridConfig, gridInfo, etapa, equipes, AlertService, GridService, EquipesService, UtilsService) {
             $scope.gridConfig = gridConfig;
-            
+
             $scope.gridInfo = gridInfo;
             $scope.etapa = etapa;
             $scope.equipes = [];
             $scope.equipesNoGrid = equipes;
-            console.log("$scope.equipesNoGrid",$scope.equipesNoGrid)
-            $scope.isNew=false;
-            
+            console.log("$scope.equipesNoGrid", $scope.equipesNoGrid)
+            $scope.isNew = false;
+
             $scope.getLabelCategoria = UtilsService.getLabelCategoria;
             if (gridInfo == null) {
                 $scope.isNew = true;
                 $scope.gridInfo = {
-                    id_Etapa:$scope.etapa.id
-                    
+                    id_Etapa: $scope.etapa.id
+
                 };
                 EquipesService.query({}, function (data) {
                     for (var index = 0; index < data.length; index++) {
                         var element = data[index];
                         var found = false;
                         for (var j = 0; j < $scope.equipesNoGrid.length; j++) {
-                            
+
                             if (element.id == $scope.equipesNoGrid[j].id_Equipe) {
                                 found = true;
-                                
+
                                 break;
                             }
                         }
@@ -906,7 +906,7 @@ var angularModule =
                     return;
                 }
                 if ($scope.isNew == true) {
-                    
+
 
                     $scope.gridInfo.id_Equipe = $scope.gridInfo.equipe.id;
                     $scope.gridInfo.id_Etapa = $scope.etapa.id;
@@ -918,7 +918,7 @@ var angularModule =
                         $uibModalInstance.close(newGridInfo);
                     }, function (error) {
                         console.log("Error", error)
-                        AlertService.showError("Houve um erro ao inserir no grid: "+error);
+                        AlertService.showError("Houve um erro ao inserir no grid: " + error);
                     });
                 } else {
                     var newGridInfo = $scope.gridInfo;
@@ -927,7 +927,7 @@ var angularModule =
 
                         $uibModalInstance.close(newGridInfo);
                     }, function (error) {
-                        AlertService.showError("Houve um erro ao atualizar o grid: "+error);
+                        AlertService.showError("Houve um erro ao atualizar o grid: " + error);
                     });
                 }
 
@@ -941,29 +941,29 @@ var angularModule =
         })
         .controller('GridListCtrl', [
 
-            '$scope', '$timeout', '$window', '$routeParams', 'GridService', '$location', 'CategoriaService', 'GridConfService', '$uibModal', '$log', 'EtapasService','UtilsService','AlertService',
-            function ($scope, $timeout, $window, $routeParams, GridService, $location, CategoriaService, GridConfService, $uibModal, $log, EtapasService,UtilsService,AlertService) {
+            '$scope', '$timeout', '$window', '$routeParams', 'GridService', '$location', 'CategoriaService', 'GridConfService', '$uibModal', '$log', 'EtapasService', 'UtilsService', 'AlertService',
+            function ($scope, $timeout, $window, $routeParams, GridService, $location, CategoriaService, GridConfService, $uibModal, $log, EtapasService, UtilsService, AlertService) {
                 $scope.sortItem = {
                     field: ["hora", "minuto"],
                     reverse: false
                 };
                 $scope.gridConfig = 1;
                 $scope.getGridConf = UtilsService.getGridInfo;
-                 $scope.items = [];
+                $scope.items = [];
                 $scope.refresh = function () {
-                    GridService.query({ idEtapa: $routeParams.idEtapa, idConfig: $scope.gridConfig },function(data){
-                         $scope.items = UtilsService.addNumeracaoToGridList(data);
-                    });                    
+                    GridService.query({ idEtapa: $routeParams.idEtapa, idConfig: $scope.gridConfig }, function (data) {
+                        $scope.items = UtilsService.addNumeracaoToGridList(data);
+                    });
                 }
                 $scope.grids = GridConfService.query({}, function (data) {
-                   $scope.refresh ();
+                    $scope.refresh();
                 });
                 $scope.categorias = CategoriaService.query({});
 
                 $scope.updateGrid = function () {
-                   $scope.refresh();
+                    $scope.refresh();
                 }
-                $scope.addEquipe = function(){
+                $scope.addEquipe = function () {
                     var modalInstance = $uibModal.open({
                         animation: $scope.animationsEnabled,
                         templateUrl: 'largadaModalContent.html',
@@ -971,15 +971,15 @@ var angularModule =
                         size: 'sm',
                         resolve: {
                             gridConfig: function () {
-                                return $scope.getGridConf(); 
-                                
+                                return $scope.getGridConf();
+
                             },
-                            gridConfigs:function(){
+                            gridConfigs: function () {
                                 return $scope.grids;
                             },
-                            equipes:function(){
+                            equipes: function () {
                                 return $scope.items;
-                            },  
+                            },
                             gridInfo: function () {
                                 return null;
                             },
@@ -992,7 +992,7 @@ var angularModule =
                     modalInstance.result.then(function (selecionado) {
                         for (var index = 0; index < $scope.items.length; index++) {
                             var element = $scope.items[index];
-                            if (element.id_Equipe == selecionado.id_Equipe) {                                
+                            if (element.id_Equipe == selecionado.id_Equipe) {
                                 $scope.items[index] = selecionado;
                                 return;
                             }
@@ -1007,8 +1007,8 @@ var angularModule =
                 $scope.sortBy = function (col) {
                     $scope.inscOrder = col;
                 }
-                $scope.removerDoGrid = function(item){
-                     var modalInstance = $uibModal.open({
+                $scope.removerDoGrid = function (item) {
+                    var modalInstance = $uibModal.open({
                         animation: $scope.animationsEnabled,
                         templateUrl: 'partials/modal.html',
                         controller: 'ConfirmModalCrtl',
@@ -1024,9 +1024,9 @@ var angularModule =
                     });
                     modalInstance.result.then(function () {
                         GridService.remove(item,
-                            function (data) {                                
+                            function (data) {
                                 AlertService.showSuccess("Inscrição removida");
-                                 $scope.refresh();
+                                $scope.refresh();
 
                             }, function (data) {
                                 AlertService.showError("Houve um erro ao remover");
@@ -1042,7 +1042,7 @@ var angularModule =
                         controller: 'ModalLargadaCtrl',
                         size: 'sm',
                         resolve: {
-                            gridConfigs:function(){
+                            gridConfigs: function () {
                                 return $scope.grids;
                             },
                             gridConfig: function () {
@@ -1056,9 +1056,9 @@ var angularModule =
                             },
                             gridInfo: function () {
                                 return item;
-                            },equipes:function(){
+                            }, equipes: function () {
                                 return [];
-                            },  
+                            },
                             etapa: function () {
                                 return $scope.etapa;
                             }
@@ -1068,7 +1068,7 @@ var angularModule =
                     modalInstance.result.then(function (selecionado) {
                         for (var index = 0; index < $scope.items.length; index++) {
                             var element = $scope.items[index];
-                            if (element.id_Equipe == selecionado.id_Equipe) {                                
+                            if (element.id_Equipe == selecionado.id_Equipe) {
                                 $scope.items[index] = selecionado;
                                 return;
                             }
@@ -1136,8 +1136,8 @@ var angularModule =
         })
         .controller('InscricoesListCtrl', [
 
-            '$scope', '$timeout', '$window', '$routeParams', 'InscricaoService', 'EtapasService', '$location','$uibModal','AlertService','CompetidorService','$log',
-            function ($scope, $timeout, $window, $routeParams, InscricaoService, EtapasService, $location,$uibModal,AlertService,CompetidorService,$log) {
+            '$scope', '$timeout', '$window', '$routeParams', 'InscricaoService', 'EtapasService', '$location', '$uibModal', 'AlertService', 'CompetidorService', '$log', 'NotificacaoService',
+            function ($scope, $timeout, $window, $routeParams, InscricaoService, EtapasService, $location, $uibModal, AlertService, CompetidorService, $log, NotificacaoService) {
                 $scope.inscOrder = "data";
                 $scope.idEtapa = $routeParams.idEtapa;
                 $scope.etapa = EtapasService.get({ id: $routeParams.idEtapa });
@@ -1152,7 +1152,7 @@ var angularModule =
                     field: "data",
                     reverse: false
                 }
-                
+
                 $scope.addPreGrid = function () {
                     if ($scope.competidores == null) {
                         $scope.competidores = CompetidorService.query();
@@ -1186,8 +1186,8 @@ var angularModule =
                         $log.info('Modal dismissed at: ' + new Date());
                     });
                 }
-                
-                $scope.apagar =function(item){
+
+                $scope.apagar = function (item) {
                     var modalInstance = $uibModal.open({
                         animation: $scope.animationsEnabled,
                         templateUrl: 'partials/modal.html',
@@ -1204,9 +1204,9 @@ var angularModule =
                     });
                     modalInstance.result.then(function () {
                         InscricaoService.remove(item,
-                            function (data) {                                
+                            function (data) {
                                 AlertService.showSuccess("Inscrição removida");
-                                 $scope.refresh();
+                                $scope.refresh();
 
                             }, function (data) {
                                 AlertService.showError("Houve um erro ao remover");
@@ -1215,22 +1215,52 @@ var angularModule =
                         // $log.info('Modal dismissed at: ' + new Date());
                     });
                 }
-               
+
                 $scope.marcarPago = function (item, state) {
                     var p = item.paga;
                     item.pagoTemp = true;
                     InscricaoService.marcarPagto(
-                        { 
+                        {
                             id_Trekker: item.id_Trekker,
-                            id_Equipe: item.id_Equipe,  
-                            id_Etapa: $routeParams.idEtapa, 
-                            
-                            paga: state }, function (successo) {
-                        item.paga = state;
-                        item.pagoTemp = false;
-                    }, function (error) {
-                        item.pagoTemp = false;
-                    })
+                            id_Equipe: item.id_Equipe,
+                            id_Etapa: $routeParams.idEtapa,
+                            paga: state
+                        }, function (successPayload) {
+                            item.paga = state;
+                            item.pagoTemp = false;
+                            if (item.paga == true) {
+
+                                var mensagemRegistro = {
+                                    type: "competidor",
+                                    to: successPayload.id_Trekker,
+
+                                    notification: {
+                                        title: "Inscrição confirmada",
+                                        body: "Sua inscrição foi confirmada"
+                                    }
+                                };
+                                //notifica o dono da inscricao
+                                NotificacaoService.publish(mensagemRegistro, function (data) {
+                                });
+                                //notificar app
+                                if (successPayload.gridUpdate == true) {
+                                    var mensagemGrid = {
+                                        type: "equipe",
+                                        id_Equipe: successPayload.id_Equipe,
+
+                                        notification: {
+                                            title: "Equipe confirmada",
+                                            body: "Sua equipe está no grid, às " + successPayload.horario
+                                        }
+                                    };
+                                    NotificacaoService.publish(mensagemGrid, function (data) {
+                                    });
+                                    //notifica a equipe da hora de largada
+                                }
+                            }
+                        }, function (error) {
+                            item.pagoTemp = false;
+                        })
 
                 }
 
@@ -1312,7 +1342,7 @@ var angularModule =
                 } else {
                     $scope.entity = CompetidorService.get({ id: $routeParams.id });
                 }
-                
+
                 $scope.saveData = function () {
                     CompetidorService.save({ id: $routeParams.id != -1 ? $routeParams.id : null }, $scope.entity,
 
@@ -1332,9 +1362,9 @@ var angularModule =
                             }
                         });
                 }
-                $scope.selectEquipe = function(){
-                     var modalInstance = $uibModal.open({
-                         animation: $scope.animationsEnabled,
+                $scope.selectEquipe = function () {
+                    var modalInstance = $uibModal.open({
+                        animation: $scope.animationsEnabled,
                         templateUrl: 'partials/modal.select.equipe.html',
                         controller: 'ModalSelectEquipeCtrl',
                         size: 'sm',
@@ -1345,14 +1375,14 @@ var angularModule =
                         }
                     });
                     modalInstance.result.then(function (selecionado) {
-                       if(selecionado){
+                        if (selecionado) {
                             $scope.associate(selecionado);
-                       }
-                       
+                        }
+
                     }, function () {
                         // $log.info('Modal dismissed at: ' + new Date());
                     });
-                
+
                 }
                 $scope.associate = function (equipe) {
                     CompetidorService.associateEquipe({
@@ -1612,13 +1642,13 @@ var angularModule =
             '$scope', '$filter', '$timeout', '$location', '$routeParams', 'EtapasService', 'LocationService', '$uibModal', 'AlertService', function (
                 $scope, $filter, $timeout, $location, $routeParams, EtapasService, LocationService, $uibModal, AlertService) {
                 $("[data-mask]").inputmask();
-                
-                $scope.makeActive=function(){
-                    EtapasService.makeActive({ id: $routeParams.id },{ id: $routeParams.id },function(data){
-                        $scope.etapa.active=1;
-                         AlertService.showSuccess("Etapa está ativa");
-                    },function(error){
-                         AlertService.showError("Erro ao ativar etapa");
+
+                $scope.makeActive = function () {
+                    EtapasService.makeActive({ id: $routeParams.id }, { id: $routeParams.id }, function (data) {
+                        $scope.etapa.active = 1;
+                        AlertService.showSuccess("Etapa está ativa");
+                    }, function (error) {
+                        AlertService.showError("Erro ao ativar etapa");
                     });
                 }
                 if ($routeParams.id == -1) {
@@ -1849,13 +1879,13 @@ var angularModule =
                 restrict: 'A',
                 link: function (scope, elm, attrs) {
                     scope.isLoading = function () {
-                        
+
                         return $http.pendingRequests.length > 0;
                     };
 
                     scope.$watch(scope.isLoading, function (v) {
                         try {
-                            
+
                             if (v) {
                                 elm[0].className = "fa fa-spin fa-refresh"
                             } else {

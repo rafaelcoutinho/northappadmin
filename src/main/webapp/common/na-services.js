@@ -131,12 +131,12 @@ angular.module('north.services', ['ngResource'])
             startPwdRecovery: {
                 method: "POST",
                 isArray: false,
-                url: "https:" +appConfigs.contextRoot + "/endpoints/senha/LembrarSenha"
+                url: appConfigs.contextRoot + "/endpoints/senha/LembrarSenha"
             },
             loginUser: {
                 method: "POST",
                 isArray: false,
-                url: "https:"+appConfigs.contextRoot + '/endpoints/Login'
+                url: appConfigs.contextRoot + '/endpoints/Login'
             },
 
             queryCompetidores: {
@@ -145,7 +145,7 @@ angular.module('north.services', ['ngResource'])
             },
             getInscricaoCompetidor: {
                 isArray: false,
-                url: appConfigs.contextRoot + '/app/enhanced/InscricaoCompetidor/:idEtapa/:email'
+                url: appConfigs.contextRoot + '/app/enhanced/InscricaoCompetidor/:idEtapa/:id_Trekker'
             },
             query4Equipe: {
                 isArray: true,
@@ -207,17 +207,17 @@ angular.module('north.services', ['ngResource'])
             getEtapaAtual: {
                 isArray: false,
                 url: appConfigs.contextRoot + '/app/enhanced/EtapaAtual'
-                // url: "http://localhost/northServer/app.php/EtapaAtual"
+                
             },
             getPerformance: {
                 isArray: true,
                 url: appConfigs.contextRoot + '/app/enhanced/Etapa/:id/Resultado'
-                // url: "http://localhost/northServer/app.php/Etapa/:id/Performance/:id_Equipe"
+                
             },
             getResultados: {
                 isArray: true,
                 url: appConfigs.contextRoot + '/app/enhanced/Etapa/:id/Resultado'
-                // url: "http://localhost/northServer/app.php/Etapa/:id/Resultado"
+                
             }
 
         })

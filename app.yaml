@@ -91,11 +91,9 @@ handlers:
 
 - url: /endpoints/Login
   script: src/main/php/login.php
-  secure: always
 
 - url: /endpoints/senha/.*
   script: src/main/php/senha.php
-  secure: always
 
 - url: /endpoints/RegisterInscription
   script: src/main/php/userRegisterInscription.php
