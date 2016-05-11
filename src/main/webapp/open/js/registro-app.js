@@ -116,7 +116,7 @@ var angularModule =
                 var js, id = 'facebook-jssdk', ref = d.getElementsByTagName('script')[0];
                 if (d.getElementById(id)) {return;}
                 js = d.createElement('script'); js.id = id; js.async = true;
-                js.src = "//connect.facebook.net/pt_BR/sdak.js";
+                js.src = "//connect.facebook.net/pt_BR/sdk.js";
                 ref.parentNode.insertBefore(js, ref);
                 }catch(e){
                     console.log("fb error",e);
