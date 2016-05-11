@@ -31,8 +31,12 @@
                         <div class="col col-sm-6">
                             <span class="text-yellow stepClass">1. Seus dados <i class="fa fa-warning"></i></span>
                         </div>
-                        <div class="col col-sm-6" style="text-align:center">
-                            <a class="btn btn-xs btn-social btn-facebook ng-binding" ng-click="connectFB()">
+                        <div class="col col-sm-6" style="text-align:center" ng-if="!isAvailable()">
+                            <p class="text-muted" style="text-align:center;cursor: pointer;" ng-click="selectCompetidor()">Clique aqui e use o formulário</p>
+                            <small>* Facebook está indisponível, verifique se sua rede permite a utilização do Facebook</small>
+                         </div>
+                        <div class="col col-sm-6" style="text-align:center" ng-if="isAvailable()">
+                            <a class="btn btn-xs btn-social btn-facebook ng-binding" ng-click="connectFB()" >
                                 <i class="fa fa-facebook"></i> Conectar com Facebook
                             </a>
                             <p class="text-muted" style="text-align:center;cursor: pointer;" ng-click="selectCompetidor()">Ou clique aqui e use o formulário</p>
@@ -255,9 +259,9 @@
                                 </div>
 
                             </div>
-                            <div class="col col-xs-6" style="text-align:center">
+                            <div class="col col-xs-6" style="text-align:center" ng-if="isAvailable()">
                                 <br>
-                                <a class="btn btn-xs btn-social btn-facebook ng-binding" ng-click="connectFB()">
+                                <a class="btn btn-xs btn-social btn-facebook ng-binding" ng-click="connectFB()" ng-if="isAvailable()" >
                                     <i class="fa fa-facebook"></i> Continuar com Facebook
                                 </a>
                                 <br>
@@ -293,7 +297,7 @@
                                     <span class="text-red" ng-show="liderForm.liderSenha.$error.required">Senha é obrigatória</span>
                                 </div>
                             </div>
-                            <div class="col col-xs-5" style="text-align:center">
+                            <div class="col col-xs-5" style="text-align:center" ng-if="isAvailable()">
                                 <br>
                                 <br>
                                 <a class="btn btn-xs btn-social btn-facebook ng-binding" ng-click="connectFB()">

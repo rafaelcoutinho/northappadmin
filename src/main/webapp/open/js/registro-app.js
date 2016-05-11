@@ -35,24 +35,23 @@ var angularModule =
             }])
 
         .factory('facebookService', function ($q) {
-            this.fbAsyncInit = function () {                
-                // Executed when the SDK is loaded
-
-                FB.init({
-                    appId: '228398097493749',
-                    channelUrl: 'partials/channel.html',
-                    status: true,
-                    cookie: true,
-                    version: 'v2.5',
-                    xfbml: true
-                });
-            };
-            this.fbAsyncInit();
+            
             var service = {
+                fb:null,  
+                isAvailable:function(){
+                    return this.fb!=null;   
+                },          
+                getFB:function(){
+                  if(this.fb==null){
+                      throw "FB not available";
+                  }  
+                  return this.fb;
+                    
+                },
                 meApi: function (fields) {
                     var deferred = $q.defer();
 
-                    FB.api('/me/?fields=id,name,email', { fields: fields }, function (response) {
+                    this.getFB(deferred).api('/me/?fields=id,name,email', { fields: fields }, function (response) {
 
                         if (!response || response.error) {
                             console.log("error", response)
@@ -66,7 +65,7 @@ var angularModule =
                 },
                 logout: function () {
                     var deferred = $q.defer();
-                    FB.logout(function (response) {
+                    this.getFB(deferred).logout(function (response) {
 
                         if (!response || response.error) {
                             deferred.reject('Error occured');
@@ -79,7 +78,7 @@ var angularModule =
                 },
                 login: function () {
                     var deferred = $q.defer();
-                    FB.login(
+                    this.getFB(deferred).login(
                         function (response) {
                             if (response.authResponse) {
                                 deferred.resolve(response);
@@ -95,7 +94,7 @@ var angularModule =
                 },
                 loginStatus: function () {
                     var deferred = $q.defer();
-                    FB.getLoginStatus(function (response) {
+                    this.getFB(deferred).getLoginStatus(function (response) {
                         console.log(response)
                         if (response.status === 'connected') {
                             deferred.resolve(response);
@@ -110,11 +109,40 @@ var angularModule =
                     });
                     return deferred.promise;
                 }
-            }
+            };
+            // Load the SDK Asynchronously
+            (function(d){
+                try{
+                var js, id = 'facebook-jssdk', ref = d.getElementsByTagName('script')[0];
+                if (d.getElementById(id)) {return;}
+                js = d.createElement('script'); js.id = id; js.async = true;
+                js.src = "//connect.facebook.net/pt_BR/sdak.js";
+                ref.parentNode.insertBefore(js, ref);
+                }catch(e){
+                    console.log("fb error",e);
+                }
+            }(document));
+            window.fbAsyncInit = function () {                
+                // Executed when the SDK is loaded
+
+                window.FB.init({
+                    appId: '228398097493749',
+                    channelUrl: 'partials/channel.html',
+                    status: true,
+                    cookie: true,
+                    version: 'v2.5',
+                    xfbml: true
+                });
+                
+                service.fb=FB;
+                
+            };
+
+            
             return service;
         }).controller('InscricaoCtrl', [
-            '$scope', '$timeout', '$window', 'facebookService', '$location', '$routeParams', 'EtapasService', 'CompetidorService', 'EquipesService', 'CategoriaService', 'InscricaoService', 'AlertService', '$rootScope',
-            function ($scope, $timeout, $window, facebookService, $location, $routeParams, EtapasService, CompetidorService, EquipesService, CategoriaService, InscricaoService, AlertService, $rootScope) {
+            '$scope', '$timeout', '$window',  '$location', '$routeParams', 'EtapasService', 'CompetidorService', 'EquipesService', 'CategoriaService', 'InscricaoService', 'AlertService', '$rootScope',
+            function ($scope, $timeout, $window, $location, $routeParams, EtapasService, CompetidorService, EquipesService, CategoriaService, InscricaoService, AlertService, $rootScope) {
                 $scope.inscricao = InscricaoService.get({ idTrekker: $routeParams.idTrekker, idEtapa: $routeParams.idEtapa }, function (data) {
                     $scope.inscricao.trekker = {
                         nome: data.nome,
@@ -775,28 +803,40 @@ var angularModule =
                         }
                     } else {
                         $rootScope.$broadcast('dialogs.wait.complete');
+                        if(facebookService.isAvailable()){
                         facebookService.login().then(function () {
                             $scope.updateWithFB();
                         });
+                        }
 
                     }
                 }
+                $scope.isAvailable=function(){
+                    return facebookService.isAvailable();
+                }
                 $scope.updateWithFB = function () {
-                    $rootScope.$broadcast('dialogs.wait.progress', { 'progress': 30 });
+                    
+                    if (facebookService.isAvailable()) {
+                        $rootScope.$broadcast('dialogs.wait.progress', { 'progress': 30 });
+                        facebookService.loginStatus().then(function (resp) {
+                            $rootScope.$broadcast('dialogs.wait.progress', { 'progress': 50 });
+                            facebookService.meApi("email,name").then(function (data) {
+                                $rootScope.$broadcast('dialogs.wait.progress', { 'progress': 70 });
+                                $scope.connectFB(data);
 
-                    facebookService.loginStatus().then(function (resp) {
-                        $rootScope.$broadcast('dialogs.wait.progress', { 'progress': 50 });
-                        facebookService.meApi("email,name").then(function (data) {
-                            $rootScope.$broadcast('dialogs.wait.progress', { 'progress': 70 });
-                            $scope.connectFB(data);
+                            }, function (error) {
+                                $rootScope.$broadcast('dialogs.wait.complete');
 
-                        }, function (error) {
+                            });
+                        }, function (resp) {
                             $rootScope.$broadcast('dialogs.wait.complete');
-
                         });
-                    }, function (resp) {
-                        $rootScope.$broadcast('dialogs.wait.complete');
-                    })
+                    }else{
+                        setTimeout(function(){
+                            console.log("a")
+                                                    $rootScope.$broadcast('dialogs.wait.complete');
+                        },1000);
+                    }
                 };
 
                 $scope.limpaCampos = function () {
