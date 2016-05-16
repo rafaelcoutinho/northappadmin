@@ -706,7 +706,7 @@ var angularModule =
                 return r;
             };
             $scope.diffNames = function (item) {
-                if (!item.grid.equipe) {
+                if (!item.grid || !item.grid.equipe) {
                     return true;
                 }
                 return item.grid.equipe != null && $scope.accentsTidy(item.grid.equipe.nome) != $scope.accentsTidy(item.Piloto);
