@@ -65,6 +65,9 @@ handlers:
 - url: /admin/(.*)/(.*)/(.*)/(.*)
   static_dir: src/main/webapp/admin/\1/\2/\3/\4/
 
+- url: /
+  script: src/main/php/redirect.php
+
 - url: /open/*
   static_dir: src/main/webapp/open/
 - url: /open/(.*)/(.*)
@@ -103,5 +106,13 @@ handlers:
 
 - url: /endpoints/Register
   script: src/main/php/userRegister.php
+
+- url: /task/GCMPush
+  script: src/main/php/notificationTaskGCM.php
+  login: admin
+
+- url: /task/APNPush
+  script: src/main/php/notificationTaskAPN.php
+  login: admin
 
 

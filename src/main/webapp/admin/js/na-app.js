@@ -248,7 +248,6 @@ var angularModule =
                                 default:
                                     return "Você tem certeza que deseja enivar uma notificação para os competidores?";
                             }
-
                         }
                     }
                 });

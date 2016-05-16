@@ -35,18 +35,36 @@ var angularModule =
             }])
 
         .factory('facebookService', function ($q) {
-            
+
             var service = {
-                fb:null,  
-                isAvailable:function(){
-                    return this.fb!=null;   
-                },          
-                getFB:function(){
-                  if(this.fb==null){
-                      throw "FB not available";
-                  }  
-                  return this.fb;
-                    
+                fb: null,
+                isAvailable: function () {
+                    return this.fb != null;
+                },
+                setInitiatied: function (FB) {
+                    this.fb = FB;
+                    for (var index = 0; index < this.onAvailable.length; index++) {
+                        var deferred = this.onAvailable[index];
+                        deferred.resolve();
+                    }
+                },
+                onAvailable: [],
+                whenAvailable: function (fct) {
+
+                    var deferred = $q.defer();
+                    if (this.fb != null) {
+                        deferred.resolve();
+                    } else {
+                        this.onAvailable.push(deferred);
+                    }
+                    return deferred.promise;
+                },
+                getFB: function () {
+                    if (this.fb == null) {
+                        throw "FB not available";
+                    }
+                    return this.fb;
+
                 },
                 meApi: function (fields) {
                     var deferred = $q.defer();
@@ -104,24 +122,22 @@ var angularModule =
                         } else {
                             deferred.reject('Error occured');
                         }
-
-
                     });
                     return deferred.promise;
                 }
             };
             // Load the SDK Asynchronously
-            (function(d){
-                try{
-                var js, id = 'facebook-jssdk', ref = d.getElementsByTagName('script')[0];
-                if (d.getElementById(id)) {return;}
-                js = d.createElement('script'); js.id = id; js.async = true;
-                js.src = "//connect.facebook.net/pt_BR/sdk.js";
-                ref.parentNode.insertBefore(js, ref);
-                }catch(e){
-                    console.log("fb error",e);
+            (function (d) {
+                try {
+                    var js, id = 'facebook-jssdk', ref = d.getElementsByTagName('script')[0];
+                    if (d.getElementById(id)) { return; }
+                    js = d.createElement('script'); js.id = id; js.async = true;
+                    js.src = "//connect.facebook.net/pt_BR/sdk.js";
+                    ref.parentNode.insertBefore(js, ref);
+                } catch (e) {
+                    console.log("fb error", e);
                 }
-            }(document));
+            } (document));
             window.fbAsyncInit = function () {                
                 // Executed when the SDK is loaded
 
@@ -133,15 +149,16 @@ var angularModule =
                     version: 'v2.5',
                     xfbml: true
                 });
-                
-                service.fb=FB;
-                
+                service.setInitiatied(FB);
+
+
+
             };
 
-            
+
             return service;
         }).controller('InscricaoCtrl', [
-            '$scope', '$timeout', '$window',  '$location', '$routeParams', 'EtapasService', 'CompetidorService', 'EquipesService', 'CategoriaService', 'InscricaoService', 'AlertService', '$rootScope',
+            '$scope', '$timeout', '$window', '$location', '$routeParams', 'EtapasService', 'CompetidorService', 'EquipesService', 'CategoriaService', 'InscricaoService', 'AlertService', '$rootScope',
             function ($scope, $timeout, $window, $location, $routeParams, EtapasService, CompetidorService, EquipesService, CategoriaService, InscricaoService, AlertService, $rootScope) {
                 $scope.inscricao = InscricaoService.get({ idTrekker: $routeParams.idTrekker, idEtapa: $routeParams.idEtapa }, function (data) {
                     $scope.inscricao.trekker = {
@@ -166,7 +183,7 @@ var angularModule =
                 }
                 $rootScope.$on('gotCompetidor', function (event, competidor) { console.log(competidor); $scope.competidor = competidor; });
             }])
-        .controller('ModalCompetidor', function ($scope, $uibModalInstance, etapa, competidores, inscricao, AlertService, InscricaoService) {
+        .controller('ModalCompetidor', function ($scope, $uibModalInstance, etapa, competidores, integrantes, inscricao, AlertService, InscricaoService) {
             $scope.etapa = etapa;
             $scope.competidores = competidores;
             $scope.inscricao = inscricao;
@@ -182,6 +199,17 @@ var angularModule =
                     if ($scope.competidorForm.$valid == false) {
                         AlertService.showError("Por favor corrija os erros do formulário.");
                         return;
+                    }
+
+                }
+                for (var i = 0; i < integrantes.length; i++) {
+                    if ($scope.novoCompetidor.email == integrantes[i].email) {
+                        if ($scope.novoCompetidor.id_Trekker == null || $scope.novoCompetidor.id_Trekker != integrantes[i].id_Trekker) {
+                            $scope.competidorForm.competidorEmail.$valid = false;
+                            $scope.competidorForm.competidorEmail.$error.existente = true;
+                            AlertService.showError("E e-mail utilizado já está sendo associado ao integrante '" + integrantes[i].nome + "'");
+                            return;
+                        }
                     }
 
                 }
@@ -213,7 +241,9 @@ var angularModule =
             }
             $scope.clearErrors = function () {
                 $scope.competidorForm.competidorEmail.$error.jainscrito = false;
+                $scope.competidorForm.competidorEmail.$error.existente = false;
                 $scope.competidorForm.competidorEmail.$valid = true;
+                
                 
                 // $scope.competidorDuplicado = null;
             }
@@ -343,9 +373,13 @@ var angularModule =
                     }
                     return;
                 }
+                if ($scope.newUser == true && (!$scope.lider.nome || $scope.lider.nome.length == 0)) {
+                    AlertService.showError("Por favor insira seu nome.");
+                    return;
+                }
                 var success = function (data) {
                     CompetidorService.query({ filter0: "email,eq," + data.email }, function (competidor) {
-                        
+
                         competidor[0].email = data.email;
                         $uibModalInstance.close(competidor[0]);
                     });
@@ -612,6 +646,9 @@ var angularModule =
                             },
                             competidores: function () {
                                 return $scope.competidores;
+                            },
+                            integrantes: function () {
+                                return $scope.inscricao.integrantes;
                             }
                         }
                     });
@@ -623,7 +660,6 @@ var angularModule =
                                 if (selecionado.id_Trekker == element.id_Trekker) {
                                     return;
                                 }
-
                             }
                         }
                         $scope.inscricao.integrantes.push(selecionado);
@@ -803,19 +839,21 @@ var angularModule =
                         }
                     } else {
                         $rootScope.$broadcast('dialogs.wait.complete');
-                        if(facebookService.isAvailable()){
-                        facebookService.login().then(function () {
-                            $scope.updateWithFB();
-                        });
+                        if (facebookService.isAvailable()) {
+                            facebookService.login().then(function () {
+                                $scope.updateWithFB();
+                            });
                         }
 
                     }
                 }
-                $scope.isAvailable=function(){
+                $scope.isAvailable = function () {
                     return facebookService.isAvailable();
                 }
+
+
                 $scope.updateWithFB = function () {
-                    
+
                     if (facebookService.isAvailable()) {
                         $rootScope.$broadcast('dialogs.wait.progress', { 'progress': 30 });
                         facebookService.loginStatus().then(function (resp) {
@@ -831,14 +869,14 @@ var angularModule =
                         }, function (resp) {
                             $rootScope.$broadcast('dialogs.wait.complete');
                         });
-                    }else{
-                        setTimeout(function(){
-                            console.log("a")
-                                                    $rootScope.$broadcast('dialogs.wait.complete');
-                        },1000);
+                    } else {
+                        setTimeout(function () {
+
+                            $rootScope.$broadcast('dialogs.wait.complete');
+                        }, 1000);
                     }
                 };
-
+                facebookService.whenAvailable().then($scope.updateWithFB);
                 $scope.limpaCampos = function () {
                     var etapa = $scope.inscricao.etapa;
                     $scope.alterarInscritos = false;
@@ -850,7 +888,8 @@ var angularModule =
                     };
                     $scope.inscricaoServer = null;
                 };
-                $scope.updateWithFB();
+
+
                 $scope.inscrever = function () {
 
                     if ($scope.inscricao.etapa.id) {

@@ -326,7 +326,7 @@ angular.module('north.services', ['ngResource'])
     }]).factory('REST_Interceptor', ['appConfigs',
 
         function (appConfigs) {
-            var DEBUG = true;
+            var DEBUG = false;
             var V2 = false;
             var request = function (config) {
                 if (DEBUG) {
