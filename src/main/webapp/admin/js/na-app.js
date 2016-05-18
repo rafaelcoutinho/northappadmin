@@ -1229,18 +1229,7 @@ var angularModule =
                             item.pagoTemp = false;
                             if (item.paga == true) {
 
-                                var mensagemRegistro = {
-                                    type: "competidor",
-                                    to: successPayload.id_Trekker,
-
-                                    notification: {
-                                        title: "Inscrição confirmada",
-                                        body: "Sua inscrição foi confirmada"
-                                    }
-                                };
-                                //notifica o dono da inscricao
-                                NotificacaoService.publish(mensagemRegistro, function (data) {
-                                });
+                                
                                 //notificar app
                                 if (successPayload.gridUpdate == true) {
                                     var mensagemGrid = {
@@ -1255,6 +1244,23 @@ var angularModule =
                                     NotificacaoService.publish(mensagemGrid, function (data) {
                                     });
                                     //notifica a equipe da hora de largada
+                                } else {
+                                    
+                                    var mensagemRegistro = {
+                                        type: "competidor",
+                                        id_Trekker: successPayload.id_Trekker,
+
+                                        notification: {
+                                            title: "Inscrição confirmada",
+                                            body: "Sua inscrição foi confirmada"
+                                        }
+                                    };
+                                    if(successPayload.horario){
+                                        mensagemRegistro.notification.body="Sua equipe está no grid, às " + successPayload.horario;
+                                    }
+                                    //notifica o dono da inscricao
+                                    NotificacaoService.publish(mensagemRegistro, function (data) {
+                                    });
                                 }
                             }
                         }, function (error) {
