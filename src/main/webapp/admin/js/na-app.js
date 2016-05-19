@@ -1245,7 +1245,7 @@ var angularModule =
                                     });
                                     //notifica a equipe da hora de largada
                                 } else {
-                                    
+
                                     var mensagemRegistro = {
                                         type: "competidor",
                                         id_Trekker: successPayload.id_Trekker,
@@ -1255,8 +1255,8 @@ var angularModule =
                                             body: "Sua inscrição foi confirmada"
                                         }
                                     };
-                                    if(successPayload.horario){
-                                        mensagemRegistro.notification.body="Sua equipe está no grid, às " + successPayload.horario;
+                                    if (successPayload.horario) {
+                                        mensagemRegistro.notification.body = "Sua equipe está no grid, às " + successPayload.horario;
                                     }
                                     //notifica o dono da inscricao
                                     NotificacaoService.publish(mensagemRegistro, function (data) {
@@ -1339,14 +1339,15 @@ var angularModule =
                 }
             }])
         .controller('CompetidorDetailsCtrl', [
-            '$scope', '$timeout', '$location', '$routeParams', 'CompetidorService', 'CategoriaService', '$rootScope', '$uibModal', 'AlertService', 'EquipesService',
-            function ($scope, $timeout, $location, $routeParams, CompetidorService, CategoriaService, $rootScope, $uibModal, AlertService, EquipesService) {
+            '$scope', '$timeout', '$location', '$routeParams', 'CompetidorService', 'CategoriaService', '$rootScope', '$uibModal', 'AlertService', 'EquipesService', 'InscricaoService',
+            function ($scope, $timeout, $location, $routeParams, CompetidorService, CategoriaService, $rootScope, $uibModal, AlertService, EquipesService, InscricaoService) {
 
                 if ($routeParams.id == -1) {
                     $scope.entity = {}
                 } else {
                     $scope.entity = CompetidorService.get({ id: $routeParams.id });
                 }
+                $scope.inscricoes = InscricaoService.query4competidor({idTrekker:$routeParams.id},function(data){console.log(data)});
 
                 $scope.saveData = function () {
                     CompetidorService.save({ id: $routeParams.id != -1 ? $routeParams.id : null }, $scope.entity,

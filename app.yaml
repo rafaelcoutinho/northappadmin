@@ -115,4 +115,3 @@ handlers:
   script: src/main/php/notificationTaskAPN.php
   login: admin
 
-
