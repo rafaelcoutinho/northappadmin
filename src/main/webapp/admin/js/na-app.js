@@ -520,7 +520,7 @@ var angularModule =
                 $uibModalInstance.dismiss('cancel');
             };
         })
-        .controller('ResultadosCtrl', function ($scope, idEtapa, EtapasService, UtilsService, $uibModal, CategoriaService, $location, $log, ResultadoAdminService, AlertService) {
+        .controller('ResultadosCtrl', function ($scope, idEtapa, EtapasService, UtilsService, $uibModal, CategoriaService, $location, $log, ResultadoAdminService, AlertService, NotificacaoService) {
             $scope.etapa = EtapasService.get({ id: idEtapa });
             $scope.categorias = CategoriaService.query({}, function (data) {
                 $scope.categoria = { id_Categoria: data[0].id };
@@ -535,6 +535,42 @@ var angularModule =
             $scope.importPerformanceCSV = function () {
                 $location.path("/etapa/" + idEtapa + "/performanceEdit");
             };
+
+            $scope.notificarTodos = function () {
+                var modalInstance = $uibModal.open({
+                    animation: $scope.animationsEnabled,
+                    templateUrl: 'partials/modal.html',
+                    controller: 'ConfirmModalCrtl',
+                    size: 'sm',
+                    resolve: {
+                        title: function () {
+                            return "Notificar resultados";
+                        },
+                        message: function () {
+                            return "Esta ação irá enviar notificações com os resultados para todos os competidores. Você tem certeza que deseja continuar?";
+                        }
+                    }
+                });
+                modalInstance.result.then(function () {
+                    var mensagemResultados = {
+                        type: "resultados",
+                        id_Etapa: idEtapa,
+
+                        notification: {
+                            title: "Resultados disponíveis",
+                            body: "Resultados da etapa já disponíveis"
+                        }
+                    };
+                    NotificacaoService.publish(mensagemResultados, function (data) {
+                        AlertService.showSuccess("Envio de notificação iniciado para "+data.length);
+                    },function(){
+                         AlertService.showError("Houve um erro ao enviar notificacao");
+                    });
+                }, function () {
+                    // $log.info('Modal dismissed at: ' + new Date());
+                });
+
+            }
 
             $scope.remover = function (item) {
                 var modalInstance = $uibModal.open({
@@ -631,14 +667,14 @@ var angularModule =
             }
         })
 
-        .controller('PerformanceFormCtrl', function ($scope, idEtapa, EtapasService, UtilsService, ResultadoAdminService, $uibModal, $log,AlertService,$location) {
+        .controller('PerformanceFormCtrl', function ($scope, idEtapa, EtapasService, UtilsService, ResultadoAdminService, $uibModal, $log, AlertService, $location) {
             $scope.processCsv = function () {
                 ResultadoAdminService.processPerformanceCSV({ etapa: idEtapa }, $scope.csvData, function (data) {
                     $scope.preResultados = data;
                     AlertService.showInfo("Resultados carregados. Revise as diferenças e salve-os.");
                 }, function (error) {
                     console.log("erro", error);
-                     AlertService.showError("Falhou ao processar CSV");
+                    AlertService.showError("Falhou ao processar CSV");
                 });
             }
             $scope.getPoints = function (item) {
@@ -713,11 +749,11 @@ var angularModule =
             }
             $scope.getLabelCategoria = UtilsService.getLabelCategoria;
             $scope.salvarResultados = function () {
-                ResultadoAdminService.saveResultados({ etapa: idEtapa }, $scope.preResultados,function(){
+                ResultadoAdminService.saveResultados({ etapa: idEtapa }, $scope.preResultados, function () {
                     AlertService.showSuccess("Resultados Salvos com sucesso");
                     $location.path("/etapa/" + idEtapa + "/resultados");
-                },function(error){
-                    AlertService.showError("Falhou ao salvar os resultados "+error.data);
+                }, function (error) {
+                    AlertService.showError("Falhou ao salvar os resultados " + error.data);
                 });
             }
             $scope.selecao = {};
@@ -1353,7 +1389,7 @@ var angularModule =
                 } else {
                     $scope.entity = CompetidorService.get({ id: $routeParams.id });
                 }
-                $scope.inscricoes = InscricaoService.query4competidor({idTrekker:$routeParams.id},function(data){console.log(data)});
+                $scope.inscricoes = InscricaoService.query4competidor({ idTrekker: $routeParams.id }, function (data) { console.log(data) });
 
                 $scope.saveData = function () {
                     CompetidorService.save({ id: $routeParams.id != -1 ? $routeParams.id : null }, $scope.entity,
