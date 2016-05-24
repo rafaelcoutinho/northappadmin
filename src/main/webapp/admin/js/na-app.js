@@ -631,13 +631,14 @@ var angularModule =
             }
         })
 
-        .controller('PerformanceFormCtrl', function ($scope, idEtapa, EtapasService, UtilsService, ResultadoAdminService, $uibModal, $log) {
+        .controller('PerformanceFormCtrl', function ($scope, idEtapa, EtapasService, UtilsService, ResultadoAdminService, $uibModal, $log,AlertService,$location) {
             $scope.processCsv = function () {
                 ResultadoAdminService.processPerformanceCSV({ etapa: idEtapa }, $scope.csvData, function (data) {
                     $scope.preResultados = data;
-
+                    AlertService.showInfo("Resultados carregados. Revise as diferenças e salve-os.");
                 }, function (error) {
                     console.log("erro", error);
+                     AlertService.showError("Falhou ao processar CSV");
                 });
             }
             $scope.getPoints = function (item) {
@@ -712,7 +713,12 @@ var angularModule =
             }
             $scope.getLabelCategoria = UtilsService.getLabelCategoria;
             $scope.salvarResultados = function () {
-                ResultadoAdminService.saveResultados({ etapa: idEtapa }, $scope.preResultados);
+                ResultadoAdminService.saveResultados({ etapa: idEtapa }, $scope.preResultados,function(){
+                    AlertService.showSuccess("Resultados Salvos com sucesso");
+                    $location.path("/etapa/" + idEtapa + "/resultados");
+                },function(error){
+                    AlertService.showError("Falhou ao salvar os resultados "+error.data);
+                });
             }
             $scope.selecao = {};
             $scope.editEquipe = function (item) {

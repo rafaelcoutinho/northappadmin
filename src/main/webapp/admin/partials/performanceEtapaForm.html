@@ -36,7 +36,7 @@
                     <button type="button" class="btn btn-sm " ng-click="processCsv()">Processar CSV</button>
                 </div>
                 <div class="box-body">
-                    <button type="submit " class="btn btn-primary btn-block pull-right " ng-if="preResultados!=null" ng-cloak ng-click="salvarResultados()">Salvar Resultados</button>
+                    <button type="submit " class="btn btn-primary btn-block pull-right " ng-if="preResultados!=null" ng-cloak ng-click="salvarResultados()">Salvar Resultados <i class="fa fa-spin fa-refresh" data-loading></i></button>
                     <table class="table table-bordered">
                         <thead>
                             <tr>
@@ -107,7 +107,7 @@
                 </div>
                 <div class="box-footer " ng-show="preResultados!=null" ng-cloak>
 
-                    <button type="submit " class="btn btn-primary btn-block pull-right " ng-cloak ng-click="salvarResultados()">Salvar Resultados</button>
+                    <button type="submit " class="btn btn-primary btn-block pull-right " ng-cloak ng-click="salvarResultados()">Salvar Resultados <i class="fa fa-spin fa-refresh" data-loading></i></button>
 
 
 
