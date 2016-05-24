@@ -2,7 +2,7 @@
 var SERVER_ROOT = "//app.northbrasil.com.br";
 
 var angularModule =
-    angular.module('adminApp', ['north.services', 'ngRoute', 'ui.bootstrap', 'ngResource'])
+    angular.module('adminApp', ['north.services', 'ngRoute', 'ui.bootstrap', 'ngResource', 'wysiwyg.module','colorpicker.module'])
         .constant("appConfigs", {
             "context": SERVER_ROOT + "/rest",
             // "context": "//localhost/northServer/api.php",
@@ -1704,6 +1704,7 @@ var angularModule =
                 } else {
                     $scope.etapa = EtapasService.get({ id: $routeParams.id },
                         function (data) {
+                            
 
                             if (data.id_Local != null && data.id_Local != -1) {
                                 $scope.location = LocationService.get({ id: data.id_Local });
@@ -1728,8 +1729,31 @@ var angularModule =
                     } catch (e) {
                     }
                 });
-
-
+                $scope.tableLines=3;
+                $scope.lines =function(){
+                     return new Array($scope.tableLines);  
+                }
+                $scope.addTable=function(){
+                    
+                    if($('.myTable').length==0){
+                        if($scope.etapa.extraInfoEmail==null){
+                            $scope.etapa.extraInfoEmail="";
+                        }
+                        $scope.etapa.extraInfoEmail+='<table class="myTable" border="1" cellpadding="0" cellspacing="0"><thead><tr style="BACKGROUND: #cfd4c1; FONT-SIZE: 7.5pt;  TEXT-ALIGN: center;font-weight: 700;"><td style="PADDING: 5.4pt;LINE-HEIGHT: 10.5pt">DATA</td><td style="PADDING: 5.4pt;LINE-HEIGHT: 10.5pt;">HORÁRIO</td><td style="PADDING: 5.4pt;LINE-HEIGHT: 10.5pt;">EVENTO</td></tr></thead><tbody><tr><td ></td><td></td><td></td></tr></tbody></table>';
+                        
+                        
+                    }else{
+                        $('.myTable>tbody').append('<tr><td ></td><td ></td><td ></td></tr>');
+                    };
+                    
+                    
+                }
+                $scope.emailar =false;
+                $scope.testar = function(){
+                    $scope.emailar=true;
+                    $scope.saveData();
+                    
+                }
                 $scope.saveData = function () {
                     if ($scope.dataLimiteLote1) {
                         $scope.etapa.dataLimiteLote1 = $scope.dataLimiteLote1.getTime();
@@ -1746,6 +1770,9 @@ var angularModule =
                         if ($scope.etapa.id == null || $scope.etapa.id == -1) {
                             $scope.etapa = data;
                             $location.path("/etapa/" + data.id);
+                        }
+                        if($scope.emailar){
+                            EtapasService.testEmail({id_Etapa:$scope.etapa.id});
                         }
                         AlertService.showSuccess("Salvo com sucesso");
                     });

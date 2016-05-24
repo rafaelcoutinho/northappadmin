@@ -199,6 +199,11 @@ angular.module('north.services', ['ngResource'])
     .service('EtapasService', ['$http', '$q', '$resource', 'appConfigs', function ($http, $q, $resource, appConfigs) {
 
         return $resource(appConfigs.context + '/Etapa/:id', {}, {
+            testEmail:{
+                method:"POST",
+                isArray: false,
+                url: appConfigs.contextRoot + '/testEmail.php'  
+            },
             query: {
                 isArray: true,
                 transformResponse: jsonTransformQuery
@@ -336,6 +341,10 @@ angular.module('north.services', ['ngResource'])
                 if (DEBUG) {
 
                     var url = config.url;
+                    if (config.url.indexOf("testEmail.php") > 0) {
+                        config.url = "http://localhost/northServer/testeEmail.php";
+                        
+                    }else
                 if (config.url.indexOf("GerenciaResultado.do") > 0) {
                         config.url = "http://localhost/northServer/performance.php";
                     } else 

@@ -36,6 +36,8 @@ handlers:
 - url: /Inscrever.do
   script:  src/main/php/inscrever.php
 
+- url: /testEmail.php
+  script:  src/main/php/testeEmail.php
 
 - url: /app/rest/.*
   script: src/main/php/apiPub.php
