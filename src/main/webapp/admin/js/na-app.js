@@ -608,7 +608,7 @@ var angularModule =
             }
             $scope.showDetalhes = function (item) {
                 if (!item.pcs) {
-                    item.pcs = EtapasService.getPerformance({ id: idEtapa, id_Equipe: item.id_Equipe });
+                    item.pcs = EtapasService.getPerformance({ id: idEtapa, idEquipe: item.id_Equipe });
                 }
                 var modalInstance = $uibModal.open({
                     animation: $scope.animationsEnabled,

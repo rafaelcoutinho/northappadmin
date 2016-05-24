@@ -215,7 +215,7 @@ angular.module('north.services', ['ngResource'])
             },
             getPerformance: {
                 isArray: true,
-                url: appConfigs.contextRoot + '/app/enhanced/Etapa/:id/Resultado'
+                url: appConfigs.contextRoot + '/app/enhanced/Etapa/:id/Performance/:idEquipe'
                 
             },
             getResultados: {
