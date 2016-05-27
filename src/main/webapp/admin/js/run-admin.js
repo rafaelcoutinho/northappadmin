@@ -21,7 +21,7 @@ require.config({
         uiboostrap: '../../bower_components/angular-bootstrap/ui-bootstrap-tpls.min',
         adminLte: '../../bower_components/admin-lte/dist/js/app.min',
         knob: '../../bower_components/admin-lte/plugins/knob/jquery.knob',
-        angularWysiwyg: '../../bower_components/angular-wysiwyg/dist/angular-wysiwyg',
+        summernote: '../../bower_components/summernote/dist/summernote',
         bootstrapColorPicker: '../../bower_components/angular-bootstrap-colorpicker/js/bootstrap-colorpicker-module.min',      
         'adminServices': "../../common/na-services",
         'adminApp': "na-app"
@@ -52,8 +52,8 @@ require.config({
         bootstrapColorPicker:{
           deps: ['boostrap','angular']  
         },
-       angularWysiwyg:{
-           deps: ['boostrap','angular','bootstrapColorPicker']
+       summernote:{
+           deps: ['boostrap','bootstrapColorPicker','jQuery']
        },
       
         adminLte: {
@@ -86,7 +86,7 @@ require.config({
             deps: ['angular', 'angularResources']
         },
         adminApp: {
-            deps: ['lodash', 'angular', 'angularMessages', 'angularRoute', 'angularResources', 'uiboostrap', 'adminLte', 'knob', 'inputMaskDate', 'inputMaskPhone', 'adminServices','angularWysiwyg']
+            deps: ['lodash', 'angular', 'angularMessages', 'angularRoute', 'angularResources', 'uiboostrap', 'adminLte', 'knob', 'inputMaskDate', 'inputMaskPhone', 'adminServices','summernote']
         }
     }
 });

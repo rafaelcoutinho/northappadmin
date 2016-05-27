@@ -83,7 +83,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label class="col-sm-2 control-label">Dados Inscrição</label>
+                    <label class="col-lg-12 col-sm-12 control-label">Dados Inscrição</label>
                 </div>
                 <div class="form-group">
                     <label for="inputPS" class="col-sm-2 control-label">Prova Social</label>
@@ -120,63 +120,23 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="extraInfoEmail" class="col-sm-2 control-label" >Extras e-mail confirmação no Grid</label>
-                    <div class="col-sm-12">
-                        <button type="button" class="btn btn-default" ng-click="addTable()" >+Tabela</button>
-                        <wysiwyg textarea-id="extraInfoEmail" textarea-class="form-control" textarea-height="80px" textarea-name="textareaQuestion"
-                        ng-trim="true" ng-maxlength="800" textarea-required ng-model="etapa.extraInfoEmail" enable-bootstrap-title="false"
-                        textarea-menu="yourModel.customMenu"></wysiwyg>
+                    <label for="extraInfoEmail" class="col-sm-12 col-lg-12  " >Extras e-mail confirmação no Grid</label>
+                    <div class="col-sm-12">                        
+                        
+                        <div id="summernote">{{etapa.extraInfoEmail}}</div>
 
                     </div>
+                    <div class="col-sm-8">
+                    </div>
+                    <div class="col-sm-4"" style="text-align:right;">
+                        ({{getTextChars()}}/800)
+                         <small style="float:right">*total de caracteres do código HTML. Pode ser diferente do texto cru.</small>
+                    </div>
+                   
                     <button class="btn btn-primary btn-block" ng-click="testar()">Enviar exemplo de email de confirmação</button>
                 </div>
                 
-                <div>
-                    <style>
-                        .myTable {
-                            BORDER-COLLAPSE: collapse;
-                            MARGIN-LEFT: 42.5pt;
-                          
-                        }
-                        
-                        .myTable>tr {
-                            HEIGHT: 10.5pt;                      
-                        }
-                        
-                        .myTable>thead>tr>td {
-                            
-                            HEIGHT: 10.5pt;
-                            BORDER-RIGHT: windowtext 1pt solid;
-                            WIDTH: 89.75pt;
-                            BACKGROUND: #cfd4c1;
-                            BORDER-BOTTOM: windowtext 1pt solid;
-                            PADDING-BOTTOM: 0cm;
-                            PADDING-TOP: 0cm;
-                            PADDING-LEFT: 5.4pt;
-                            BORDER-LEFT: windowtext 1pt solid;
-                            
-                        }
-                        
-                        .myTable>tbody>tr {
-                            HEIGHT: 19.5pt;
-                            mso-yfti-irow: 1;
-                        }
-                        
-                        .myTable>tbody>tr>td {
-                            BORDER-TOP: medium none;
-                            HEIGHT: 19.5pt;
-                            BORDER-RIGHT: windowtext 1pt solid;
-                            WIDTH: 89.75pt;
-                            BORDER-BOTTOM: windowtext 1pt solid;
-                            PADDING-BOTTOM: 0cm;
-                            PADDING-TOP: 0cm;
-                            PADDING-LEFT: 5.4pt;
-                            BORDER-LEFT: windowtext 1pt solid;
-                            PADDING-RIGHT: 5.4pt
-                        }
-                    </style>
-                    
-                </div>
+                
 
             </div>
 

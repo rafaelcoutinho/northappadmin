@@ -2,7 +2,7 @@
 var SERVER_ROOT = "//app.northbrasil.com.br";
 
 var angularModule =
-    angular.module('adminApp', ['north.services', 'ngRoute', 'ui.bootstrap', 'ngResource', 'wysiwyg.module','colorpicker.module'])
+    angular.module('adminApp', ['north.services', 'ngRoute', 'ui.bootstrap', 'ngResource', 'colorpicker.module'])
         .constant("appConfigs", {
             "context": SERVER_ROOT + "/rest",
             // "context": "//localhost/northServer/api.php",
@@ -562,9 +562,9 @@ var angularModule =
                         }
                     };
                     NotificacaoService.publish(mensagemResultados, function (data) {
-                        AlertService.showSuccess("Envio de notificação iniciado para "+data.length);
-                    },function(){
-                         AlertService.showError("Houve um erro ao enviar notificacao");
+                        AlertService.showSuccess("Envio de notificação iniciado para " + data.length);
+                    }, function () {
+                        AlertService.showError("Houve um erro ao enviar notificacao");
                     });
                 }, function () {
                     // $log.info('Modal dismissed at: ' + new Date());
@@ -1704,8 +1704,8 @@ var angularModule =
                 } else {
                     $scope.etapa = EtapasService.get({ id: $routeParams.id },
                         function (data) {
-                            
-
+                            $('#summernote').summernote('code', data.extraInfoEmail);
+                            $scope.totalChars = data.extraInfoEmail.length;
                             if (data.id_Local != null && data.id_Local != -1) {
                                 $scope.location = LocationService.get({ id: data.id_Local });
                             }
@@ -1729,50 +1729,93 @@ var angularModule =
                     } catch (e) {
                     }
                 });
-                $scope.tableLines=3;
-                $scope.lines =function(){
-                     return new Array($scope.tableLines);  
-                }
-                $scope.addTable=function(){
-                    
-                    if($('.myTable').length==0){
-                        if($scope.etapa.extraInfoEmail==null){
-                            $scope.etapa.extraInfoEmail="";
+
+
+                $scope.customTableButton = function (context) {
+                    var ui = $.summernote.ui;
+  
+                    // create button
+                    var button = ui.button({
+                        contents: '<i class="fa fa-table"/> + Tabela Padrão',
+                        tooltip: 'adiciona tabela padão',
+                        add: false,
+                        click: function () {
+                            // invoke insertText method with 'hello' on editor module.
+                            var row = '<tr><td style="PADDING: 5.4pt;LINE-HEIGHT: 10.5pt;">A definir</td><td>A definir</td><td>A definir</td></tr>';
+                            if ($('.myTable').length == 0) {
+                                var value = '<table class="myTable" border="1" cellpadding="0" cellspacing="0"><thead><tr style="BACKGROUND: #cfd4c1; FONT-SIZE: 7.5pt;  TEXT-ALIGN: center;font-weight: 700;"><td style="PADDING: 5.4pt;LINE-HEIGHT: 10.5pt">DATA</td><td style="PADDING: 5.4pt;LINE-HEIGHT: 10.5pt;">HORÁRIO</td><td style="PADDING: 5.4pt;LINE-HEIGHT: 10.5pt;">EVENTO</td></tr></thead><tbody>' + row + '</tbody></table>';
+
+                                $('#summernote').summernote('code', $('#summernote').summernote('code') + value);
+
+                            } else {
+                                $('.myTable>tbody').append(row);
+                            };
+
+
+
                         }
-                        $scope.etapa.extraInfoEmail+='<table class="myTable" border="1" cellpadding="0" cellspacing="0"><thead><tr style="BACKGROUND: #cfd4c1; FONT-SIZE: 7.5pt;  TEXT-ALIGN: center;font-weight: 700;"><td style="PADDING: 5.4pt;LINE-HEIGHT: 10.5pt">DATA</td><td style="PADDING: 5.4pt;LINE-HEIGHT: 10.5pt;">HORÁRIO</td><td style="PADDING: 5.4pt;LINE-HEIGHT: 10.5pt;">EVENTO</td></tr></thead><tbody><tr><td ></td><td></td><td></td></tr></tbody></table>';
-                        
-                        
-                    }else{
-                        $('.myTable>tbody').append('<tr><td ></td><td ></td><td ></td></tr>');
-                    };
-                    
-                    
+                    });
+
+                    return button.render();   // return button as jquery object 
                 }
-                $scope.emailar =false;
-                $scope.testar = function(){
-                    $scope.emailar=true;
+                $('#summernote').summernote({
+                    minHeight: 200,
+                    toolbar: [
+                        // [groupName, [list of button]]
+                        ['style', ['bold', 'italic', 'underline', 'clear']],
+                        ['insert', ['table', 'link', 'picture', 'hr']],
+                        ['font', ['strikethrough', 'fontsize', 'color']],
+
+                        ['para', ['ul', 'ol', 'paragraph']],
+                        ['height', ['height']],
+                        ['edit', ['codeview', 'undo', 'redo', 'clear']],
+                        ['custom', ['customTable']]
+
+                    ],
+                    buttons: {
+                        customTable: $scope.customTableButton
+                    },
+                    callbacks: {
+                        onKeyup: function () {
+                            if ($scope.lastCall) {
+                                $timeout.cancel($scope.lastCall);
+
+                            }
+                            $scope.lastCall = $timeout($scope.$apply, 300);
+
+                        }
+                    }
+
+                });
+
+                $scope.getTextChars = function () {
+                    return $('#summernote').summernote('code').length;
+                }
+
+                $scope.emailar = false;
+                $scope.testar = function () {
+                    $scope.emailar = true;
                     $scope.saveData();
-                    
+
                 }
                 $scope.saveData = function () {
                     if ($scope.dataLimiteLote1) {
                         $scope.etapa.dataLimiteLote1 = $scope.dataLimiteLote1.getTime();
                     }
                     if ($scope.dataLimiteLote2) {
-                        $scope.etapa.dataLimiteLote2 = $scope.dataLimiteLote2.getTime();
                     }
                     if ($scope.dataLimiteLote3) {
                         $scope.etapa.dataLimiteLote3 = $scope.dataLimiteLote3.getTime();
                     }
-
+                    $scope.etapa.extraInfoEmail = $('#summernote').summernote('code');
 
                     EtapasService.save({ id: $routeParams.id != -1 ? $routeParams.id : null }, $scope.etapa, function (data) {
                         if ($scope.etapa.id == null || $scope.etapa.id == -1) {
                             $scope.etapa = data;
                             $location.path("/etapa/" + data.id);
                         }
-                        if($scope.emailar){
-                            EtapasService.testEmail({id_Etapa:$scope.etapa.id});
+                        if ($scope.emailar) {
+                            EtapasService.testEmail({ id_Etapa: $scope.etapa.id });
                         }
                         AlertService.showSuccess("Salvo com sucesso");
                     });
