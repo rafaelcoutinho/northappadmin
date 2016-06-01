@@ -236,17 +236,17 @@ var angularModule =
                         message: function () {
                             switch ($scope.mensagem.type) {
                                 case "all":
-                                    return "Você tem certeza que deseja enivar uma notificação para TODOS os usuários do aplicativo?";
+                                    return "Você tem certeza que deseja enviar uma notificação para TODOS os usuários do aplicativo?";
                                 case "pro":
-                                    return "Você tem certeza que deseja enivar uma notificação para os competidores da categoria Pró?";
+                                    return "Você tem certeza que deseja enviar uma notificação para os competidores da categoria Pró?";
                                 case "graduado":
-                                    return "Você tem certeza que deseja enivar uma notificação para os competidores da categoria Graduado?";
+                                    return "Você tem certeza que deseja enviar uma notificação para os competidores da categoria Graduado?";
                                 case "trekker":
-                                    return "Você tem certeza que deseja enivar uma notificação para os competidores da categoria Trekker?";
+                                    return "Você tem certeza que deseja enviar uma notificação para os competidores da categoria Trekker?";
                                 case "turismo":
-                                    return "Você tem certeza que deseja enivar uma notificação para os competidores da categoria Turismo?";
+                                    return "Você tem certeza que deseja enviar uma notificação para os competidores da categoria Turismo?";
                                 default:
-                                    return "Você tem certeza que deseja enivar uma notificação para os competidores?";
+                                    return "Você tem certeza que deseja enviar uma notificação para os competidores?";
                             }
                         }
                     }
@@ -1269,42 +1269,7 @@ var angularModule =
                         }, function (successPayload) {
                             item.paga = state;
                             item.pagoTemp = false;
-                            if (item.paga == true) {
-
-                                
-                                //notificar app
-                                if (successPayload.gridUpdate == true) {
-                                    var mensagemGrid = {
-                                        type: "equipe",
-                                        id_Equipe: successPayload.id_Equipe,
-
-                                        notification: {
-                                            title: "Equipe confirmada",
-                                            body: "Sua equipe está no grid, às " + successPayload.horario
-                                        }
-                                    };
-                                    NotificacaoService.publish(mensagemGrid, function (data) {
-                                    });
-                                    //notifica a equipe da hora de largada
-                                } else {
-
-                                    var mensagemRegistro = {
-                                        type: "competidor",
-                                        id_Trekker: successPayload.id_Trekker,
-
-                                        notification: {
-                                            title: "Inscrição confirmada",
-                                            body: "Sua inscrição foi confirmada"
-                                        }
-                                    };
-                                    if (successPayload.horario) {
-                                        mensagemRegistro.notification.body = "Sua equipe está no grid, às " + successPayload.horario;
-                                    }
-                                    //notifica o dono da inscricao
-                                    NotificacaoService.publish(mensagemRegistro, function (data) {
-                                    });
-                                }
-                            }
+                            
                         }, function (error) {
                             item.pagoTemp = false;
                         })
@@ -1741,9 +1706,12 @@ var angularModule =
                         add: false,
                         click: function () {
                             // invoke insertText method with 'hello' on editor module.
-                            var row = '<tr><td style="PADDING: 5.4pt;LINE-HEIGHT: 10.5pt;">A definir</td><td>A definir</td><td>A definir</td></tr>';
+                            var defStyle = "border:solid windowtext 1.0pt;border-top:none;PADDING: 5.4pt;LINE-HEIGHT: 10.5pt;";
+                            var row = '<tr><td style="'+defStyle+'border-right:none;">A definir</td><td style="'+defStyle+'border-right:none;">A definir</td><td style="'+defStyle+'">A definir</td></tr>';
                             if ($('.myTable').length == 0) {
-                                var value = '<table class="myTable" border="1" cellpadding="0" cellspacing="0"><thead><tr style="BACKGROUND: #cfd4c1; FONT-SIZE: 7.5pt;  TEXT-ALIGN: center;font-weight: 700;"><td style="PADDING: 5.4pt;LINE-HEIGHT: 10.5pt">DATA</td><td style="PADDING: 5.4pt;LINE-HEIGHT: 10.5pt;">HORÁRIO</td><td style="PADDING: 5.4pt;LINE-HEIGHT: 10.5pt;">EVENTO</td></tr></thead><tbody>' + row + '</tbody></table>';
+                                var defHeaderStyle='PADDING: 5.4pt;LINE-HEIGHT: 10.5pt;border:solid windowtext 1.0pt;';
+                                var value = '<table class="myTable" border="0" cellspacing="0" cellpadding="0" style="margin-left:42.5pt;border-collapse:collapse"><thead><tr style="BACKGROUND: #cfd4c1; FONT-SIZE: 7.5pt;  TEXT-ALIGN: center;font-weight: 700;">';
+                                value+='<td style="'+defHeaderStyle+'border-right:none;">DATA</td><td style="'+defHeaderStyle+'border-right:none;">HORÁRIO</td><td style="'+defHeaderStyle+'">EVENTO</td></tr></thead><tbody>' + row + '</tbody></table>';
 
                                 $('#summernote').summernote('code', $('#summernote').summernote('code') + value);
 

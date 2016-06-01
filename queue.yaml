@@ -3,3 +3,5 @@ queue:
   rate: 0.5/s
 - name: pushAPN
   rate: 0.5/s
+- name: mailerQueue
+  rate: 1/s

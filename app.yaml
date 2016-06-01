@@ -36,9 +36,6 @@ handlers:
 - url: /Inscrever.do
   script:  src/main/php/inscrever.php
 
-- url: /testEmail.php
-  script:  src/main/php/testeEmail.php
-
 - url: /app/rest/.*
   script: src/main/php/apiPub.php
 
@@ -117,3 +114,6 @@ handlers:
   script: src/main/php/notificationTaskAPN.php
   login: admin
 
+- url: /task/mailer
+  script:  src/main/php/mailSender.php
+  login: admin
