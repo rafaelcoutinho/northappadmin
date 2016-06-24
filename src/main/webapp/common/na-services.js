@@ -131,12 +131,12 @@ angular.module('north.services', ['ngResource'])
             startPwdRecovery: {
                 method: "POST",
                 isArray: false,
-                url: "https:" +appConfigs.contextRoot + "/endpoints/senha/LembrarSenha"
+                url: appConfigs.contextRoot + "/endpoints/senha/LembrarSenha"
             },
             loginUser: {
                 method: "POST",
                 isArray: false,
-                url: "https:"+appConfigs.contextRoot + '/endpoints/Login'
+                url: appConfigs.contextRoot + '/endpoints/Login'
             },
 
             queryCompetidores: {
@@ -145,7 +145,7 @@ angular.module('north.services', ['ngResource'])
             },
             getInscricaoCompetidor: {
                 isArray: false,
-                url: appConfigs.contextRoot + '/app/enhanced/InscricaoCompetidor/:idEtapa/:email'
+                url: appConfigs.contextRoot + '/app/enhanced/InscricaoCompetidor/:idEtapa/:id_Trekker'
             },
             query4Equipe: {
                 isArray: true,
@@ -207,17 +207,17 @@ angular.module('north.services', ['ngResource'])
             getEtapaAtual: {
                 isArray: false,
                 url: appConfigs.contextRoot + '/app/enhanced/EtapaAtual'
-                // url: "http://localhost/northServer/app.php/EtapaAtual"
+                
             },
             getPerformance: {
                 isArray: true,
                 url: appConfigs.contextRoot + '/app/enhanced/Etapa/:id/Resultado'
-                // url: "http://localhost/northServer/app.php/Etapa/:id/Performance/:id_Equipe"
+                
             },
             getResultados: {
                 isArray: true,
                 url: appConfigs.contextRoot + '/app/enhanced/Etapa/:id/Resultado'
-                // url: "http://localhost/northServer/app.php/Etapa/:id/Resultado"
+                
             }
 
         })
@@ -261,8 +261,50 @@ angular.module('north.services', ['ngResource'])
                         return element.nome;
                     }
                 }
-            }
+            },
+            addNumeracaoToGridList:function(data){
+                var fixedList =[];
+                var tuples = [];
 
+                for (var index = 0; index < data.length; index++) {
+                    var item = data[index];
+
+                    tuples.push([item, item.hora + ":" + (item.minuto < 10 ? "0" + item.minuto : item.minuto)]);
+                }
+
+                tuples.sort(
+                    function (a, b) {
+
+                        return a[1] > b[1] ? 1 : a[1] < b[1] ? -1 : 0
+                    }
+
+                    );
+
+                var lastChangeIndex=-1;
+                var lastChangeCat=-1;
+                var index = 0;
+                
+                for (var key in tuples) {
+
+                    var item = tuples[key][0];
+                     var gridCat = item.categoria_Equipe < 3 ? 1 : item.categoria_Equipe;
+                    if (lastChangeCat != gridCat) {
+                        lastChangeIndex = index;
+                        lastChangeCat = gridCat;
+                    }
+                   
+                    console.log(gridCat,tuples[key][1])
+                    var gridInfo = this.getGridInfo(gridCat);
+                    if (!gridInfo) {
+                        console.log("nao conseguiu pegar grid info para ", item)
+                    }
+                    item.numeracao = index + gridInfo.numeracao - lastChangeIndex;
+                    fixedList.push(item);
+                    index++;
+
+                }
+                return fixedList;
+            }
         }
     }])
     .service('EquipesService', ['$http', '$q', '$resource', 'appConfigs', function ($http, $q, $resource, appConfigs) {
@@ -290,8 +332,12 @@ angular.module('north.services', ['ngResource'])
                 if (DEBUG) {
 
                     var url = config.url;
-
+                if (config.url.indexOf("GerenciaResultado.do") > 0) {
+                        config.url = "http://localhost/northServer/performance.php";
+                    } else 
                      if (config.url.indexOf("notification") > 0) {
+                        config.url = "http://localhost/northServer/notificator.php";
+                    } else if (config.url.indexOf("notification") > 0) {
                         config.url = "http://localhost/northServer/notificator.php";
                     } else if (config.url.indexOf("AlteraGrid") > 0) {
                         config.url = "http://localhost/northServer/alteraGrid.php";

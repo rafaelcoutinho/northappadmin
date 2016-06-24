@@ -1,5 +1,5 @@
 // var SERVER_ROOT ="//2-dot-cumeqetrekking.appspot.com";
-var SERVER_ROOT = "//cumeqetrekking.appspot.com";
+var SERVER_ROOT = "//app.northbrasil.com.br";
 
 var angularModule =
     angular.module('registroApp', ['ngRoute', 'ngAnimate', 'dialogs.main', 'north.services', 'ui.bootstrap', 'ngResource', 'ngSanitize']).constant("appConfigs", {
@@ -35,24 +35,41 @@ var angularModule =
             }])
 
         .factory('facebookService', function ($q) {
-            this.fbAsyncInit = function () {                
-                // Executed when the SDK is loaded
 
-                FB.init({
-                    appId: '228398097493749',
-                    channelUrl: 'partials/channel.html',
-                    status: true,
-                    cookie: true,
-                    version: 'v2.5',
-                    xfbml: true
-                });
-            };
-            this.fbAsyncInit();
             var service = {
+                fb: null,
+                isAvailable: function () {
+                    return this.fb != null;
+                },
+                setInitiatied: function (FB) {
+                    this.fb = FB;
+                    for (var index = 0; index < this.onAvailable.length; index++) {
+                        var deferred = this.onAvailable[index];
+                        deferred.resolve();
+                    }
+                },
+                onAvailable: [],
+                whenAvailable: function (fct) {
+
+                    var deferred = $q.defer();
+                    if (this.fb != null) {
+                        deferred.resolve();
+                    } else {
+                        this.onAvailable.push(deferred);
+                    }
+                    return deferred.promise;
+                },
+                getFB: function () {
+                    if (this.fb == null) {
+                        throw "FB not available";
+                    }
+                    return this.fb;
+
+                },
                 meApi: function (fields) {
                     var deferred = $q.defer();
 
-                    FB.api('/me', { fields: fields }, function (response) {
+                    this.getFB(deferred).api('/me/?fields=id,name,email', { fields: fields }, function (response) {
 
                         if (!response || response.error) {
                             console.log("error", response)
@@ -66,7 +83,7 @@ var angularModule =
                 },
                 logout: function () {
                     var deferred = $q.defer();
-                    FB.logout(function (response) {
+                    this.getFB(deferred).logout(function (response) {
 
                         if (!response || response.error) {
                             deferred.reject('Error occured');
@@ -79,19 +96,23 @@ var angularModule =
                 },
                 login: function () {
                     var deferred = $q.defer();
-                    FB.login(function (response) {
-                        if (response.authResponse) {
-                            deferred.resolve(response);
-                        } else {
-                            //User cancelled login or did not fully authorize.
-                            deferred.reject('Error occured');
-                        }
-                    });
+                    this.getFB(deferred).login(
+                        function (response) {
+                            if (response.authResponse) {
+                                deferred.resolve(response);
+                            } else {
+                                //User cancelled login or did not fully authorize.
+                                deferred.reject('Error occured');
+                            }
+                        }, {
+                            scope: 'email,public_profile',
+                            return_scopes: true
+                        });
                     return deferred.promise;
                 },
                 loginStatus: function () {
                     var deferred = $q.defer();
-                    FB.getLoginStatus(function (response) {
+                    this.getFB(deferred).getLoginStatus(function (response) {
                         console.log(response)
                         if (response.status === 'connected') {
                             deferred.resolve(response);
@@ -101,16 +122,44 @@ var angularModule =
                         } else {
                             deferred.reject('Error occured');
                         }
-
-
                     });
                     return deferred.promise;
                 }
-            }
+            };
+            // Load the SDK Asynchronously
+            (function (d) {
+                try {
+                    var js, id = 'facebook-jssdk', ref = d.getElementsByTagName('script')[0];
+                    if (d.getElementById(id)) { return; }
+                    js = d.createElement('script'); js.id = id; js.async = true;
+                    js.src = "//connect.facebook.net/pt_BR/sdk.js";
+                    ref.parentNode.insertBefore(js, ref);
+                } catch (e) {
+                    console.log("fb error", e);
+                }
+            } (document));
+            window.fbAsyncInit = function () {                
+                // Executed when the SDK is loaded
+
+                window.FB.init({
+                    appId: '228398097493749',
+                    channelUrl: 'partials/channel.html',
+                    status: true,
+                    cookie: true,
+                    version: 'v2.5',
+                    xfbml: true
+                });
+                service.setInitiatied(FB);
+
+
+
+            };
+
+
             return service;
         }).controller('InscricaoCtrl', [
-            '$scope', '$timeout', '$window', 'facebookService', '$location', '$routeParams', 'EtapasService', 'CompetidorService', 'EquipesService', 'CategoriaService', 'InscricaoService', 'AlertService', '$rootScope',
-            function ($scope, $timeout, $window, facebookService, $location, $routeParams, EtapasService, CompetidorService, EquipesService, CategoriaService, InscricaoService, AlertService, $rootScope) {
+            '$scope', '$timeout', '$window', '$location', '$routeParams', 'EtapasService', 'CompetidorService', 'EquipesService', 'CategoriaService', 'InscricaoService', 'AlertService', '$rootScope',
+            function ($scope, $timeout, $window, $location, $routeParams, EtapasService, CompetidorService, EquipesService, CategoriaService, InscricaoService, AlertService, $rootScope) {
                 $scope.inscricao = InscricaoService.get({ idTrekker: $routeParams.idTrekker, idEtapa: $routeParams.idEtapa }, function (data) {
                     $scope.inscricao.trekker = {
                         nome: data.nome,
@@ -124,7 +173,7 @@ var angularModule =
 
                 });
             }])
- 
+
         .controller('MenuCtrl', [
             '$scope', '$timeout', '$window', 'facebookService', '$location', '$routeParams', 'EtapasService', 'CompetidorService', 'EquipesService', 'CategoriaService', 'InscricaoService', 'AlertService', '$rootScope',
             function ($scope, $timeout, $window, facebookService, $location, $routeParams, EtapasService, CompetidorService, EquipesService, CategoriaService, InscricaoService, AlertService, $rootScope) {
@@ -134,13 +183,17 @@ var angularModule =
                 }
                 $rootScope.$on('gotCompetidor', function (event, competidor) { console.log(competidor); $scope.competidor = competidor; });
             }])
-        .controller('ModalCompetidor', function ($scope, $uibModalInstance, etapa, competidores, inscricao, AlertService, InscricaoService) {
+        .controller('ModalCompetidor', function ($scope, $uibModalInstance, etapa, competidores, integrantes, inscricao, AlertService, InscricaoService) {
             $scope.etapa = etapa;
             $scope.competidores = competidores;
             $scope.inscricao = inscricao;
             $scope.novoCompetidor = { nome: "" };
 
             $scope.ok = function () {
+                if (!$scope.wasChecked) {
+                    $scope.exitFilterCompetidor();
+                    return;
+                }
                 if ($scope.novoCompetidor.id_Trekker == null) {
 
                     if ($scope.competidorForm.$valid == false) {
@@ -149,7 +202,18 @@ var angularModule =
                     }
 
                 }
-                InscricaoService.getInscricaoCompetidor({ idEtapa: etapa.id, email: $scope.novoCompetidor.email }, function (results) {
+                for (var i = 0; i < integrantes.length; i++) {
+                    if ($scope.novoCompetidor.email == integrantes[i].email) {
+                        if ($scope.novoCompetidor.id_Trekker == null || $scope.novoCompetidor.id_Trekker != integrantes[i].id_Trekker) {
+                            $scope.competidorForm.competidorEmail.$valid = false;
+                            $scope.competidorForm.competidorEmail.$error.existente = true;
+                            AlertService.showError("E e-mail utilizado já está sendo associado ao integrante '" + integrantes[i].nome + "'");
+                            return;
+                        }
+                    }
+
+                }
+                InscricaoService.getInscricaoCompetidor({ idEtapa: etapa.id, email: $scope.novoCompetidor.email, id_Trekker: $scope.novoCompetidor.id_Trekker }, function (results) {
 
                     if (results == null || results.ins_EquipeId == null || results.ins_EquipeId == $scope.inscricao.equipe.id) {
                         if (results.id_Trekker != null) {
@@ -177,13 +241,15 @@ var angularModule =
             }
             $scope.clearErrors = function () {
                 $scope.competidorForm.competidorEmail.$error.jainscrito = false;
+                $scope.competidorForm.competidorEmail.$error.existente = false;
                 $scope.competidorForm.competidorEmail.$valid = true;
+                
                 
                 // $scope.competidorDuplicado = null;
             }
 
             $scope.exitFilterCompetidor = function () {
-
+                $scope.wasChecked = true;
                 if ($scope.noResult == true) {
                     var nome = $scope.novoCompetidor;
                     $scope.novoCompetidor = {
@@ -291,15 +357,24 @@ var angularModule =
                             AlertService.showError("Houve um erro inesperado processando seu e-mail. Por favor tente novamente.");
                         }
 
-
-
-
                     });
             }
             $scope.ok = function () {
-                
-                if (!$scope.lider.password || $scope.lider.password.length==0) {
-                    AlertService.showError("Por favor insira sua senha.");
+                if ($scope.liderForm.liderEmail.$error.email) {
+                    AlertService.showError("Por favor insira seu email corretamente.");
+                    return;
+                }
+                if (!$scope.lider.password || $scope.lider.password.length == 0) {
+
+                    if (!$scope.wasChecked) {
+                        $scope.validateLider();
+                    } else {
+                        AlertService.showError("Por favor insira sua senha.");
+                    }
+                    return;
+                }
+                if ($scope.newUser == true && (!$scope.lider.nome || $scope.lider.nome.length == 0)) {
+                    AlertService.showError("Por favor insira seu nome.");
                     return;
                 }
                 var success = function (data) {
@@ -312,7 +387,7 @@ var angularModule =
                 var error = function (err) {
                     console.log(err);
                     if (err.data.errorCode) {
-                        switch (err.data.errorCode) {
+                        switch (parseInt(err.data.errorCode)) {
                             case 804:
                                 AlertService.showError("Senha inválida. Por favor tente novamente.");
                                 break;
@@ -321,11 +396,11 @@ var angularModule =
                                 break;
 
                             default:
-                            if(err.status==404){
-                                AlertService.showError("O e-mail e senha inseridos não coicidem.");
-                            }else{
-                                AlertService.showError("Por favor corrija os erros do formulário.");
-                            }
+                                if (err.status == 404) {
+                                    AlertService.showError("O e-mail e senha inseridos não coicidem.");
+                                } else {
+                                    AlertService.showError("Por favor corrija os erros do formulário.");
+                                }
                         }
                     } else {
                         AlertService.showError("Houve um erro processando sua autenticação. Por favor revise seu formulário e tente novamente.");
@@ -571,6 +646,9 @@ var angularModule =
                             },
                             competidores: function () {
                                 return $scope.competidores;
+                            },
+                            integrantes: function () {
+                                return $scope.inscricao.integrantes;
                             }
                         }
                     });
@@ -582,7 +660,6 @@ var angularModule =
                                 if (selecionado.id_Trekker == element.id_Trekker) {
                                     return;
                                 }
-
                             }
                         }
                         $scope.inscricao.integrantes.push(selecionado);
@@ -756,33 +833,50 @@ var angularModule =
                             });
                         } else {
                             $rootScope.$broadcast('dialogs.wait.complete');
+                            AlertService.showError("Não foi possível obter seu e-mail do Facebook. Por favor tente novamente.");
+                            
+                            // facebookService.logout();
                         }
                     } else {
                         $rootScope.$broadcast('dialogs.wait.complete');
-                        facebookService.login().then(function () {
-                            $scope.updateWithFB();
-                        });
+                        if (facebookService.isAvailable()) {
+                            facebookService.login().then(function () {
+                                $scope.updateWithFB();
+                            });
+                        }
 
                     }
                 }
+                $scope.isAvailable = function () {
+                    return facebookService.isAvailable();
+                }
+
+
                 $scope.updateWithFB = function () {
-                    $rootScope.$broadcast('dialogs.wait.progress', { 'progress': 30 });
 
-                    facebookService.loginStatus().then(function (resp) {
-                        $rootScope.$broadcast('dialogs.wait.progress', { 'progress': 50 });
-                        facebookService.meApi("email,name").then(function (data) {
-                            $rootScope.$broadcast('dialogs.wait.progress', { 'progress': 70 });
-                            $scope.connectFB(data);
+                    if (facebookService.isAvailable()) {
+                        $rootScope.$broadcast('dialogs.wait.progress', { 'progress': 30 });
+                        facebookService.loginStatus().then(function (resp) {
+                            $rootScope.$broadcast('dialogs.wait.progress', { 'progress': 50 });
+                            facebookService.meApi("email,name").then(function (data) {
+                                $rootScope.$broadcast('dialogs.wait.progress', { 'progress': 70 });
+                                $scope.connectFB(data);
 
-                        }, function (error) {
+                            }, function (error) {
+                                $rootScope.$broadcast('dialogs.wait.complete');
+
+                            });
+                        }, function (resp) {
                             $rootScope.$broadcast('dialogs.wait.complete');
-
                         });
-                    }, function (resp) {
-                        $rootScope.$broadcast('dialogs.wait.complete');
-                    })
-                };
+                    } else {
+                        setTimeout(function () {
 
+                            $rootScope.$broadcast('dialogs.wait.complete');
+                        }, 1000);
+                    }
+                };
+                facebookService.whenAvailable().then($scope.updateWithFB);
                 $scope.limpaCampos = function () {
                     var etapa = $scope.inscricao.etapa;
                     $scope.alterarInscritos = false;
@@ -794,7 +888,8 @@ var angularModule =
                     };
                     $scope.inscricaoServer = null;
                 };
-                $scope.updateWithFB();
+
+
                 $scope.inscrever = function () {
 
                     if ($scope.inscricao.etapa.id) {

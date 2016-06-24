@@ -26,7 +26,7 @@
             </thead>
             <tbody>
                 <tr ng-repeat="entry in report|orderBy:['hora','minuto','nome_Equipe']">
-                    <td>{{getNumeracao(entry,$index)}}</td>
+                    <td>{{entry.numeracao}}</td>
                     <td>{{entry.hora}}:{{entry.minuto|zeroLeadNumber}}</td>
                     <td>{{entry.nome_Equipe}}</td>
                     <td>{{getLabelCategoria(entry.categoria_Equipe)}}</td>
@@ -54,6 +54,28 @@
                     <td>{{$index+1}}</td>
                     <td>{{entry.nome_Equipe}}</td>
                     <td>{{entry.nome}}</td>
+
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="col-xs-12 table-responsive">
+        <h2>Pré grid</h2>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    
+
+                    <th>Equipe</th>
+                    <th>Categoria</th>
+
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="entry in gridInfo.preGrid|orderBy:['id_Categoria','nome']">
+                    
+                    <td>{{entry.nome}}</td>
+                    <td>{{entry.nome_Categoria}}</td>
 
                 </tr>
             </tbody>

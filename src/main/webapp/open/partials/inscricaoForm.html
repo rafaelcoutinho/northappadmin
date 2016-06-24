@@ -31,7 +31,11 @@
                         <div class="col col-sm-6">
                             <span class="text-yellow stepClass">1. Seus dados <i class="fa fa-warning"></i></span>
                         </div>
-                        <div class="col col-sm-6" style="text-align:center">
+                        <div class="col col-sm-6" style="text-align:center" ng-if="!isAvailable()">
+                            <p class="text-muted" style="text-align:center;cursor: pointer;" ng-click="selectCompetidor()">Clique aqui e use o formulário</p>
+                            <small>* Facebook está indisponível, verifique se sua rede permite a utilização do Facebook</small>
+                        </div>
+                        <div class="col col-sm-6" style="text-align:center" ng-if="isAvailable()">
                             <a class="btn btn-xs btn-social btn-facebook ng-binding" ng-click="connectFB()">
                                 <i class="fa fa-facebook"></i> Conectar com Facebook
                             </a>
@@ -43,7 +47,8 @@
                             <div class="pull-right box-tools">
                                 <button class="btn btn-warning btn-xs no-print" ng-cloak ng-click="selectCompetidor();" ng-disabled="inscricaoServer!=null">Alterar</button>
                             </div>
-                            <span class=" text-green stepClass">1. {{inscricao.lider.nome}} <i class="fa fa-check"  ></i></span>
+                            <div class=" text-green stepClass" style="font-size:10pt">1. Seus dados <i class="fa fa-check"></i></div>
+                            <span class=" text-green stepClass">{{inscricao.lider.nome}} </span>
                         </div>
 
                     </div>
@@ -61,10 +66,10 @@
                     <div class="row" ng-show="inscricao.equipe!=null">
                         <div class="col col-sm-12">
                             <div class="pull-right box-tools">
-                                <button class="btn btn-warning btn-xs no-print" ng-cloak ng-click="selectEquipe();
-" ng-disabled="disableAlterarEquipe()">Alterar</button>
+                                <button class="btn btn-warning btn-xs no-print" ng-cloak ng-click="selectEquipe();" ng-disabled="disableAlterarEquipe()">Alterar</button>
                             </div>
-                            <span class=" text-green stepClass">2. {{inscricao.equipe.nome}} <i class="fa fa-check"  ></i></span>
+                            <div class=" text-green stepClass" style="font-size:10pt">2. Sua equipe <i class="fa fa-check"></i></div>
+                            <span class=" text-green stepClass">{{inscricao.equipe.nome}}</span>
                         </div>
 
 
@@ -107,7 +112,7 @@
                 <div class="box-footer no-print" ng-show="inscricao.lider!=null && inscricao.equipe!=null" ng-cloak>
 
                     <button type="submit" class="btn btn-primary btn-block pull-right no-print" ng-cloak ng-click="inscrever()
-" ng-show="inscricaoServer==null || alterarInscritos==true">Inscrever</button>
+" ng-show="inscricaoServer==null || alterarInscritos==true">Confirmar Inscrição</button>
 
 
 
@@ -254,9 +259,9 @@
                                 </div>
 
                             </div>
-                            <div class="col col-xs-6" style="text-align:center">
+                            <div class="col col-xs-6" style="text-align:center" ng-if="isAvailable()">
                                 <br>
-                                <a class="btn btn-xs btn-social btn-facebook ng-binding" ng-click="connectFB()">
+                                <a class="btn btn-xs btn-social btn-facebook ng-binding" ng-click="connectFB()" ng-if="isAvailable()">
                                     <i class="fa fa-facebook"></i> Continuar com Facebook
                                 </a>
                                 <br>
@@ -292,7 +297,7 @@
                                     <span class="text-red" ng-show="liderForm.liderSenha.$error.required">Senha é obrigatória</span>
                                 </div>
                             </div>
-                            <div class="col col-xs-5" style="text-align:center">
+                            <div class="col col-xs-5" style="text-align:center" ng-if="isAvailable()">
                                 <br>
                                 <br>
                                 <a class="btn btn-xs btn-social btn-facebook ng-binding" ng-click="connectFB()">
@@ -348,6 +353,8 @@
                     <span class="text-red" ng-show="competidorForm.competidorEmail.$error.email">Formato inválido de email</span>
                     <span class="text-red" ng-show="competidorForm.competidorEmail.$error.required">E-mail é obrigatório</span>
                     <span class="text-red" ng-show="competidorForm.competidorEmail.$error.jainscrito">Competidor já está inscrito em outra equipe nesta etapa</span>
+                    <span class="text-red" ng-show="competidorForm.competidorEmail.$error.existente">E-mail já está associado a outro integrante.</span>
+
                 </div>
 
                 <div class="form-group" ng-show="noResult">
@@ -394,7 +401,7 @@
 
                     <label for="inputCidade">Cidade</label>
 
-                    <input type="tel" ng-model="novaEquipe.descricao" id="inputCidade" class="form-control">
+                    <input type="text" ng-model="novaEquipe.descricao" id="inputCidade" class="form-control">
 
                 </div>
 

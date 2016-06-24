@@ -90,7 +90,7 @@ require.config({
         },
 
         registroApp: {
-            deps: ['lodash', 'facebook', 'angularDialogs', 'angularAnimate', 'northServices', 'angular', 'adminLte', 'angularMessages', 'angularRoute', 'angularResources', 'uiboostrap', 'angularSanitize']
+            deps: ['lodash', 'angularDialogs', 'angularAnimate', 'northServices', 'angular', 'adminLte', 'angularMessages', 'angularRoute', 'angularResources', 'uiboostrap', 'angularSanitize']
         }
     }
 });
