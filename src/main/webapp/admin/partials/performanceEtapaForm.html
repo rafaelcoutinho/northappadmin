@@ -30,13 +30,16 @@
                     <h3 class="box-title">Gerenciar Resultados da Etapa <b>{{etapa.titulo}}</b></h3>
                     <div><small class="text-red">*Esta ação irá substituir qualquer resultado existente para a etapa</small></div>
                     <div class="input-group input-group-sm">
+                        
                         <textarea ng-model="csvData" cols="120" rows="4" style="width:100%">
                         </textarea>
                     </div>
                     <button type="button" class="btn btn-sm " ng-click="processCsv()">Processar CSV</button>
                 </div>
                 <div class="box-body">
-                    <button type="submit " class="btn btn-primary btn-block pull-right " ng-if="preResultados!=null" ng-cloak ng-click="salvarResultados()">Salvar Resultados</button>
+                    <button type="submit " class="btn btn-primary btn-block pull-right " ng-if="preResultados!=null" ng-cloak ng-click="salvarResultados()">Salvar Resultados <i class="fa fa-spin fa-refresh" data-loading></i></button>
+                    Nome do resultado: <input type="text" ng-model="nomeResultado">
+                    
                     <table class="table table-bordered">
                         <thead>
                             <tr>
@@ -107,7 +110,7 @@
                 </div>
                 <div class="box-footer " ng-show="preResultados!=null" ng-cloak>
 
-                    <button type="submit " class="btn btn-primary btn-block pull-right " ng-cloak ng-click="salvarResultados()">Salvar Resultados</button>
+                    <button type="submit " class="btn btn-primary btn-block pull-right " ng-cloak ng-click="salvarResultados()">Salvar Resultados <i class="fa fa-spin fa-refresh" data-loading></i></button>
 
 
 

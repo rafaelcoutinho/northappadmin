@@ -21,6 +21,10 @@ handlers:
 - url: /test
   script: src/main/php/nottest.php
 
+- url: /relatorio/Etapa/.*
+  script:  src/main/php/etapaReport.php
+  login: admin
+
 - url: /SetPago.do
   script:  src/main/php/marcarPaga.php
   login: admin
@@ -35,7 +39,6 @@ handlers:
 
 - url: /Inscrever.do
   script:  src/main/php/inscrever.php
-
 
 - url: /app/rest/.*
   script: src/main/php/apiPub.php
@@ -115,4 +118,6 @@ handlers:
   script: src/main/php/notificationTaskAPN.php
   login: admin
 
-
+- url: /task/mailer
+  script:  src/main/php/mailSender.php
+  login: admin

@@ -2,7 +2,7 @@
 var SERVER_ROOT = "//app.northbrasil.com.br";
 
 var angularModule =
-    angular.module('adminApp', ['north.services', 'ngRoute', 'ui.bootstrap', 'ngResource'])
+    angular.module('adminApp', ['north.services', 'ngRoute', 'ui.bootstrap', 'ngResource', 'colorpicker.module'])
         .constant("appConfigs", {
             "context": SERVER_ROOT + "/rest",
             // "context": "//localhost/northServer/api.php",
@@ -177,6 +177,12 @@ var angularModule =
                     url: appConfigs.contextRoot + '/GerenciaResultado.do'
                     // url: "http://localhost/northServer/performance.php"
                 },
+                removeResultados: {
+                    method: "DELETE",
+                    isArray: false,
+                    url: appConfigs.contextRoot + '/GerenciaResultado.do'
+                    // url: "http://localhost/northServer/performance.php"
+                },
                 processPerformanceCSV: {
                     method: "POST",
                     isArray: true,
@@ -236,17 +242,17 @@ var angularModule =
                         message: function () {
                             switch ($scope.mensagem.type) {
                                 case "all":
-                                    return "Você tem certeza que deseja enivar uma notificação para TODOS os usuários do aplicativo?";
+                                    return "Você tem certeza que deseja enviar uma notificação para TODOS os usuários do aplicativo?";
                                 case "pro":
-                                    return "Você tem certeza que deseja enivar uma notificação para os competidores da categoria Pró?";
+                                    return "Você tem certeza que deseja enviar uma notificação para os competidores da categoria Pró?";
                                 case "graduado":
-                                    return "Você tem certeza que deseja enivar uma notificação para os competidores da categoria Graduado?";
+                                    return "Você tem certeza que deseja enviar uma notificação para os competidores da categoria Graduado?";
                                 case "trekker":
-                                    return "Você tem certeza que deseja enivar uma notificação para os competidores da categoria Trekker?";
+                                    return "Você tem certeza que deseja enviar uma notificação para os competidores da categoria Trekker?";
                                 case "turismo":
-                                    return "Você tem certeza que deseja enivar uma notificação para os competidores da categoria Turismo?";
+                                    return "Você tem certeza que deseja enviar uma notificação para os competidores da categoria Turismo?";
                                 default:
-                                    return "Você tem certeza que deseja enivar uma notificação para os competidores?";
+                                    return "Você tem certeza que deseja enviar uma notificação para os competidores?";
                             }
                         }
                     }
@@ -520,13 +526,61 @@ var angularModule =
                 $uibModalInstance.dismiss('cancel');
             };
         })
-        .controller('ResultadosCtrl', function ($scope, idEtapa, EtapasService, UtilsService, $uibModal, CategoriaService, $location, $log, ResultadoAdminService, AlertService) {
+        .controller('ResultadosCtrl', function ($scope, idEtapa, EtapasService, UtilsService, $uibModal, CategoriaService, $location, $log, ResultadoAdminService, AlertService, NotificacaoService) {
             $scope.etapa = EtapasService.get({ id: idEtapa });
+            $scope.nomesResultados = [];
             $scope.categorias = CategoriaService.query({}, function (data) {
-                $scope.categoria = { id_Categoria: data[0].id };
-
+                $scope.categoria = { id_Categoria: data[0].id, nomeResultado: "Final" };
             });
-            $scope.resultados = EtapasService.getResultados({ id: idEtapa });
+
+            $scope.removeResultados = function () {
+                var modalInstance = $uibModal.open({
+                    animation: $scope.animationsEnabled,
+                    templateUrl: 'partials/modal.html',
+                    controller: 'ConfirmModalCrtl',
+                    size: 'sm',
+                    resolve: {
+                        title: function () {
+                            return "Apagar resultados";
+                        },
+                        message: function () {
+                            return "Você tem certeza que deseja apagar os resultados " + $scope.categoria.nomeResultado;
+                        }
+                    }
+                });
+                modalInstance.result.then(function () {
+                    ResultadoAdminService.removeResultados({ etapa: idEtapa, nome: $scope.categoria.nomeResultado },
+                        function (data) {
+                            AlertService.showSuccess("Resultados apagados");
+                            $scope.refresh();
+                        }, function () {
+                            AlertService.showError("Houve um erro ao apagar resultados");
+                        });
+
+                }, function () {
+                    // $log.info('Modal dismissed at: ' + new Date());
+                });
+
+            }
+            $scope.resultados = [];
+            $scope.refresh = function () {
+                $scope.resultados = [];
+                EtapasService.getResultados({ id: idEtapa }, function (data) {
+                    if (data.length > 0) {
+                        $scope.categoria.nomeResultado = data[0].nomeResultado;
+                        $scope.nomesResultados = data;
+                        for (var i = 0; i < data.length; i++) {
+                            var element = data[i];
+                            $scope.resultados = $scope.resultados.concat(element.resultados);
+                            console.log($scope.resultados.length, element.resultados.length)
+
+
+                        }
+                    }
+
+                });
+            }
+            $scope.refresh();
             $scope.getLabelCategoria = UtilsService.getLabelCategoria;
 
             $scope.importCSV = function () {
@@ -535,6 +589,42 @@ var angularModule =
             $scope.importPerformanceCSV = function () {
                 $location.path("/etapa/" + idEtapa + "/performanceEdit");
             };
+
+            $scope.notificarTodos = function () {
+                var modalInstance = $uibModal.open({
+                    animation: $scope.animationsEnabled,
+                    templateUrl: 'partials/modal.html',
+                    controller: 'ConfirmModalCrtl',
+                    size: 'sm',
+                    resolve: {
+                        title: function () {
+                            return "Notificar resultados";
+                        },
+                        message: function () {
+                            return "Esta ação irá enviar notificações com os resultados para todos os competidores. Você tem certeza que deseja continuar?";
+                        }
+                    }
+                });
+                modalInstance.result.then(function () {
+                    var mensagemResultados = {
+                        type: "resultados",
+                        id_Etapa: idEtapa,
+
+                        notification: {
+                            title: "Resultados disponíveis",
+                            body: "Resultados da etapa já disponíveis"
+                        }
+                    };
+                    NotificacaoService.publish(mensagemResultados, function (data) {
+                        AlertService.showSuccess("Envio de notificação iniciado para " + data.length);
+                    }, function () {
+                        AlertService.showError("Houve um erro ao enviar notificacao");
+                    });
+                }, function () {
+                    // $log.info('Modal dismissed at: ' + new Date());
+                });
+
+            }
 
             $scope.remover = function (item) {
                 var modalInstance = $uibModal.open({
@@ -608,7 +698,7 @@ var angularModule =
             }
             $scope.showDetalhes = function (item) {
                 if (!item.pcs) {
-                    item.pcs = EtapasService.getPerformance({ id: idEtapa, id_Equipe: item.id_Equipe });
+                    item.pcs = EtapasService.getPerformance({ id: idEtapa, idEquipe: item.id_Equipe });
                 }
                 var modalInstance = $uibModal.open({
                     animation: $scope.animationsEnabled,
@@ -631,15 +721,17 @@ var angularModule =
             }
         })
 
-        .controller('PerformanceFormCtrl', function ($scope, idEtapa, EtapasService, UtilsService, ResultadoAdminService, $uibModal, $log) {
+        .controller('PerformanceFormCtrl', function ($scope, idEtapa, EtapasService, UtilsService, ResultadoAdminService, $uibModal, $log, AlertService, $location) {
             $scope.processCsv = function () {
                 ResultadoAdminService.processPerformanceCSV({ etapa: idEtapa }, $scope.csvData, function (data) {
                     $scope.preResultados = data;
-
+                    AlertService.showInfo("Resultados carregados. Revise as diferenças e salve-os.");
                 }, function (error) {
                     console.log("erro", error);
+                    AlertService.showError("Falhou ao processar CSV");
                 });
             }
+            $scope.nomeResultado = "Final";
             $scope.getPoints = function (item) {
                 var pcs = item.pcs;
 
@@ -711,8 +803,16 @@ var angularModule =
                 return item.grid.equipe != null && $scope.accentsTidy(item.grid.equipe.nome) != $scope.accentsTidy(item.Piloto);
             }
             $scope.getLabelCategoria = UtilsService.getLabelCategoria;
+
+
             $scope.salvarResultados = function () {
-                ResultadoAdminService.saveResultados({ etapa: idEtapa }, $scope.preResultados);
+                console.log("a", $scope.nomeResultado)
+                ResultadoAdminService.saveResultados({ etapa: idEtapa }, { resultados: $scope.preResultados, nome: $scope.nomeResultado }, function () {
+                    AlertService.showSuccess("Resultados Salvos com sucesso");
+                    $location.path("/etapa/" + idEtapa + "/resultados");
+                }, function (error) {
+                    AlertService.showError("Falhou ao salvar os resultados " + error.data);
+                });
             }
             $scope.selecao = {};
             $scope.editEquipe = function (item) {
@@ -836,10 +936,7 @@ var angularModule =
             $scope.data = new Date();
             $scope.report = [];
             RelatorioService.query({ filter0: 'id_Etapa,eq,' + idEtapa }, function (data) {
-
-
                 $scope.report = UtilsService.addNumeracaoToGridList(data);
-
             })
             $scope.gridInfo = RelatorioService.queryGridInfo({ id: idEtapa });
 
@@ -1227,36 +1324,7 @@ var angularModule =
                         }, function (successPayload) {
                             item.paga = state;
                             item.pagoTemp = false;
-                            if (item.paga == true) {
 
-                                var mensagemRegistro = {
-                                    type: "competidor",
-                                    to: successPayload.id_Trekker,
-
-                                    notification: {
-                                        title: "Inscrição confirmada",
-                                        body: "Sua inscrição foi confirmada"
-                                    }
-                                };
-                                //notifica o dono da inscricao
-                                NotificacaoService.publish(mensagemRegistro, function (data) {
-                                });
-                                //notificar app
-                                if (successPayload.gridUpdate == true) {
-                                    var mensagemGrid = {
-                                        type: "equipe",
-                                        id_Equipe: successPayload.id_Equipe,
-
-                                        notification: {
-                                            title: "Equipe confirmada",
-                                            body: "Sua equipe está no grid, às " + successPayload.horario
-                                        }
-                                    };
-                                    NotificacaoService.publish(mensagemGrid, function (data) {
-                                    });
-                                    //notifica a equipe da hora de largada
-                                }
-                            }
                         }, function (error) {
                             item.pagoTemp = false;
                         })
@@ -1333,14 +1401,15 @@ var angularModule =
                 }
             }])
         .controller('CompetidorDetailsCtrl', [
-            '$scope', '$timeout', '$location', '$routeParams', 'CompetidorService', 'CategoriaService', '$rootScope', '$uibModal', 'AlertService', 'EquipesService',
-            function ($scope, $timeout, $location, $routeParams, CompetidorService, CategoriaService, $rootScope, $uibModal, AlertService, EquipesService) {
+            '$scope', '$timeout', '$location', '$routeParams', 'CompetidorService', 'CategoriaService', '$rootScope', '$uibModal', 'AlertService', 'EquipesService', 'InscricaoService',
+            function ($scope, $timeout, $location, $routeParams, CompetidorService, CategoriaService, $rootScope, $uibModal, AlertService, EquipesService, InscricaoService) {
 
                 if ($routeParams.id == -1) {
                     $scope.entity = {}
                 } else {
                     $scope.entity = CompetidorService.get({ id: $routeParams.id });
                 }
+                $scope.inscricoes = InscricaoService.query4competidor({ idTrekker: $routeParams.id }, function (data) { console.log(data) });
 
                 $scope.saveData = function () {
                     CompetidorService.save({ id: $routeParams.id != -1 ? $routeParams.id : null }, $scope.entity,
@@ -1655,7 +1724,8 @@ var angularModule =
                 } else {
                     $scope.etapa = EtapasService.get({ id: $routeParams.id },
                         function (data) {
-
+                            $('#summernote').summernote('code', data.extraInfoEmail);
+                            $scope.totalChars = data.extraInfoEmail.length;
                             if (data.id_Local != null && data.id_Local != -1) {
                                 $scope.location = LocationService.get({ id: data.id_Local });
                             }
@@ -1681,6 +1751,76 @@ var angularModule =
                 });
 
 
+                $scope.customTableButton = function (context) {
+                    var ui = $.summernote.ui;
+  
+                    // create button
+                    var button = ui.button({
+                        contents: '<i class="fa fa-table"/> + Tabela Padrão',
+                        tooltip: 'adiciona tabela padão',
+                        add: false,
+                        click: function () {
+                            // invoke insertText method with 'hello' on editor module.
+                            var defStyle = "border:solid windowtext 1.0pt;border-top:none;PADDING: 5.4pt;LINE-HEIGHT: 10.5pt;";
+                            var row = '<tr><td style="' + defStyle + 'border-right:none;">A definir</td><td style="' + defStyle + 'border-right:none;">A definir</td><td style="' + defStyle + '">A definir</td></tr>';
+                            if ($('.myTable').length == 0) {
+                                var defHeaderStyle = 'PADDING: 5.4pt;LINE-HEIGHT: 10.5pt;border:solid windowtext 1.0pt;';
+                                var value = '<table class="myTable" border="0" cellspacing="0" cellpadding="0" style="margin-left:42.5pt;border-collapse:collapse"><thead><tr style="BACKGROUND: #cfd4c1; FONT-SIZE: 7.5pt;  TEXT-ALIGN: center;font-weight: 700;">';
+                                value += '<td style="' + defHeaderStyle + 'border-right:none;">DATA</td><td style="' + defHeaderStyle + 'border-right:none;">HORÁRIO</td><td style="' + defHeaderStyle + '">EVENTO</td></tr></thead><tbody>' + row + '</tbody></table>';
+
+                                $('#summernote').summernote('code', $('#summernote').summernote('code') + value);
+
+                            } else {
+                                $('.myTable>tbody').append(row);
+                            };
+
+
+
+                        }
+                    });
+
+                    return button.render();   // return button as jquery object 
+                }
+                $('#summernote').summernote({
+                    minHeight: 200,
+                    toolbar: [
+                        // [groupName, [list of button]]
+                        ['style', ['bold', 'italic', 'underline', 'clear']],
+                        ['insert', ['table', 'link', 'picture', 'hr']],
+                        ['font', ['strikethrough', 'fontsize', 'color']],
+
+                        ['para', ['ul', 'ol', 'paragraph']],
+                        ['height', ['height']],
+                        ['edit', ['codeview', 'undo', 'redo', 'clear']],
+                        ['custom', ['customTable']]
+
+                    ],
+                    buttons: {
+                        customTable: $scope.customTableButton
+                    },
+                    callbacks: {
+                        onKeyup: function () {
+                            if ($scope.lastCall) {
+                                $timeout.cancel($scope.lastCall);
+
+                            }
+                            $scope.lastCall = $timeout($scope.$apply, 300);
+
+                        }
+                    }
+
+                });
+
+                $scope.getTextChars = function () {
+                    return $('#summernote').summernote('code').length;
+                }
+
+                $scope.emailar = false;
+                $scope.testar = function () {
+                    $scope.emailar = true;
+                    $scope.saveData();
+
+                }
                 $scope.saveData = function () {
                     if ($scope.dataLimiteLote1) {
                         $scope.etapa.dataLimiteLote1 = $scope.dataLimiteLote1.getTime();
@@ -1691,12 +1831,15 @@ var angularModule =
                     if ($scope.dataLimiteLote3) {
                         $scope.etapa.dataLimiteLote3 = $scope.dataLimiteLote3.getTime();
                     }
-
+                    $scope.etapa.extraInfoEmail = $('#summernote').summernote('code');
 
                     EtapasService.save({ id: $routeParams.id != -1 ? $routeParams.id : null }, $scope.etapa, function (data) {
                         if ($scope.etapa.id == null || $scope.etapa.id == -1) {
                             $scope.etapa = data;
                             $location.path("/etapa/" + data.id);
+                        }
+                        if ($scope.emailar) {
+                            EtapasService.testEmail({ id_Etapa: $scope.etapa.id });
                         }
                         AlertService.showSuccess("Salvo com sucesso");
                     });

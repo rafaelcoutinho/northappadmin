@@ -113,6 +113,11 @@ angular.module('north.services', ['ngResource'])
     .service('InscricaoService', ['$http', '$q', '$resource', 'appConfigs', function ($http, $q, $resource, appConfigs) {
 
         return $resource(appConfigs.context + '/InscricaoFull/', {}, {
+            query4competidor: {
+                isArray: true,
+                url: appConfigs.context + '/InscricaoFull?filter0=id_Trekker,eq,:idTrekker',
+                transformResponse: jsonTransformQuery
+            },
             get: {
                 isArray: false,
                 url: appConfigs.context + '/InscricaoFull?filter0=id_Trekker,eq,:idTrekker&filter1=id_Etapa,eq,:idEtapa',
@@ -165,7 +170,6 @@ angular.module('north.services', ['ngResource'])
                 method: 'DELETE',
                 isArray: false,
                 url: appConfigs.contextRoot + '/Inscrever.do'
-                // url: "http://localhost/northServer/inscrever.php"
             },
 
             inscrever: {
@@ -195,6 +199,11 @@ angular.module('north.services', ['ngResource'])
     .service('EtapasService', ['$http', '$q', '$resource', 'appConfigs', function ($http, $q, $resource, appConfigs) {
 
         return $resource(appConfigs.context + '/Etapa/:id', {}, {
+            testEmail:{
+                method:"POST",
+                isArray: false,
+                url: appConfigs.contextRoot + '/testEmail.php'  
+            },
             query: {
                 isArray: true,
                 transformResponse: jsonTransformQuery
@@ -211,7 +220,7 @@ angular.module('north.services', ['ngResource'])
             },
             getPerformance: {
                 isArray: true,
-                url: appConfigs.contextRoot + '/app/enhanced/Etapa/:id/Resultado'
+                url: appConfigs.contextRoot + '/app/enhanced/Etapa/:id/Performance/:idEquipe'
                 
             },
             getResultados: {
@@ -332,6 +341,10 @@ angular.module('north.services', ['ngResource'])
                 if (DEBUG) {
 
                     var url = config.url;
+                    if (config.url.indexOf("testEmail.php") > 0) {
+                        config.url = "http://localhost/northServer/testeEmail.php";
+                        
+                    }else
                 if (config.url.indexOf("GerenciaResultado.do") > 0) {
                         config.url = "http://localhost/northServer/performance.php";
                     } else 

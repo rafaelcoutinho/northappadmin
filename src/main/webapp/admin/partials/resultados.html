@@ -16,6 +16,12 @@
 
                         </select>
 
+
+                        <select class="form-control input-group input-group-sm" ng-model="categoria.nomeResultado" ng-options="option.nomeResultado as  option.nomeResultado   for option in nomesResultados ">
+
+                        </select>
+                        <button ng-click="removeResultados()">Apagar Resultado</button>
+
                     </div>
                     <div class="pull-right box-tools">
                         <div class="btn-group">
@@ -48,6 +54,8 @@
 
                 </div>
                 <div class="box-body">
+                    <button type="submit " class="btn btn-primary btn-block  " ng-if="resultados.length>0" ng-cloak ng-click="notificarTodos()">Enviar notificações com resultados</button>
+'{{categoria.nomeResultado}}'
                     <table class="table table-bordered">
                         <tbody>
                             <tr>
@@ -60,7 +68,7 @@
                                 <th>PCs Pegos</th>
 
                                 <th></th>
-                                <th></th>
+                                <th> </th>
                             </tr>
                             <tr ng-repeat="item in resultados|filter:categoria | orderBy : ['id_Categoria','colocacao'] " ng-class="{'manualUpdate':item.t==1}">
                                 <td ng-click="editItem(item)">{{item.colocacao}}</td>
@@ -146,13 +154,13 @@
                 <label for="colocacao" class="control-label">Colocação*</label>
                 <div class="form-group">
                     <div>
-                            <input type="number" name="colocacao" ng-required placeholder="posicao" ng-model="entry.colocacao" min="1">
+                        <input type="number" name="colocacao" ng-required placeholder="posicao" ng-model="entry.colocacao" min="1">
                     </div>
                 </div>
                 <label for="colocacao" class="control-label">Número da equipe*</label>
                 <div class="form-group">
                     <div>
-                            <input type="number" name="colocacao" ng-required placeholder="numero" ng-model="entry.numero" min="1">
+                        <input type="number" name="colocacao" ng-required placeholder="numero" ng-model="entry.numero" min="1">
                     </div>
                 </div>
                 <label for="pontos_perdidos" class="control-label">Pontos perdidos*</label>
@@ -164,16 +172,16 @@
                 <label for="colocacao" class="control-label">Pontos para o ranking*</label>
                 <div class="form-group">
                     <div>
-                            <input type="number" name="colocacao" ng-required placeholder="numero" ng-model="entry.pontos_ranking">
+                        <input type="number" name="colocacao" ng-required placeholder="numero" ng-model="entry.pontos_ranking">
                     </div>
                 </div>
                 <label for="colocacao" class="control-label">Penalidades</label>
                 <div class="form-group">
                     <div>
-                            <input type="number" name="colocacao" ng-required placeholder="numero" ng-model="entry.penalidade" min="0">
+                        <input type="number" name="colocacao" ng-required placeholder="numero" ng-model="entry.penalidade" min="0">
                     </div>
                 </div>
-                
+
                 <label for="pcs_zerados" class="control-label">PCs Zerados</label>
                 <div class="form-group">
                     <div>

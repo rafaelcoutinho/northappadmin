@@ -203,12 +203,14 @@ var angularModule =
 
                 }
                 for (var i = 0; i < integrantes.length; i++) {
-                    if ($scope.novoCompetidor.email == integrantes[i].email) {
-                        if ($scope.novoCompetidor.id_Trekker == null || $scope.novoCompetidor.id_Trekker != integrantes[i].id_Trekker) {
-                            $scope.competidorForm.competidorEmail.$valid = false;
-                            $scope.competidorForm.competidorEmail.$error.existente = true;
-                            AlertService.showError("E e-mail utilizado já está sendo associado ao integrante '" + integrantes[i].nome + "'");
-                            return;
+                    if ($scope.novoCompetidor.id_Trekker == null && integrantes[i].id_Trekker == null) {
+                        if ($scope.novoCompetidor.email == integrantes[i].email) {
+                            if ($scope.novoCompetidor.id_Trekker == null || $scope.novoCompetidor.id_Trekker != integrantes[i].id_Trekker) {
+                                $scope.competidorForm.competidorEmail.$valid = false;
+                                $scope.competidorForm.competidorEmail.$error.existente = true;
+                                AlertService.showError("O e-mail utilizado já está sendo associado ao integrante '" + integrantes[i].nome + "'");
+                                return;
+                            }
                         }
                     }
 
@@ -398,7 +400,9 @@ var angularModule =
                             default:
                                 if (err.status == 404) {
                                     AlertService.showError("O e-mail e senha inseridos não coicidem.");
-                                } else {
+                                } else if (err.status == 403) {
+                                    AlertService.showError("Senha incorreta.");
+                                }else{
                                     AlertService.showError("Por favor corrija os erros do formulário.");
                                 }
                         }

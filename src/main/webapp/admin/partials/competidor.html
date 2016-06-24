@@ -50,7 +50,6 @@
                         <button type="button" class="btn btn-warning" ng-click="removeAssociation()" ng-show="entity.id_Equipe!=null">Remover associação com equipe</button>
                     </div>
                 </div>
-
             </div>
             <!-- /.box-body -->
             <div class="box-footer">
@@ -60,5 +59,51 @@
             <!-- /.box-footer -->
         </form>
     </div>
-    
+    <div class="box box-info">
+        <div class="box-header with-border">
+            <h3 class="box-title">Inscrições</h3>
+
+            <div class="box-tools pull-right">
+                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                </button>
+
+            </div>
+        </div>
+        <!-- /.box-header -->
+        <div class="box-body">
+            <div class="table-responsive">
+                <table class="table no-margin">
+                    <thead>
+                        <tr>
+                            <th>Etapa</th>
+                            <th>Data</th>
+                            <th>Equipe</th>
+                            <th>Categoria</th>
+                            <th>Paga?</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="item in inscricoes">
+{{item.titulo}}
+                            <td>{{item.titulo}}</td>
+                            <td>{{item.data|date:'dd-MM-yyyy'}}</td>
+                            <td>{{item.nome_Equipe}}</td>
+                            <td>{{item.categoria}}</td>
+                            <td>{{item.paga}}</td>
+                            
+
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+            <!-- /.table-responsive -->
+        </div>
+        <!-- /.box-body -->
+        <div class="box-footer clearfix">
+
+        </div>
+        <!-- /.box-footer -->
+    </div>
+
 </section>
