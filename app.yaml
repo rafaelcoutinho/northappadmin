@@ -21,6 +21,10 @@ handlers:
 - url: /test
   script: src/main/php/nottest.php
 
+- url: /relatorio/Etapa/.*
+  script:  src/main/php/etapaReport.php
+  login: admin
+
 - url: /SetPago.do
   script:  src/main/php/marcarPaga.php
   login: admin

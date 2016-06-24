@@ -177,6 +177,12 @@ var angularModule =
                     url: appConfigs.contextRoot + '/GerenciaResultado.do'
                     // url: "http://localhost/northServer/performance.php"
                 },
+                removeResultados: {
+                    method: "DELETE",
+                    isArray: false,
+                    url: appConfigs.contextRoot + '/GerenciaResultado.do'
+                    // url: "http://localhost/northServer/performance.php"
+                },
                 processPerformanceCSV: {
                     method: "POST",
                     isArray: true,
@@ -522,11 +528,59 @@ var angularModule =
         })
         .controller('ResultadosCtrl', function ($scope, idEtapa, EtapasService, UtilsService, $uibModal, CategoriaService, $location, $log, ResultadoAdminService, AlertService, NotificacaoService) {
             $scope.etapa = EtapasService.get({ id: idEtapa });
+            $scope.nomesResultados = [];
             $scope.categorias = CategoriaService.query({}, function (data) {
-                $scope.categoria = { id_Categoria: data[0].id };
-
+                $scope.categoria = { id_Categoria: data[0].id, nomeResultado: "Final" };
             });
-            $scope.resultados = EtapasService.getResultados({ id: idEtapa });
+
+            $scope.removeResultados = function () {
+                var modalInstance = $uibModal.open({
+                    animation: $scope.animationsEnabled,
+                    templateUrl: 'partials/modal.html',
+                    controller: 'ConfirmModalCrtl',
+                    size: 'sm',
+                    resolve: {
+                        title: function () {
+                            return "Apagar resultados";
+                        },
+                        message: function () {
+                            return "Você tem certeza que deseja apagar os resultados " + $scope.categoria.nomeResultado;
+                        }
+                    }
+                });
+                modalInstance.result.then(function () {
+                    ResultadoAdminService.removeResultados({ etapa: idEtapa, nome: $scope.categoria.nomeResultado },
+                        function (data) {
+                            AlertService.showSuccess("Resultados apagados");
+                            $scope.refresh();
+                        }, function () {
+                            AlertService.showError("Houve um erro ao apagar resultados");
+                        });
+
+                }, function () {
+                    // $log.info('Modal dismissed at: ' + new Date());
+                });
+
+            }
+            $scope.resultados = [];
+            $scope.refresh = function () {
+                $scope.resultados = [];
+                EtapasService.getResultados({ id: idEtapa }, function (data) {
+                    if (data.length > 0) {
+                        $scope.categoria.nomeResultado = data[0].nomeResultado;
+                        $scope.nomesResultados = data;
+                        for (var i = 0; i < data.length; i++) {
+                            var element = data[i];
+                            $scope.resultados = $scope.resultados.concat(element.resultados);
+                            console.log($scope.resultados.length, element.resultados.length)
+
+
+                        }
+                    }
+
+                });
+            }
+            $scope.refresh();
             $scope.getLabelCategoria = UtilsService.getLabelCategoria;
 
             $scope.importCSV = function () {
@@ -677,6 +731,7 @@ var angularModule =
                     AlertService.showError("Falhou ao processar CSV");
                 });
             }
+            $scope.nomeResultado = "Final";
             $scope.getPoints = function (item) {
                 var pcs = item.pcs;
 
@@ -748,8 +803,11 @@ var angularModule =
                 return item.grid.equipe != null && $scope.accentsTidy(item.grid.equipe.nome) != $scope.accentsTidy(item.Piloto);
             }
             $scope.getLabelCategoria = UtilsService.getLabelCategoria;
+
+
             $scope.salvarResultados = function () {
-                ResultadoAdminService.saveResultados({ etapa: idEtapa }, $scope.preResultados, function () {
+                console.log("a", $scope.nomeResultado)
+                ResultadoAdminService.saveResultados({ etapa: idEtapa }, { resultados: $scope.preResultados, nome: $scope.nomeResultado }, function () {
                     AlertService.showSuccess("Resultados Salvos com sucesso");
                     $location.path("/etapa/" + idEtapa + "/resultados");
                 }, function (error) {
@@ -878,10 +936,7 @@ var angularModule =
             $scope.data = new Date();
             $scope.report = [];
             RelatorioService.query({ filter0: 'id_Etapa,eq,' + idEtapa }, function (data) {
-
-
                 $scope.report = UtilsService.addNumeracaoToGridList(data);
-
             })
             $scope.gridInfo = RelatorioService.queryGridInfo({ id: idEtapa });
 
@@ -1269,7 +1324,7 @@ var angularModule =
                         }, function (successPayload) {
                             item.paga = state;
                             item.pagoTemp = false;
-                            
+
                         }, function (error) {
                             item.pagoTemp = false;
                         })
@@ -1707,11 +1762,11 @@ var angularModule =
                         click: function () {
                             // invoke insertText method with 'hello' on editor module.
                             var defStyle = "border:solid windowtext 1.0pt;border-top:none;PADDING: 5.4pt;LINE-HEIGHT: 10.5pt;";
-                            var row = '<tr><td style="'+defStyle+'border-right:none;">A definir</td><td style="'+defStyle+'border-right:none;">A definir</td><td style="'+defStyle+'">A definir</td></tr>';
+                            var row = '<tr><td style="' + defStyle + 'border-right:none;">A definir</td><td style="' + defStyle + 'border-right:none;">A definir</td><td style="' + defStyle + '">A definir</td></tr>';
                             if ($('.myTable').length == 0) {
-                                var defHeaderStyle='PADDING: 5.4pt;LINE-HEIGHT: 10.5pt;border:solid windowtext 1.0pt;';
+                                var defHeaderStyle = 'PADDING: 5.4pt;LINE-HEIGHT: 10.5pt;border:solid windowtext 1.0pt;';
                                 var value = '<table class="myTable" border="0" cellspacing="0" cellpadding="0" style="margin-left:42.5pt;border-collapse:collapse"><thead><tr style="BACKGROUND: #cfd4c1; FONT-SIZE: 7.5pt;  TEXT-ALIGN: center;font-weight: 700;">';
-                                value+='<td style="'+defHeaderStyle+'border-right:none;">DATA</td><td style="'+defHeaderStyle+'border-right:none;">HORÁRIO</td><td style="'+defHeaderStyle+'">EVENTO</td></tr></thead><tbody>' + row + '</tbody></table>';
+                                value += '<td style="' + defHeaderStyle + 'border-right:none;">DATA</td><td style="' + defHeaderStyle + 'border-right:none;">HORÁRIO</td><td style="' + defHeaderStyle + '">EVENTO</td></tr></thead><tbody>' + row + '</tbody></table>';
 
                                 $('#summernote').summernote('code', $('#summernote').summernote('code') + value);
 
@@ -1771,6 +1826,7 @@ var angularModule =
                         $scope.etapa.dataLimiteLote1 = $scope.dataLimiteLote1.getTime();
                     }
                     if ($scope.dataLimiteLote2) {
+                        $scope.etapa.dataLimiteLote2 = $scope.dataLimiteLote2.getTime();
                     }
                     if ($scope.dataLimiteLote3) {
                         $scope.etapa.dataLimiteLote3 = $scope.dataLimiteLote3.getTime();
