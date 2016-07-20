@@ -275,41 +275,49 @@ angular.module('north.services', ['ngResource'])
                 var fixedList =[];
                 var tuples = [];
 
-                for (var index = 0; index < data.length; index++) {
-                    var item = data[index];
+                // for (var index = 0; index < data.length; index++) {
+                //     var item = data[index];
 
-                    tuples.push([item, item.hora + ":" + (item.minuto < 10 ? "0" + item.minuto : item.minuto)]);
-                }
+                //     tuples.push([item, item.hora + ":" + (item.minuto < 10 ? "0" + item.minuto : item.minuto)]);
+                // }
 
-                tuples.sort(
-                    function (a, b) {
+                // tuples.sort(
+                //     function (a, b) {
 
-                        return a[1] > b[1] ? 1 : a[1] < b[1] ? -1 : 0
-                    }
+                //         return a[1] > b[1] ? 1 : a[1] < b[1] ? -1 : 0
+                //     }
 
-                    );
-
-                var lastChangeIndex=-1;
-                var lastChangeCat=-1;
-                var index = 0;
+                //     );
+                data.sort(function(a,b){
+                    return a.hora>b.hora?1:a.hora<b.hora?-1:(a.minuto>=b.minuto?1:-1);
+                })
                 
-                for (var key in tuples) {
 
-                    var item = tuples[key][0];
-                     var gridCat = item.categoria_Equipe < 3 ? 1 : item.categoria_Equipe;
+                var lastChangeIndex = -1;
+                var lastChangeCat = -1;
+                var index = 0;
+
+                for (var key in data) {
+
+                    var item = data[key];//tuples[key][0];
+                    var gridCat = item.categoria_Equipe < 3 ? 1 : item.categoria_Equipe;
                     if (lastChangeCat != gridCat) {
                         lastChangeIndex = index;
                         lastChangeCat = gridCat;
                     }
                    
-                    console.log(gridCat,tuples[key][1])
+                    //   console.log(gridCat,tuples[key][1])
                     var gridInfo = this.getGridInfo(gridCat);
-                    if (!gridInfo) {
-                        console.log("nao conseguiu pegar grid info para ", item)
+                    if (!gridInfo || gridInfo == null) {
+                        console.log("nao conseguiu pegar grid info para " + key, item);
+
+                    } else {
+                        item.numeracao = index + gridInfo.numeracao - lastChangeIndex;
+                        fixedList.push(item);
+
+                        index++;
                     }
-                    item.numeracao = index + gridInfo.numeracao - lastChangeIndex;
-                    fixedList.push(item);
-                    index++;
+                    
 
                 }
                 return fixedList;
