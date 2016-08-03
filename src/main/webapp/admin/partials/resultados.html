@@ -144,13 +144,13 @@
         <form name="largadaForm" role="form " class="css-form " novalidate autocomplete="none">
             <div class="box-body ">
 
-                <div class="row ">
+                <div class="row " >
                     Equipe: {{entry.nome}}
-                    <input ng-show="entry.id_Equipe==null" type="text" autocomplete="off " ng-model="equipe" typeahead-show-hint="true " uib-typeahead="g as g.nome for g in equipes | filter:{nome:$viewValue} | limitTo:8"
+                    <input ng-if="entry.id_Equipe==null" type="text" autocomplete="off " ng-model="equipe" typeahead-show-hint="true " uib-typeahead="g as g.nome for g in equipes | filter:{nome:$viewValue} | limitTo:8"
                     typeahead-editable="true " class="form-control " typeahead-select-on-exact="true " typeahead-min-length="0 "
                     typeahead-no-results="noResult">
                 </div>
-
+<br>
                 <label for="colocacao" class="control-label">Colocação*</label>
                 <div class="form-group">
                     <div>

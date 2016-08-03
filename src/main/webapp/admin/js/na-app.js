@@ -487,8 +487,6 @@ var angularModule =
 
 
             $scope.ok = function () {
-
-
                 console.log("#", $scope.equipe);
                 if ($scope.equipe == null) {
                     AlertService.showError("Por favor selecione uma equipe existente.");
@@ -683,12 +681,12 @@ var angularModule =
                     if (selecionado.isNew == true) {
 
                         ResultadoAdminService.save(selecionado, function (data) {
-                            $scope.resultados = EtapasService.getResultados({ id: idEtapa });
+                            $scope.refresh();
                         });
 
                     } else {
                         ResultadoAdminService.update(selecionado, function (data) {
-                            $scope.resultados = EtapasService.getResultados({ id: idEtapa });
+                            $scope.refresh();
                         });
                     }
 
