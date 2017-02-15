@@ -1,7 +1,7 @@
 runtime: php55
 api_version: 1
-application: cumeqetrekking
-version: 1 
+#application: cumeqetrekking
+#version: 1 
 
 
 handlers:
@@ -57,43 +57,27 @@ handlers:
 
 
 
-- url: /admin/*
-  static_dir: src/main/webapp/admin/
+- url: /admin/(.*\.(css|js|html))$  
+  static_files:  src/main/webapp/admin/\1
+  upload: src/main/webapp/admin/.*\.(css|js|html)$
   login: admin
-- url: /admin/(.*)/(.*)
-  static_dir: src/main/webapp/admin/\1/\2/
-  login: admin
-- url: /admin/(.*)/(.*)/(.*)
-  static_dir: src/main/webapp/admin/\1/\2/\3/
-- url: /admin/(.*)/(.*)/(.*)/(.*)
-  static_dir: src/main/webapp/admin/\1/\2/\3/\4/
+  
 
 - url: /
   script: src/main/php/redirect.php
 
-- url: /open/*
-  static_dir: src/main/webapp/open/
-- url: /open/(.*)/(.*)
-  static_dir: src/main/webapp/open/\1/\2/
-- url: /open/(.*)/(.*)/(.*)
-  static_dir: src/main/webapp/open/\1/\2/\3/
-- url: /open/(.*)/(.*)/(.*)/(.*)
-  static_dir: src/main/webapp/open/\1/\2/\3/\4/
 
-- url: /common/*
-  static_dir: src/main/webapp/common/
+- url: /open/(.*\.(css|js|html))$  
+  static_files:  src/main/webapp/open/\1
+  upload: src/main/webapp/open/.*\.(css|js|html)$
 
-- url: /bower_components/*
-  static_dir: src/main/webapp/bower_components/
-- url: /bower_components/(.*)/(.*)
-  static_dir: src/main/webapp/bower_components/\1/\2/
-- url: /bower_components/(.*)/(.*)/(.*)
-  static_dir: src/main/webapp/bower_components/\1/\2/\3/
-- url: /bower_components/(.*)/(.*)/(.*)/(.*)
-  static_dir: src/main/webapp/bower_components/\1/\2/\3/\4/
-- url: /bower_components/(.*)/(.*)/(.*)/(.*)/(.*)
-  static_dir: src/main/webapp/bower_components/\1/\2/\3/\4/\5
+- url: /common/(.*\.(css|js|html))$  
+  static_files:  src/main/webapp/common/\1
+  upload: src/main/webapp/common/.*\.(css|js|html)$
 
+- url: /bower_components/(.*\.(css|js|woff|ttf|woff2))$
+  static_files: src/main/webapp/bower_components/\1
+  upload: src/main/webapp/bower_components/.*\.(css|js|woff|ttf|woff2)$
 
 - url: /endpoints/Login
   script: src/main/php/login.php
